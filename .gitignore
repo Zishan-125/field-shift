@@ -1,0 +1,33 @@
+# Environment variables & secrets
+.env
+.env*.local
+*.pem
+*.key
+
+# Python virtual environment & cache
+.venv/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Database & Local Data
+*.sqlite3
+*.db
+pgdata/
+
+# Next.js / Node.js (Frontend)
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# IDE & Editor settings
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.DS_Store
