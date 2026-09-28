@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "TerraShift",
+    "slug": "terrashift",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0B0F17",
+    "splash": { "backgroundColor": "#0B0F17" },
+    "ios": { "supportsTablet": true },
+    "android": { "adaptiveIcon": { "backgroundColor": "#0B0F17" } },
+    "web": { "bundler": "metro" }
+  }
+}

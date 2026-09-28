@@ -1,0 +1,59 @@
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--bg-deep-space);
+    font-family: "Space Grotesk", sans-serif;
+  }
+
+  /* Visible keyboard focus everywhere, WCAG 2.2 AA — never rely on hover-only affordances */
+  :focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background-color: rgba(0, 242, 254, 0.25);
+    color: var(--text-primary);
+  }
+
+  /* Slim, low-contrast scrollbars that don't fight the HUD chrome */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--divider);
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+}
+
+@layer components {
+  /* Base glass panel used by every elevated surface: cards, HUD bars, drawers */
+  .glass-panel {
+    background-color: var(--surface-panel);
+    backdrop-filter: var(--glass-backdrop);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--surface-panel-border);
+  }
+
+  .tabular {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}

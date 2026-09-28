@@ -1,0 +1,35 @@
+:root {
+  /* Surfaces & Elevation */
+  --bg-deep-space: #0b0f17;
+  --surface-panel-solid: #141c2e; /* Card Surface, elevation 1dp */
+  --surface-panel: rgba(20, 28, 46, 0.72);
+  --surface-panel-border: rgba(255, 255, 255, 0.08);
+  --surface-glow: rgba(0, 242, 254, 0.15);
+  --divider: #1e293b;
+
+  /* Typography */
+  --text-primary: #f8fafc;
+  --text-muted: #94a3b8;
+
+  /* Data & Status Accents */
+  --accent-cyan: #00f2fe;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-crimson: #ef4444;
+  --accent-violet: #8b5cf6;
+
+  /* Glassmorphism */
+  --glass-backdrop: blur(12px) saturate(180%);
+}
+
+/* Respect reduced-motion preference across every animated utility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
