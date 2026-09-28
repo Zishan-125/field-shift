@@ -1,0 +1,55 @@
+"""
+Single-dataset backfill for ECOSTRESS evapotranspiration stress (ESI).
+
+Same pattern as ingest_smap.py. ECOSTRESS is the most irregularly-
+sampled of the five datasets — it depends on the ISS's orbit, not a
+fixed daily pass — so this is also the one you'll most often need to
+backfill after discovering a field's recent window simply didn't have
+an overpass. If region_mean() prints no rows for a given window,
+check the ECOSTRESS coverage calendar before assuming this script is
+broken.
+
+Run: python data-pipeline/ingest_ecostress.py --start-date 2026-01-01 --end-date 2026-02-01
+"""
+
+import csv
+from pathlib import Path
+
+import ee
+
+from _common import build_arg_parser, date_windows, default_date_range, fetch_fields, init_earth_engine, region_mean
+
+COLLECTION_ID = "NASA/ECOSTRESS/ESI/L4/ESI_PT_JPL"
+BAND = "ESI"
+DATASET_NAME = "ECOSTRESS"
+
+
+def run(args) -> None:
+    init_earth_engine(args.service_account_json)
+    start, end = (args.start_date, args.end_date) if args.start_date else default_date_range(16)
+    fields = fetch_fields(args.backend_url, args.field_id)
+
+    output_path = Path(args.output or f"data-pipeline/output/{DATASET_NAME.lower()}_backfill.csv")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    rows_written = 0
+    with open(output_path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["field_id", "date", "dataset", "value"])
+
+        for field in fields:
+            geom = ee.Geometry(field["geojson_polygon"])
+            for window_start, window_end in date_windows(start, end, args.step_days):
+                value = region_mean(COLLECTION_ID, BAND, geom, window_start, window_end)
+                if value is not None:
+                    writer.writerow([field["id"], window_start, DATASET_NAME, value])
+                    rows_written += 1
+                else:
+                    print(f"  no ECOSTRESS overpass for field {field['id']} in {window_start}..{window_end}")
+
+    print(f"Wrote {rows_written} {DATASET_NAME} rows for {len(fields)} field(s) to {output_path}")
+
+
+if __name__ == "__main__":
+    args = build_arg_parser(__doc__).parse_args()
+    run(args)

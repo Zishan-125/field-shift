@@ -1,0 +1,14 @@
+{
+  "feature_columns": [
+    "SMAP",
+    "MODIS",
+    "GPM",
+    "ECOSTRESS",
+    "GRACE-FO"
+  ],
+  "input_steps": 6,
+  "target_steps": 4,
+  "target_definition": "sum of MODIS (NDVI) over the next 4 steps \u2014 a yield proxy, not calibrated yield",
+  "hidden_size": 32,
+  "num_layers": 2
+}

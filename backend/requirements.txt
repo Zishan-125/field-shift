@@ -1,0 +1,15 @@
+fastapi[standard]
+uvicorn
+pydantic
+pydantic-settings
+sqlalchemy
+geoalchemy2
+psycopg2-binary
+xgboost
+scikit-learn
+torch
+sentence-transformers
+faiss-cpu
+twilio
+httpx
+python-dotenv

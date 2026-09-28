@@ -1,0 +1,17 @@
+[
+  "ECOSTRESS",
+  "GPM",
+  "GRACE-FO",
+  "MODIS",
+  "SMAP",
+  "SMAP_rolling3",
+  "SMAP_trend",
+  "MODIS_rolling3",
+  "MODIS_trend",
+  "GPM_rolling3",
+  "GPM_trend",
+  "ECOSTRESS_rolling3",
+  "ECOSTRESS_trend",
+  "GRACE-FO_rolling3",
+  "GRACE-FO_trend"
+]

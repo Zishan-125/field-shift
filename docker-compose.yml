@@ -1,0 +1,105 @@
+# One-command spin-up: `docker compose up --build`
+#
+# Every service a judge needs to run TerraShift end-to-end lives here
+# — no "also install Postgres locally" or "also run Ollama yourself"
+# steps hiding in the README. If a service isn't in this file, assume
+# it's not required to see the core demo work.
+
+services:
+  # ---------------------------------------------------------------------
+  # Primary database. Uses the postgis/postgis image (not plain postgres)
+  # because backend/app/models/field.py stores field boundaries as a
+  # native PostGIS Geometry column — plain Postgres can't create that
+  # column type.
+  db:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: terrashift
+      POSTGRES_PASSWORD: terrashift
+      POSTGRES_DB: terrashift
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrashift"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Separate database + port for the test suite (see backend/tests/
+  # conftest.py's TEST_DATABASE_URL), so `pytest` runs never touch the
+  # same data the demo dashboard is showing.
+  db-test:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: terrashift
+      POSTGRES_PASSWORD: terrashift
+      POSTGRES_DB: terrashift_test
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_test_data:/var/lib/postgresql/data
+
+  # Local LLM runtime for the RAG copilot (backend/app/services/
+  # rag_pipeline.py). Running this in-network means the copilot demo
+  # works with zero internet connection and no API key on the judging
+  # table — a deliberate reliability choice, not a cost-cutting one.
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    # Pulls the model on first boot so `rag_pipeline.py` has something
+    # to call immediately; safe to re-run, it's a no-op if already pulled.
+    entrypoint: >
+      sh -c "ollama serve & sleep 3 && ollama pull llama3 && wait"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # These two override whatever's in .env so the backend always
+      # reaches the *container* hostnames, not localhost — the most
+      # common first bug when moving from local dev to Compose.
+      DATABASE_URL: postgresql+asyncpg://terrashift:terrashift@db:5432/terrashift
+      OLLAMA_BASE_URL: http://ollama:11434
+      ML_MODEL_DIR: /app/ml_models
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app   # live-reload during the hackathon; drop for a "frozen" judge build
+      # backend's build context is ./backend, so it never sees
+      # ml-models/ on its own — this is what lets scoring_engine.py's
+      # USE_ML_SCORER path actually find the trained .joblib files.
+      # Read-only: the backend container consumes models, it doesn't train them.
+      - ./ml-models/saved_models:/app/ml_models:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Lets a judge (or a teammate) inspect the database through a
+  # browser in about 10 seconds, with no local psql/client install —
+  # small addition, disproportionately useful during a live Q&A.
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+  db_test_data:
+  ollama_data:
