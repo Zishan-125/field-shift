@@ -1,136 +1,410 @@
 """
-Before writing this, it's worth being explicit about something I
-flagged earlier and you haven't resolved yet: this file is NOT five
-separate ingest_smap.py / ingest_modis_ndvi.py / ... scripts, and I
-didn't write those. Here's why.
+Bulk historical Earth Engine exporter for ML training.
 
-backend/app/services/nasa_data_service.py already pulls SMAP, MODIS,
-GPM, ECOSTRESS and GRACE-FO from Earth Engine — live, for one field,
-for the current 2-4 week window, whenever a farmer opens the
-dashboard or texts STATUS. Writing five more scripts that pull the
-same five datasets the same way would just be that logic duplicated
-in two places that will drift out of sync the first time either one
-changes.
+This script:
+1. Gets field polygons from the backend.
+2. Reads historical NASA Earth-observation datasets.
+3. Calculates field-level temporal/spatial aggregates.
+4. Writes tidy CSV files.
 
-What data-pipeline/ actually needs to do is a DIFFERENT job: pull
-YEARS of history, for MANY fields at once, in bulk, offline — because
-that's what ml-models/stress_risk_model.py and shift_score_model.py
-need to train against, and it's not something you'd ever want to run
-inside a live API request. That's what this file is.
+This is a PRE-DEPLOYMENT pipeline.
 
-Run it as: python data-pipeline/gee_field_clip.py --years 5
+It should NOT be called by the live FastAPI request path.
 """
 
 import argparse
 import asyncio
 import csv
-import json
 import sys
-from datetime import date, timedelta
+from datetime import date
 from pathlib import Path
 
 import ee
-import httpx
 
-# Datasets + bands, matching nasa_data_service.py exactly so a model
-# trained on this export sees the same signals the live API computes.
+from _common import (
+    fetch_fields,
+    init_earth_engine,
+    date_windows,
+    region_mean,
+    region_sum,
+)
+
+
+# ---------------------------------------------------------------------
+# Dataset configuration
+# ---------------------------------------------------------------------
+
 DATASETS = {
-    "SMAP": ("NASA/SMAP/SPL4SMGP/007", "sm_rootzone"),
-    "MODIS": ("MODIS/061/MOD13Q1", "NDVI"),
-    "GPM": ("NASA/GPM_L3/IMERG_MONTHLY_V07", "precipitation"),
-    "ECOSTRESS": ("NASA/ECOSTRESS/ESI/L4/ESI_PT_JPL", "ESI"),
-    "GRACE-FO": ("NASA/GRACE/MASS_GRIDS_V04/LAND", "lwe_thickness_csr"),
+    "SMAP": {
+        "collection": "NASA/SMAP/SPL4SMGP/008",
+        "band": "sm_rootzone",
+        "scale": 11000,
+        "step_days": 7,
+        "unit": "m3/m3",
+    },
+
+    "MODIS_NDVI": {
+        "collection": "MODIS/061/MOD13Q1",
+        "band": "NDVI",
+        "scale": 250,
+        "step_days": 16,
+        "unit": "index",
+    },
+
+    "MODIS_EVI": {
+        "collection": "MODIS/061/MOD13Q1",
+        "band": "EVI",
+        "scale": 250,
+        "step_days": 16,
+        "unit": "index",
+    },
+
+    "ECOSTRESS": {
+        "collection": "NASA/ECOSTRESS/ESI/L4/ESI_PT_JPL",
+        "band": "ESI",
+        "scale": 1000,
+        "step_days": 30,
+        "unit": "index",
+    },
+
+    "GRACE": {
+        "collection": "NASA/GRACE/MASS_GRIDS_V04/MASCON_CRI",
+        "band": "lwe_thickness",
+        "scale": 55660,
+        "step_days": 30,
+        "unit": "cm",
+    },
 }
 
-STEP_DAYS = 16  # one export point roughly every 16 days (matches MODIS's native cadence)
-BACKEND_URL = "http://localhost:8000"  # override with --backend-url if not running via Docker Compose
+
+GPM_COLLECTION = "NASA/GPM_L3/IMERG_V07"
+GPM_BAND = "precipitation"
+GPM_SCALE = 11132
 
 
-def init_earth_engine(service_account_json_path: str) -> None:
-    with open(service_account_json_path) as f:
-        info = json.load(f)
-    credentials = ee.ServiceAccountCredentials(email=info["client_email"], key_file=service_account_json_path)
-    ee.Initialize(credentials)
-
-
-async def fetch_fields_from_backend(backend_url: str) -> list[dict]:
+def gpm_rainfall(
+    geom: "ee.Geometry",
+    start: str,
+    end: str,
+) -> float | None:
     """
-    Reuses the backend's own /api/v1/fields endpoint rather than
-    connecting to Postgres directly — this script then works
-    correctly no matter how the Field table evolves, since it only
-    depends on the same public API contract the frontend already
-    relies on.
+    Calculate accumulated rainfall in mm.
+
+    IMERG V07 precipitation is reported as a rate in mm/hr.
+    The collection has 30-minute observations.
+
+    Therefore:
+
+        sum(rate) * 0.5 hours
+
+    gives accumulated rainfall in mm.
     """
-    async with httpx.AsyncClient(base_url=backend_url, timeout=30.0) as client:
-        response = await client.get("/api/v1/fields")
-        response.raise_for_status()
-        return response.json()
+
+    collection = (
+        ee.ImageCollection(GPM_COLLECTION)
+        .filterDate(start, end)
+        .filterBounds(geom)
+        .select(GPM_BAND)
+    )
+
+    count = collection.size().getInfo()
+
+    if count == 0:
+        return None
+
+    rainfall = collection.sum().multiply(0.5)
+
+    stats = rainfall.reduceRegion(
+        reducer=ee.Reducer.mean(),
+        geometry=geom,
+        scale=GPM_SCALE,
+        maxPixels=1e9,
+        bestEffort=True,
+    )
+
+    value = stats.get(GPM_BAND).getInfo()
+
+    if value is None:
+        return None
+
+    return float(value)
 
 
-def _date_steps(start: date, end: date, step_days: int) -> list[tuple[str, str]]:
-    steps = []
-    current = start
-    while current < end:
-        window_end = min(current + timedelta(days=step_days), end)
-        steps.append((current.isoformat(), window_end.isoformat()))
-        current = window_end
-    return steps
+def process_dataset(
+    field: dict,
+    dataset_name: str,
+    config: dict,
+    start: date,
+    end: date,
+    writer,
+) -> int:
 
-
-def _region_mean(collection_id: str, band: str, geom: "ee.Geometry", start: str, end: str) -> float | None:
-    image = ee.ImageCollection(collection_id).filterDate(start, end).filterBounds(geom).select(band).mean()
-    stats = image.reduceRegion(reducer=ee.Reducer.mean(), geometry=geom, scale=1000, maxPixels=1e9)
-    value = stats.get(band).getInfo()
-    return float(value) if value is not None else None
-
-
-def export_field_history(field: dict, years: int, output_dir: Path) -> Path:
-    """
-    Writes one CSV per field: date, dataset, value. Long/tidy format
-    (rather than one wide row per date) so ml-models/notebooks can
-    pivot however each model needs without re-exporting.
-    """
     geom = ee.Geometry(field["geojson_polygon"])
-    end = date.today()
-    start = end.replace(year=end.year - years)
 
-    output_path = output_dir / f"field_{field['id']}_history.csv"
-    with open(output_path, "w", newline="") as f:
+    windows = date_windows(
+        start.isoformat(),
+        end.isoformat(),
+        config["step_days"],
+    )
+
+    rows_written = 0
+
+    for window_start, window_end in windows:
+
+        try:
+            value = region_mean(
+                collection_id=config["collection"],
+                band=config["band"],
+                geom=geom,
+                start=window_start,
+                end=window_end,
+                scale=config["scale"],
+            )
+
+        except ee.EEException as exc:
+            print(
+                f"[WARN] {dataset_name} "
+                f"{window_start}: {exc}",
+                file=sys.stderr,
+            )
+            continue
+
+        if value is None:
+            continue
+
+        # MODIS raw values have a scale factor of 0.0001.
+        if dataset_name in {"MODIS_NDVI", "MODIS_EVI"}:
+            value *= 0.0001
+
+        writer.writerow(
+            [
+                field["id"],
+                window_start,
+                dataset_name,
+                value,
+                config["unit"],
+            ]
+        )
+
+        rows_written += 1
+
+    return rows_written
+
+
+def export_field_history(
+    field: dict,
+    start: date,
+    end: date,
+    output_dir: Path,
+) -> Path:
+
+    output_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    output_path = (
+        output_dir /
+        f"field_{field['id']}_history.csv"
+    )
+
+    geom = ee.Geometry(field["geojson_polygon"])
+
+    total_rows = 0
+
+    with output_path.open(
+        "w",
+        newline="",
+        encoding="utf-8",
+    ) as f:
+
         writer = csv.writer(f)
-        writer.writerow(["field_id", "date", "dataset", "value"])
 
-        for window_start, window_end in _date_steps(start, end, STEP_DAYS):
-            for dataset_name, (collection_id, band) in DATASETS.items():
-                try:
-                    value = _region_mean(collection_id, band, geom, window_start, window_end)
-                except ee.EEException as exc:
-                    print(f"  [skip] {field['id']} {dataset_name} {window_start}: {exc}", file=sys.stderr)
-                    continue
-                if value is not None:
-                    writer.writerow([field["id"], window_start, dataset_name, value])
+        writer.writerow(
+            [
+                "field_id",
+                "date",
+                "dataset",
+                "value",
+                "unit",
+            ]
+        )
+
+        # -------------------------------------------------------------
+        # GPM rainfall
+        # -------------------------------------------------------------
+
+        gpm_windows = date_windows(
+            start.isoformat(),
+            end.isoformat(),
+            7,
+        )
+
+        print(
+            f"  [GPM] {len(gpm_windows)} windows"
+        )
+
+        for window_start, window_end in gpm_windows:
+
+            try:
+                value = gpm_rainfall(
+                    geom,
+                    window_start,
+                    window_end,
+                )
+
+            except ee.EEException as exc:
+                print(
+                    f"  [WARN] GPM {window_start}: {exc}",
+                    file=sys.stderr,
+                )
+                continue
+
+            if value is None:
+                continue
+
+            writer.writerow(
+                [
+                    field["id"],
+                    window_start,
+                    "GPM",
+                    value,
+                    "mm",
+                ]
+            )
+
+            total_rows += 1
+
+        # -------------------------------------------------------------
+        # Other datasets
+        # -------------------------------------------------------------
+
+        for dataset_name, config in DATASETS.items():
+
+            print(
+                f"  [{dataset_name}] processing..."
+            )
+
+            rows = process_dataset(
+                field=field,
+                dataset_name=dataset_name,
+                config=config,
+                start=start,
+                end=end,
+                writer=writer,
+            )
+
+            total_rows += rows
+
+    print(
+        f"  [OK] {output_path} "
+        f"({total_rows} rows)"
+    )
 
     return output_path
 
 
-async def main(years: int, service_account_json_path: str, backend_url: str, output_dir: Path) -> None:
-    init_earth_engine(service_account_json_path)
-    output_dir.mkdir(parents=True, exist_ok=True)
+async def main(
+    years: int,
+    service_account_json_path: str,
+    backend_url: str,
+    output_dir: Path,
+    field_id: str | None,
+) -> None:
 
-    fields = await fetch_fields_from_backend(backend_url)
-    print(f"Exporting {years}-year history for {len(fields)} field(s)...")
+    if years <= 0:
+        raise ValueError("--years must be greater than zero.")
+
+    init_earth_engine(
+        service_account_json_path
+    )
+
+    fields = fetch_fields(
+        backend_url=backend_url,
+        field_id=field_id,
+    )
+
+    if not fields:
+        raise RuntimeError(
+            "No fields returned by backend."
+        )
+
+    end = date.today()
+
+    start = date(
+        end.year - years,
+        end.month,
+        end.day,
+    )
+
+    print()
+    print("=" * 70)
+    print("FIELD SHIFT HISTORICAL EXPORT")
+    print("=" * 70)
+    print(f"Start : {start}")
+    print(f"End   : {end}")
+    print(f"Fields: {len(fields)}")
+    print("=" * 70)
+    print()
 
     for field in fields:
-        path = export_field_history(field, years, output_dir)
-        print(f"  wrote {path}")
+
+        print(
+            f"[FIELD] {field['id']}"
+        )
+
+        export_field_history(
+            field=field,
+            start=start,
+            end=end,
+            output_dir=output_dir,
+        )
+
+    print()
+    print("[SUCCESS] Historical export completed.")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--years", type=int, default=5, help="How many years of history to export per field")
-    parser.add_argument("--service-account-json", default=".gee_service_account.json",
-                         help="Path to the GEE service-account key file (not the inline env var)")
-    parser.add_argument("--backend-url", default=BACKEND_URL)
-    parser.add_argument("--output-dir", default="ml-models/data/raw", type=Path)
+
+    parser = argparse.ArgumentParser(
+        description=__doc__
+    )
+
+    parser.add_argument(
+        "--years",
+        type=int,
+        default=5,
+    )
+
+    parser.add_argument(
+        "--service-account-json",
+        default=".gee_service_account.json",
+    )
+
+    parser.add_argument(
+        "--backend-url",
+        default="http://localhost:8000",
+    )
+
+    parser.add_argument(
+        "--field-id",
+        default=None,
+    )
+
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("ml-models/data/raw"),
+    )
+
     args = parser.parse_args()
 
-    asyncio.run(main(args.years, args.service_account_json, args.backend_url, args.output_dir))
+    asyncio.run(
+        main(
+            years=args.years,
+            service_account_json_path=args.service_account_json,
+            backend_url=args.backend_url,
+            output_dir=args.output_dir,
+            field_id=args.field_id,
+        )
+    )

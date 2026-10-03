@@ -1,13 +1,12 @@
 """
-Single-dataset backfill for GPM IMERG rainfall accumulation.
+GPM IMERG V07 rainfall ingestion.
 
-Same pattern as ingest_smap.py. Useful in particular right after a
-major storm event a farmer or field agent flags as "the dashboard
-didn't seem to register the rain we got" — a targeted re-pull for
-just that field and week is much faster to run and verify than a full
-multi-dataset export.
+The Earth Engine IMERG V07 collection provides 30-minute precipitation
+estimates. We aggregate these into accumulated rainfall over each
+configured window.
 
-Run: python data-pipeline/ingest_gpm_rainfall.py --start-date 2026-01-01 --end-date 2026-02-01
+Output unit:
+    millimeters (mm)
 """
 
 import csv
@@ -15,37 +14,184 @@ from pathlib import Path
 
 import ee
 
-from _common import build_arg_parser, date_windows, default_date_range, fetch_fields, init_earth_engine, region_mean
+from _common import (
+    build_arg_parser,
+    date_windows,
+    default_date_range,
+    fetch_fields,
+    init_earth_engine,
+)
 
-COLLECTION_ID = "NASA/GPM_L3/IMERG_MONTHLY_V07"
+
+COLLECTION_ID = "NASA/GPM_L3/IMERG_V07"
 BAND = "precipitation"
-DATASET_NAME = "GPM"
+
+# Approximate native spatial resolution of IMERG.
+SCALE = 11132
+
+# IMERG precipitation is mm/hour.
+# Each image represents 30 minutes = 0.5 hour.
+HALF_HOUR_FACTOR = 0.5
 
 
-def run(args) -> None:
-    init_earth_engine(args.service_account_json)
-    start, end = (args.start_date, args.end_date) if args.start_date else default_date_range(30)
-    fields = fetch_fields(args.backend_url, args.field_id)
+def rainfall_sum(
+    geom,
+    start: str,
+    end: str,
+):
+    collection = (
+        ee.ImageCollection(COLLECTION_ID)
+        .filterDate(start, end)
+        .filterBounds(geom)
+        .select(BAND)
+    )
 
-    output_path = Path(args.output or f"data-pipeline/output/{DATASET_NAME.lower()}_backfill.csv")
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    count = collection.size().getInfo()
 
-    rows_written = 0
-    with open(output_path, "w", newline="") as f:
+    if count == 0:
+        return None, 0
+
+    rainfall = (
+        collection
+        .sum()
+        .multiply(HALF_HOUR_FACTOR)
+    )
+
+    stats = rainfall.reduceRegion(
+        reducer=ee.Reducer.mean(),
+        geometry=geom,
+        scale=SCALE,
+        maxPixels=1e9,
+        bestEffort=True,
+    )
+
+    value = stats.get(BAND).getInfo()
+
+    if value is None:
+        return None, count
+
+    return float(value), count
+
+
+def main(args):
+
+    init_earth_engine(
+        args.service_account_json
+    )
+
+    fields = fetch_fields(
+        args.backend_url,
+        args.field_id,
+    )
+
+    if args.start_date:
+        start = args.start_date
+    else:
+        start, _ = default_date_range(
+            args.days_back
+        )
+
+    end = args.end_date
+
+    windows = date_windows(
+        start,
+        end,
+        args.step_days,
+    )
+
+    output_path = (
+        Path(args.output)
+        if args.output
+        else Path(
+            "data-pipeline/output/gpm_rainfall_backfill.csv"
+        )
+    )
+
+    output_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    total_rows = 0
+
+    with output_path.open(
+        "w",
+        newline="",
+        encoding="utf-8",
+    ) as f:
+
         writer = csv.writer(f)
-        writer.writerow(["field_id", "date", "dataset", "value"])
+
+        writer.writerow(
+            [
+                "field_id",
+                "date",
+                "dataset",
+                "value",
+                "unit",
+                "observation_count",
+            ]
+        )
 
         for field in fields:
-            geom = ee.Geometry(field["geojson_polygon"])
-            for window_start, window_end in date_windows(start, end, args.step_days):
-                value = region_mean(COLLECTION_ID, BAND, geom, window_start, window_end)
-                if value is not None:
-                    writer.writerow([field["id"], window_start, DATASET_NAME, value])
-                    rows_written += 1
 
-    print(f"Wrote {rows_written} {DATASET_NAME} rows for {len(fields)} field(s) to {output_path}")
+            geom = ee.Geometry(
+                field["geojson_polygon"]
+            )
+
+            for window_start, window_end in windows:
+
+                try:
+
+                    value, observation_count = (
+                        rainfall_sum(
+                            geom,
+                            window_start,
+                            window_end,
+                        )
+                    )
+
+                except ee.EEException as exc:
+
+                    print(
+                        f"[WARN] GPM "
+                        f"{window_start}: {exc}"
+                    )
+
+                    continue
+
+                if value is None:
+                    continue
+
+                writer.writerow(
+                    [
+                        field["id"],
+                        window_start,
+                        "GPM",
+                        round(value, 4),
+                        "mm",
+                        observation_count,
+                    ]
+                )
+
+                total_rows += 1
+
+    print()
+    print("=" * 60)
+    print("[SUCCESS] GPM rainfall ingestion completed")
+    print(f"Output : {output_path}")
+    print(f"Rows   : {total_rows}")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
-    args = build_arg_parser(__doc__).parse_args()
-    run(args)
+
+    parser = build_arg_parser(
+        description=__doc__,
+        default_step_days=7,
+        default_days_back=30,
+    )
+
+    args = parser.parse_args()
+
+    main(args)

@@ -1,0 +1,710 @@
+
+@import "tailwindcss";
+
+/* =========================================================
+   FIELD SHIFT — GLOBAL DESIGN SYSTEM
+   Farmer-first agricultural intelligence interface
+   ========================================================= */
+
+:root {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: #172033;
+  background: #f4f7f2;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  --fs-green-950: #123524;
+  --fs-green-900: #16452d;
+  --fs-green-800: #1c633d;
+  --fs-green-700: #27834d;
+  --fs-green-600: #35a15c;
+  --fs-green-500: #55b86e;
+
+  --fs-earth-900: #513d25;
+  --fs-earth-700: #80633b;
+  --fs-earth-500: #b69762;
+
+  --fs-surface: #ffffff;
+  --fs-background: #f4f7f2;
+  --fs-muted: #6d796f;
+  --fs-text: #172033;
+  --fs-soft-text: #89938b;
+
+  --fs-border: #e2e9e1;
+  --fs-border-strong: #d4dfd3;
+
+  --fs-shadow-sm:
+    0 1px 2px rgba(23, 32, 24, 0.04),
+    0 4px 14px rgba(23, 32, 24, 0.04);
+
+  --fs-shadow:
+    0 8px 30px rgba(23, 32, 24, 0.07);
+
+  --fs-shadow-lg:
+    0 16px 45px rgba(23, 32, 24, 0.10);
+
+  --fs-radius-sm: 12px;
+  --fs-radius-md: 18px;
+  --fs-radius-lg: 24px;
+  --fs-radius-xl: 32px;
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--fs-background);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 10% 0%,
+      rgba(85, 184, 110, 0.07),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(182, 151, 98, 0.05),
+      transparent 24%
+    ),
+    var(--fs-background);
+
+  color: var(--fs-text);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+
+::selection {
+  background: #cdebd4;
+  color: #123524;
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd7cc;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #aebbaf;
+}
+
+/* =========================================================
+   APP ROOT
+   ========================================================= */
+
+#root {
+  min-height: 100vh;
+}
+
+/* =========================================================
+   FIELD SHIFT CONTAINER
+   ========================================================= */
+
+.fs-page {
+  min-height: 100vh;
+  background: transparent;
+}
+
+.fs-container {
+  width: min(100% - 40px, 1240px);
+  margin-inline: auto;
+}
+
+@media (max-width: 640px) {
+  .fs-container {
+    width: min(100% - 28px, 1240px);
+  }
+}
+
+/* =========================================================
+   SECTION SYSTEM
+   ========================================================= */
+
+.fs-section {
+  margin-bottom: 56px;
+}
+
+.fs-section:last-child {
+  margin-bottom: 0;
+}
+
+.fs-eyebrow {
+  margin: 0;
+
+  color: var(--fs-green-700);
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.fs-section-title {
+  margin: 5px 0 0;
+
+  color: #142019;
+
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.fs-section-description {
+  max-width: 680px;
+  margin: 9px 0 0;
+
+  color: var(--fs-muted);
+
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   CARD SYSTEM
+   ========================================================= */
+
+.fs-card {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-lg);
+  box-shadow: var(--fs-shadow-sm);
+}
+
+.fs-card-hover {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.fs-card-hover:hover {
+  border-color: #cbdccb;
+  box-shadow: var(--fs-shadow);
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   FARM / EARTH SURFACES
+   ========================================================= */
+
+.fs-earth-surface {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(235, 244, 231, 0.95),
+      rgba(248, 246, 237, 0.96)
+    );
+
+  border: 1px solid #dfe9dc;
+}
+
+.fs-earth-surface::before {
+  content: "";
+
+  position: absolute;
+  width: 220px;
+  height: 220px;
+
+  right: -90px;
+  top: -110px;
+
+  border-radius: 999px;
+
+  background: rgba(85, 184, 110, 0.08);
+  pointer-events: none;
+}
+
+/* =========================================================
+   FIELD GRID / MAP TEXTURE
+   ========================================================= */
+
+.fs-field-pattern {
+  background-color: #eef4e9;
+
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(55, 105, 66, 0.06) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      rgba(55, 105, 66, 0.06) 1px,
+      transparent 1px
+    );
+
+  background-size: 34px 34px;
+}
+
+/* =========================================================
+   FARM PILL
+   ========================================================= */
+
+.fs-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  width: fit-content;
+
+  padding: 7px 11px;
+
+  border: 1px solid var(--fs-border);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.8);
+
+  color: #536157;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* =========================================================
+   STATUS DOT
+   ========================================================= */
+
+.fs-status-dot {
+  width: 8px;
+  height: 8px;
+
+  flex: 0 0 auto;
+
+  border-radius: 999px;
+  background: var(--fs-green-600);
+
+  box-shadow:
+    0 0 0 4px rgba(53, 161, 92, 0.10);
+}
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.fs-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 44px;
+
+  padding: 11px 18px;
+
+  border-radius: 14px;
+
+  background: var(--fs-green-700);
+
+  color: white;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 5px 14px rgba(39, 131, 77, 0.18);
+
+  transition:
+    background 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.fs-primary-button:hover {
+  background: var(--fs-green-800);
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 20px rgba(39, 131, 77, 0.22);
+}
+
+.fs-primary-button:active {
+  transform: translateY(0);
+}
+
+.fs-primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================================================
+   SECONDARY BUTTON
+   ========================================================= */
+
+.fs-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 44px;
+
+  padding: 10px 17px;
+
+  border: 1px solid var(--fs-border);
+  border-radius: 14px;
+
+  background: white;
+
+  color: #435047;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.fs-secondary-button:hover {
+  border-color: #bcd1bd;
+  background: #f4faf3;
+  color: var(--fs-green-800);
+}
+
+/* =========================================================
+   FARMER METRIC
+   ========================================================= */
+
+.fs-metric {
+  padding: 15px;
+
+  border: 1px solid #edf1ed;
+  border-radius: 18px;
+
+  background: #fafcf9;
+}
+
+.fs-metric-label {
+  color: #8a948d;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fs-metric-value {
+  margin-top: 5px;
+
+  color: #18231b;
+
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.035em;
+}
+
+.fs-metric-detail {
+  margin-top: 4px;
+
+  color: #89938c;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   DECISION CARD
+   ========================================================= */
+
+.fs-decision-card {
+  position: relative;
+  overflow: hidden;
+
+  border: 1px solid #cfe3d1;
+  border-radius: 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #f8fcf7 60%,
+      #f1f8ef 100%
+    );
+
+  box-shadow:
+    0 14px 40px rgba(38, 100, 55, 0.08);
+}
+
+.fs-decision-card::after {
+  content: "";
+
+  position: absolute;
+
+  width: 260px;
+  height: 260px;
+
+  right: -120px;
+  bottom: -150px;
+
+  border-radius: 50%;
+
+  background: rgba(85, 184, 110, 0.08);
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   SCORE / FIT
+   ========================================================= */
+
+.fs-score {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-height: 84px;
+
+  padding: 13px;
+
+  border-radius: 18px;
+}
+
+.fs-score-value {
+  margin-top: 4px;
+
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.fs-score-label {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   SOFT COLOR SYSTEM
+   ========================================================= */
+
+.fs-blue {
+  background: #f0f7ff;
+  color: #2568a5;
+}
+
+.fs-green {
+  background: #eff9f0;
+  color: #27834d;
+}
+
+.fs-amber {
+  background: #fff8e8;
+  color: #9a6a12;
+}
+
+.fs-purple {
+  background: #f7f1ff;
+  color: #7651a8;
+}
+
+/* =========================================================
+   PROGRESS
+   ========================================================= */
+
+.fs-progress {
+  width: 100%;
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e8eee8;
+}
+
+.fs-progress-bar {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: var(--fs-green-600);
+
+  transition: width 400ms ease;
+}
+
+/* =========================================================
+   EXPANDABLE CONTENT
+   ========================================================= */
+
+.fs-details {
+  border-top: 1px solid var(--fs-border);
+}
+
+.fs-details summary {
+  list-style: none;
+  cursor: pointer;
+
+  color: var(--fs-green-800);
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.fs-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.fs-details summary::after {
+  content: "＋";
+
+  float: right;
+
+  color: #8b988e;
+}
+
+.fs-details[open] summary::after {
+  content: "−";
+}
+
+/* =========================================================
+   NOTICE
+   ========================================================= */
+
+.fs-notice {
+  border: 1px solid #e2eadf;
+  border-radius: 20px;
+
+  background: #f7faf6;
+
+  color: #637066;
+
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   FOCUS ACCESSIBILITY
+   ========================================================= */
+
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid rgba(53, 161, 92, 0.30);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  .fs-section {
+    margin-bottom: 40px;
+  }
+
+  .fs-section-title {
+    font-size: 23px;
+  }
+
+  .fs-section-description {
+    font-size: 13px;
+  }
+
+  .fs-card {
+    border-radius: 22px;
+  }
+
+  .fs-decision-card {
+    border-radius: 24px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

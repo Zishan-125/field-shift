@@ -1,14 +1,18 @@
 """
-Single-dataset backfill for SMAP root-zone soil moisture.
+SMAP L4 root-zone soil-moisture ingestion.
 
-Use this when you need to re-pull JUST soil moisture for one field or
-one date range — e.g. NASA reprocessed the SMAP L4 product, or a
-specific week's data looked wrong in the dashboard and you want to
-refresh it without touching the other four datasets. For routine full
-exports (all datasets, all fields, years of history — the ML training
-path), use gee_field_clip.py instead.
+Dataset:
+    NASA/SMAP/SPL4SMGP/008
 
-Run: python data-pipeline/ingest_smap.py --start-date 2026-01-01 --end-date 2026-02-01
+Metric:
+    sm_rootzone
+
+Unit:
+    volumetric soil-water fraction (m3/m3)
+
+Important:
+    SMAP is a coarse regional product. It should be interpreted as
+    environmental soil-moisture context, not field-survey ground truth.
 """
 
 import csv
@@ -16,37 +20,162 @@ from pathlib import Path
 
 import ee
 
-from _common import build_arg_parser, date_windows, default_date_range, fetch_fields, init_earth_engine, region_mean
+from _common import (
+    build_arg_parser,
+    date_windows,
+    default_date_range,
+    fetch_fields,
+    init_earth_engine,
+    region_mean,
+)
 
-COLLECTION_ID = "NASA/SMAP/SPL4SMGP/007"
+
+COLLECTION_ID = "NASA/SMAP/SPL4SMGP/008"
 BAND = "sm_rootzone"
-DATASET_NAME = "SMAP"
+
+SCALE = 11000
+DATASET_NAME = "SMAP_ROOTZONE"
 
 
-def run(args) -> None:
-    init_earth_engine(args.service_account_json)
-    start, end = (args.start_date, args.end_date) if args.start_date else default_date_range(30)
-    fields = fetch_fields(args.backend_url, args.field_id)
+def main(args):
 
-    output_path = Path(args.output or f"data-pipeline/output/{DATASET_NAME.lower()}_backfill.csv")
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    init_earth_engine(
+        args.service_account_json
+    )
 
-    rows_written = 0
-    with open(output_path, "w", newline="") as f:
+    fields = fetch_fields(
+        args.backend_url,
+        args.field_id,
+    )
+
+    if args.start_date:
+        start = args.start_date
+    else:
+        start, _ = default_date_range(
+            args.days_back
+        )
+
+    end = args.end_date
+
+    windows = date_windows(
+        start,
+        end,
+        args.step_days,
+    )
+
+    output_path = (
+        Path(args.output)
+        if args.output
+        else Path(
+            "data-pipeline/output/smap_backfill.csv"
+        )
+    )
+
+    output_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    total_rows = 0
+
+    with output_path.open(
+        "w",
+        newline="",
+        encoding="utf-8",
+    ) as f:
+
         writer = csv.writer(f)
-        writer.writerow(["field_id", "date", "dataset", "value"])
+
+        writer.writerow(
+            [
+                "field_id",
+                "date",
+                "dataset",
+                "value",
+                "unit",
+                "observation_count",
+            ]
+        )
 
         for field in fields:
-            geom = ee.Geometry(field["geojson_polygon"])
-            for window_start, window_end in date_windows(start, end, args.step_days):
-                value = region_mean(COLLECTION_ID, BAND, geom, window_start, window_end)
-                if value is not None:
-                    writer.writerow([field["id"], window_start, DATASET_NAME, value])
-                    rows_written += 1
 
-    print(f"Wrote {rows_written} {DATASET_NAME} rows for {len(fields)} field(s) to {output_path}")
+            geom = ee.Geometry(
+                field["geojson_polygon"]
+            )
+
+            for window_start, window_end in windows:
+
+                try:
+
+                    collection = (
+                        ee.ImageCollection(
+                            COLLECTION_ID
+                        )
+                        .filterDate(
+                            window_start,
+                            window_end,
+                        )
+                        .filterBounds(geom)
+                        .select(BAND)
+                    )
+
+                    observation_count = (
+                        collection.size().getInfo()
+                    )
+
+                    if observation_count == 0:
+                        continue
+
+                    value = region_mean(
+                        collection_id=COLLECTION_ID,
+                        band=BAND,
+                        geom=geom,
+                        start=window_start,
+                        end=window_end,
+                        scale=SCALE,
+                    )
+
+                except ee.EEException as exc:
+
+                    print(
+                        f"[WARN] SMAP "
+                        f"{window_start}: {exc}"
+                    )
+
+                    continue
+
+                if value is None:
+                    continue
+
+                writer.writerow(
+                    [
+                        field["id"],
+                        window_start,
+                        DATASET_NAME,
+                        round(value, 6),
+                        "m3/m3",
+                        observation_count,
+                    ]
+                )
+
+                total_rows += 1
+
+    print()
+    print("=" * 60)
+    print("[SUCCESS] SMAP ingestion completed")
+    print(f"Output : {output_path}")
+    print(f"Rows   : {total_rows}")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
-    args = build_arg_parser(__doc__).parse_args()
-    run(args)
+
+    parser = build_arg_parser(
+        description=__doc__,
+        default_step_days=7,
+        default_days_back=30,
+    )
+
+    args = parser.parse_args()
+
+    main(args)

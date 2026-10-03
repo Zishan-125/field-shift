@@ -1,14 +1,15 @@
 """
-Single-dataset backfill for MODIS NDVI (vegetation health).
+MODIS MOD13Q1 V6.1 vegetation-index ingestion.
 
-Same purpose and usage pattern as ingest_smap.py — see that file's
-docstring for when to reach for this vs. gee_field_clip.py. The one
-MODIS-specific detail: the raw NDVI band is scaled by 10000 in the
-source product, so this script divides it back down before writing,
-matching the same normalization nasa_data_service.py applies for the
-live API — keep both in sync if this ever changes.
+Outputs:
+- NDVI
+- EVI
 
-Run: python data-pipeline/ingest_modis_ndvi.py --start-date 2026-01-01 --end-date 2026-02-01
+Temporal cadence:
+- 16 days
+
+Spatial resolution:
+- 250 m
 """
 
 import csv
@@ -16,38 +17,200 @@ from pathlib import Path
 
 import ee
 
-from _common import build_arg_parser, date_windows, default_date_range, fetch_fields, init_earth_engine, region_mean
+from _common import (
+    build_arg_parser,
+    date_windows,
+    default_date_range,
+    fetch_fields,
+    init_earth_engine,
+)
+
 
 COLLECTION_ID = "MODIS/061/MOD13Q1"
-BAND = "NDVI"
-DATASET_NAME = "MODIS"
-NDVI_SCALE_FACTOR = 10000  # raw product units -> the -1..1 NDVI range used everywhere else in the codebase
+
+DATASET_NAME_NDVI = "MODIS_NDVI"
+DATASET_NAME_EVI = "MODIS_EVI"
+
+SCALE = 250
+SCALE_FACTOR = 0.0001
 
 
-def run(args) -> None:
-    init_earth_engine(args.service_account_json)
-    start, end = (args.start_date, args.end_date) if args.start_date else default_date_range(32)
-    fields = fetch_fields(args.backend_url, args.field_id)
+def mask_modis_quality(image):
+    """
+    Keep pixels with SummaryQA 0 (good) or 1 (marginal).
+    """
 
-    output_path = Path(args.output or f"data-pipeline/output/{DATASET_NAME.lower()}_ndvi_backfill.csv")
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    qa = image.select("SummaryQA")
 
-    rows_written = 0
-    with open(output_path, "w", newline="") as f:
+    mask = qa.lte(1)
+
+    return image.updateMask(mask)
+
+
+def region_mean(
+    geom,
+    band: str,
+    start: str,
+    end: str,
+):
+    collection = (
+        ee.ImageCollection(COLLECTION_ID)
+        .filterDate(start, end)
+        .filterBounds(geom)
+        .map(mask_modis_quality)
+        .select(band)
+    )
+
+    count = collection.size().getInfo()
+
+    if count == 0:
+        return None, 0
+
+    image = collection.mean()
+
+    stats = image.reduceRegion(
+        reducer=ee.Reducer.mean(),
+        geometry=geom,
+        scale=SCALE,
+        maxPixels=1e9,
+        bestEffort=True,
+    )
+
+    value = stats.get(band).getInfo()
+
+    if value is None:
+        return None, count
+
+    return float(value) * SCALE_FACTOR, count
+
+
+def main(args):
+
+    init_earth_engine(
+        args.service_account_json
+    )
+
+    fields = fetch_fields(
+        args.backend_url,
+        args.field_id,
+    )
+
+    if args.start_date:
+        start = args.start_date
+    else:
+        start, _ = default_date_range(
+            args.days_back
+        )
+
+    end = args.end_date
+
+    windows = date_windows(
+        start,
+        end,
+        args.step_days,
+    )
+
+    output_path = (
+        Path(args.output)
+        if args.output
+        else Path(
+            "data-pipeline/output/modis_backfill.csv"
+        )
+    )
+
+    output_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    total_rows = 0
+
+    with output_path.open(
+        "w",
+        newline="",
+        encoding="utf-8",
+    ) as f:
+
         writer = csv.writer(f)
-        writer.writerow(["field_id", "date", "dataset", "value"])
+
+        writer.writerow(
+            [
+                "field_id",
+                "date",
+                "dataset",
+                "value",
+                "unit",
+                "observation_count",
+                "quality",
+            ]
+        )
 
         for field in fields:
-            geom = ee.Geometry(field["geojson_polygon"])
-            for window_start, window_end in date_windows(start, end, args.step_days):
-                raw_value = region_mean(COLLECTION_ID, BAND, geom, window_start, window_end)
-                if raw_value is not None:
-                    writer.writerow([field["id"], window_start, DATASET_NAME, raw_value / NDVI_SCALE_FACTOR])
-                    rows_written += 1
 
-    print(f"Wrote {rows_written} {DATASET_NAME} rows for {len(fields)} field(s) to {output_path}")
+            geom = ee.Geometry(
+                field["geojson_polygon"]
+            )
+
+            for window_start, window_end in windows:
+
+                for band, dataset_name in [
+                    ("NDVI", DATASET_NAME_NDVI),
+                    ("EVI", DATASET_NAME_EVI),
+                ]:
+
+                    try:
+
+                        value, observation_count = (
+                            region_mean(
+                                geom,
+                                band,
+                                window_start,
+                                window_end,
+                            )
+                        )
+
+                    except ee.EEException as exc:
+
+                        print(
+                            f"[WARN] {dataset_name} "
+                            f"{window_start}: {exc}"
+                        )
+
+                        continue
+
+                    if value is None:
+                        continue
+
+                    writer.writerow(
+                        [
+                            field["id"],
+                            window_start,
+                            dataset_name,
+                            round(value, 6),
+                            "index",
+                            observation_count,
+                            "SummaryQA<=1",
+                        ]
+                    )
+
+                    total_rows += 1
+
+    print()
+    print("=" * 60)
+    print("[SUCCESS] MODIS ingestion completed")
+    print(f"Output : {output_path}")
+    print(f"Rows   : {total_rows}")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
-    args = build_arg_parser(__doc__).parse_args()
-    run(args)
+
+    parser = build_arg_parser(
+        description=__doc__,
+        default_step_days=16,
+        default_days_back=32,
+    )
+
+    args = parser.parse_args()
+
+    main(args)
