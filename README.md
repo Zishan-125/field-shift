@@ -384,52 +384,6 @@ What is completed
 
 ✅ Local frontend storage architecture
 
-What is pending
-
-Data and ML
-
-⏳ Complete canonical observation layer
-
-⏳ Complete monthly feature generation
-
-⏳ Complete NASA POWER integration into the final feature layer
-
-⏳ Integrate agricultural target data
-
-⏳ Build final ML-ready dataset
-
-⏳ Complete ML model integration
-
-⏳ Validate model performance
-
-Product
-
-⏳ Complete farmer-first dashboard redesign
-
-⏳ Field/map visualization
-
-⏳ Environmental trend visualization
-
-⏳ Rotation Lab / scenario comparison
-
-⏳ Full recommendation explanation tied to NASA signals
-
-⏳ Browser-level offline/PWA support
-
-⏳ Sync/reconciliation workflow
-
-⏳ End-to-end demo recording
-
-Later / optional channels
-
-⏳ Mobile application
-
-⏳ SMS/USSD channel
-
-⏳ Additional field-data integrations
-
-These are roadmap items and are not presented as completed functionality.
-
 Development
 
 Frontend
