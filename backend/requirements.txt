@@ -13,3 +13,5 @@ faiss-cpu
 twilio
 httpx
 python-dotenv
+libsql-experimental
+sqlalchemy-libsql

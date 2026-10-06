@@ -2,17 +2,13 @@
 Database wiring shared by every model and router in the app.
 
 This file owns exactly three things:
-  1. the async engine (one process-wide connection pool to Postgres)
+  1. the async engine (process-wide connection pool)
   2. the session factory
   3. `get_db`, the FastAPI dependency every endpoint uses to get a
      transactional session and have it cleaned up automatically
-
-Nothing domain-specific belongs here — no Field, no scoring logic.
-That separation is what let fields.py (previous file) import
-`get_db` and `Base` without needing to know how the connection is
-actually configured.
 """
 
+import os
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -20,21 +16,38 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.core.config import settings
 
-# `postgresql+asyncpg://` — asyncpg is the driver; PostGIS itself is just
-# a Postgres extension, so no special engine config is needed for it
-# beyond making sure `CREATE EXTENSION postgis;` has been run once on
-# the database (docker-compose's init script does this for the demo).
-engine = create_async_engine(
-    settings.DATABASE_URL,
-    echo=settings.ENVIRONMENT == "local",  # log SQL locally, stay quiet in prod
-    pool_pre_ping=True,  # avoids "server closed the connection" after idle periods
-    future=True,
-)
+# Retrieve database URL and auth token from configuration/environment
+DATABASE_URL = str(settings.DATABASE_URL)
+TURSO_AUTH_TOKEN = getattr(settings, "TURSO_AUTH_TOKEN", os.getenv("TURSO_AUTH_TOKEN", ""))
 
-# expire_on_commit=False matters here: without it, accessing a row's
-# attributes (e.g. row.name) after `await db.commit()` triggers a
-# lazy-load that fails outside the session context — a classic async
-# SQLAlchemy footgun that shows up as a confusing MissingGreenlet error.
+# Configure engine connection string based on driver protocol
+if DATABASE_URL.startswith("libsql://"):
+    # Turso Cloud SQLite configuration via libsql driver
+    connection_string = f"sqlite+{DATABASE_URL}?auth_token={TURSO_AUTH_TOKEN}&secure=true"
+    engine = create_async_engine(
+        connection_string,
+        echo=settings.ENVIRONMENT == "local",
+        connect_args={"check_same_thread": False},
+        future=True,
+    )
+elif DATABASE_URL.startswith("sqlite"):
+    # Standard local SQLite configuration
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=settings.ENVIRONMENT == "local",
+        connect_args={"check_same_thread": False},
+        future=True,
+    )
+else:
+    # Standard Async PostgreSQL / PostGIS configuration
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=settings.ENVIRONMENT == "local",  # Log SQL queries in local environment
+        pool_pre_ping=True,  # Avoid idle connection drops
+        future=True,
+    )
+
+# Async session factory
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
     class_=AsyncSession,
@@ -53,9 +66,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     FastAPI dependency: `db: AsyncSession = Depends(get_db)`.
 
     Yields one session per request and guarantees it's closed even if
-    the endpoint raises — commit/rollback is left to the endpoint
-    itself so it can decide the transaction boundary explicitly
-    (see create_field/update_field in fields.py).
+    the endpoint raises — commit/rollback is left to the endpoint itself.
     """
     async with AsyncSessionLocal() as session:
         try:
