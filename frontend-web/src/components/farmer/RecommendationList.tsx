@@ -2,361 +2,354 @@ import { useMemo, useState } from "react";
 
 import type { FarmerPriorities } from "../../types/farmer";
 import type { RotationRecommendation } from "../../types/recommendation";
+import type { NormalizedCrop } from "../../types/crop";
 
 import RecommendationCard from "./RecommendationCard";
+
+import bn from "../../i18n/bn";
+import en from "../../i18n/en";
 
 interface RecommendationListProps {
   recommendations: RotationRecommendation[];
   priorities: FarmerPriorities;
   maxItems?: number;
+  language?: "bn" | "en";
+  crops?: NormalizedCrop[];
 }
 
-interface RankedRecommendation {
-  recommendation: RotationRecommendation;
-  priorityFit: number;
-  originalIndex: number;
-}
-
-/**
- * Convert any score into a safe 0–1 value.
- */
-function score(value: unknown): number {
+function clampScore(value: unknown): number {
   const parsed = Number(value);
 
   if (!Number.isFinite(parsed)) {
     return 0;
   }
 
-  return Math.max(0, Math.min(1, parsed));
+  return Math.max(
+    0,
+    Math.min(1, parsed),
+  );
 }
 
-/**
- * Calculate the farmer-specific Priority Fit.
- *
- * IMPORTANT:
- * This intentionally does NOT use backend `priority_score`.
- *
- * The formula is:
- *
- *   Water score    × Water weight
- * + Soil score     × Soil weight
- * + Climate score  × Climate weight
- * + Variety score  × Variety weight
- */
 function calculatePriorityFit(
   recommendation: RotationRecommendation,
   priorities: FarmerPriorities,
 ): number {
-  const water = score(
-    recommendation.water_conservation_score,
+  return (
+    clampScore(
+      recommendation.water_conservation_score,
+    ) *
+      priorities.water_conservation +
+    clampScore(
+      recommendation.soil_health_score,
+    ) *
+      priorities.soil_health +
+    clampScore(
+      recommendation.climate_resilience_score,
+    ) *
+      priorities.climate_resilience +
+    clampScore(
+      recommendation.crop_diversity_score,
+    ) *
+      priorities.crop_diversity
   );
-
-  const soil = score(
-    recommendation.soil_health_score,
-  );
-
-  const climate = score(
-    recommendation.climate_resilience_score,
-  );
-
-  const diversity = score(
-    recommendation.crop_diversity_score,
-  );
-
-  const waterContribution =
-    water * priorities.water_conservation;
-
-  const soilContribution =
-    soil * priorities.soil_health;
-
-  const climateContribution =
-    climate * priorities.climate_resilience;
-
-  const diversityContribution =
-    diversity * priorities.crop_diversity;
-
-  const priorityFit =
-    waterContribution +
-    soilContribution +
-    climateContribution +
-    diversityContribution;
-
-  return priorityFit;
 }
 
 export default function RecommendationList({
   recommendations,
   priorities,
   maxItems = 3,
+  language = "bn",
+  crops = [],
 }: RecommendationListProps) {
-  const [showAll, setShowAll] = useState(false);
+  const t =
+    language === "bn" ? bn : en;
 
-  /*
-   * ---------------------------------------------------------
-   * RANKING
-   * ---------------------------------------------------------
-   *
-   * Whenever either:
-   *
-   *   recommendations
-   *   priorities
-   *
-   * changes, useMemo recalculates the ranking.
-   */
-  const rankedRecommendations = useMemo<RankedRecommendation[]>(() => {
-    const ranked = recommendations.map(
-      (recommendation, index) => {
-        const priorityFit =
-          calculatePriorityFit(
-            recommendation,
-            priorities,
-          );
+  const recommendationText = {
+    rankingWeights:
+      "rankingWeights" in
+      t.recommendations
+        ? t.recommendations
+            .rankingWeights
+        : language === "bn"
+          ? "র‍্যাংকিং অগ্রাধিকার"
+          : "Ranking priorities",
 
-        return {
+    rankingDescription:
+      "rankingDescription" in
+      t.recommendations
+        ? t.recommendations
+            .rankingDescription
+        : language === "bn"
+          ? "আপনার নির্বাচিত অগ্রাধিকারের ওজন অনুযায়ী rotation-গুলো র‍্যাংক করা হয়েছে।"
+          : "Rotations are ranked according to the weights of your selected priorities.",
+
+    showMore:
+      language === "bn"
+        ? "আরও দেখুন"
+        : "Show more",
+
+    showLess:
+      language === "bn"
+        ? "কম দেখুন"
+        : "Show less",
+  };
+
+  const [visibleCount, setVisibleCount] =
+    useState(maxItems);
+
+  const ranked = useMemo(() => {
+    return recommendations
+      .map(
+        (
           recommendation,
-          priorityFit,
+          index,
+        ) => ({
+          recommendation,
+          priorityFit:
+            calculatePriorityFit(
+              recommendation,
+              priorities,
+            ),
           originalIndex: index,
-        };
-      },
+        }),
+      )
+      .sort(
+        (a, b) =>
+          b.priorityFit -
+            a.priorityFit ||
+          a.originalIndex -
+            b.originalIndex,
+      );
+  }, [
+    recommendations,
+    priorities,
+  ]);
+
+  const visible =
+    ranked.slice(
+      0,
+      Math.min(
+        visibleCount,
+        ranked.length,
+      ),
     );
 
-    ranked.sort((a, b) => {
-      const difference =
-        b.priorityFit - a.priorityFit;
+  const hasMore =
+    visibleCount <
+    ranked.length;
 
-      if (difference !== 0) {
-        return difference;
-      }
+  const remainingCount =
+    Math.max(
+      0,
+      ranked.length -
+        visibleCount,
+    );
 
-      return (
-        a.originalIndex -
-        b.originalIndex
+  const handleShowMore =
+    () => {
+      setVisibleCount(
+        (current) =>
+          Math.min(
+            current + 10,
+            ranked.length,
+          ),
       );
-    });
+    };
 
-    return ranked;
-  }, [recommendations, priorities]);
-
-  const visibleRecommendations = showAll
-    ? rankedRecommendations
-    : rankedRecommendations.slice(
-        0,
+  const handleShowLess =
+    () => {
+      setVisibleCount(
         maxItems,
       );
 
-  /*
-   * ---------------------------------------------------------
-   * EMPTY STATE
-   * ---------------------------------------------------------
-   */
-  if (recommendations.length === 0) {
-    return (
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm sm:p-10">
-        <div className="mx-auto max-w-md text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-green-50 text-2xl">
-            🌱
-          </div>
+      window.requestAnimationFrame(
+        () => {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        },
+      );
+    };
 
-          <p className="mt-5 text-xs font-black uppercase tracking-[0.18em] text-green-700">
-            Decision support
-          </p>
-
-          <h3 className="mt-2 text-xl font-black text-slate-950">
-            Your crop plan is not ready yet
-          </h3>
-
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            FIELD SHIFT needs your field
-            information and farming priorities
-            before it can compare crop rotations.
-          </p>
-        </div>
-      </section>
-    );
-  }
-
-  /*
-   * ---------------------------------------------------------
-   * MAIN UI
-   * ---------------------------------------------------------
-   */
   return (
-    <section>
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-green-700">
-              Your farm plan
-            </p>
-
-            <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-              What should you plant?
-            </h2>
-
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              FIELD SHIFT ranks these crop
-              rotations using your current farming
-              priorities.
-            </p>
-          </div>
-
-          <div className="flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 shadow-sm">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-50 text-xs">
-              🌾
-            </span>
-
-            <span className="text-xs font-bold text-slate-600">
-              {recommendations.length}{" "}
-              {recommendations.length === 1
-                ? "rotation"
-                : "rotations"}{" "}
-              compared
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Current priority profile */}
-      <div className="mb-5 rounded-2xl border border-green-100 bg-green-50/70 p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <div className="mb-5 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-green-700">
-              Current ranking weights
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+              {
+                recommendationText.rankingWeights
+              }
             </p>
 
-            <p className="mt-1 text-xs text-green-900/70">
-              These weights determine how FIELD
-              SHIFT ranks the rotations.
+            <p className="mt-1 text-sm text-slate-500">
+              {
+                recommendationText.rankingDescription
+              }
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="rounded-xl bg-blue-50 p-3">
+            <p className="text-xs font-black text-blue-700">
+              💧{" "}
+              {language === "bn"
+                ? "পানি"
+                : "Water"}
+            </p>
+
+            <p className="mt-1 text-lg font-black text-blue-900">
+              {Math.round(
+                priorities.water_conservation *
+                  100,
+              )}
+              %
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 text-[10px] font-black sm:grid-cols-4">
-            <WeightBadge
-              icon="💧"
-              label="Water"
-              value={
-                priorities.water_conservation
-              }
-            />
+          <div className="rounded-xl bg-green-50 p-3">
+            <p className="text-xs font-black text-green-700">
+              🌱{" "}
+              {language === "bn"
+                ? "মাটি"
+                : "Soil"}
+            </p>
 
-            <WeightBadge
-              icon="🌱"
-              label="Soil"
-              value={
-                priorities.soil_health
-              }
-            />
+            <p className="mt-1 text-lg font-black text-green-900">
+              {Math.round(
+                priorities.soil_health *
+                  100,
+              )}
+              %
+            </p>
+          </div>
 
-            <WeightBadge
-              icon="☀️"
-              label="Climate"
-              value={
-                priorities.climate_resilience
-              }
-            />
+          <div className="rounded-xl bg-amber-50 p-3">
+            <p className="text-xs font-black text-amber-700">
+              ☀️{" "}
+              {language === "bn"
+                ? "জলবায়ু"
+                : "Climate"}
+            </p>
 
-            <WeightBadge
-              icon="🌾"
-              label="Variety"
-              value={
-                priorities.crop_diversity
-              }
-            />
+            <p className="mt-1 text-lg font-black text-amber-900">
+              {Math.round(
+                priorities.climate_resilience *
+                  100,
+              )}
+              %
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-purple-50 p-3">
+            <p className="text-xs font-black text-purple-700">
+              🌾{" "}
+              {language === "bn"
+                ? "বৈচিত্র্য"
+                : "Variety"}
+            </p>
+
+            <p className="mt-1 text-lg font-black text-purple-900">
+              {Math.round(
+                priorities.crop_diversity *
+                  100,
+              )}
+              %
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Recommendations */}
-      <div className="space-y-4">
-        {visibleRecommendations.map(
-          (item, index) => (
+      <div className="space-y-5">
+        {visible.map(
+          (
+            {
+              recommendation,
+            },
+            index,
+          ) => (
             <RecommendationCard
               key={
-                item.recommendation
-                  .rotation_id ||
-                `recommendation-${item.originalIndex}`
+                recommendation.rotation_id ??
+                index
               }
               recommendation={
-                item.recommendation
+                recommendation
               }
               rank={index + 1}
-              featured={index === 0}
-              priorities={priorities}
+              featured={
+                index === 0
+              }
+              priorities={
+                priorities
+              }
+              language={
+                language
+              }
+              crops={crops}
             />
           ),
         )}
       </div>
 
-      {/* Show all / show top */}
-      {recommendations.length > maxItems && (
-        <button
-          type="button"
-          onClick={() =>
-            setShowAll(
-              (current) => !current,
-            )
-          }
-          className="mt-5 w-full rounded-2xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-bold text-slate-700 shadow-sm transition hover:border-green-300 hover:bg-green-50 hover:text-green-700"
-        >
-          {showAll
-            ? `Show top ${maxItems}`
-            : `View all ${recommendations.length} crop rotations`}
-        </button>
+      {ranked.length >
+        maxItems && (
+        <div className="mt-6">
+          {hasMore ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p className="text-center text-sm font-black text-slate-700">
+                {language === "bn"
+                  ? `আরও ${remainingCount}টি matching rotation রয়েছে`
+                  : `${remainingCount} more matching rotations`}
+              </p>
+
+              <button
+                type="button"
+                onClick={
+                  handleShowMore
+                }
+                className="mx-auto mt-3 flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800 active:scale-[0.98]"
+              >
+                {
+                  recommendationText.showMore
+                }
+
+                <span className="ml-2 text-base">
+                  ↓
+                </span>
+              </button>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
+              <p className="text-center text-sm font-black text-green-800">
+                {language === "bn"
+                  ? `সব ${ranked.length}টি matching rotation দেখানো হচ্ছে`
+                  : `All ${ranked.length} matching rotations are shown`}
+              </p>
+
+              <button
+                type="button"
+                onClick={
+                  handleShowLess
+                }
+                className="mx-auto mt-3 flex items-center justify-center rounded-xl border border-green-200 bg-white px-5 py-3 text-xs font-black text-green-700 transition hover:bg-green-100 active:scale-[0.98]"
+              >
+                ↑{" "}
+                {
+                  recommendationText.showLess
+                }
+              </button>
+            </div>
+          )}
+        </div>
       )}
-
-      {/* Disclaimer */}
-      <div className="mt-5 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-sm shadow-sm">
-          ℹ️
-        </div>
-
-        <div>
-          <p className="text-xs font-black text-slate-700">
-            A recommendation, not a guarantee
-          </p>
-
-          <p className="mt-1 text-xs leading-5 text-slate-500">
-            These rankings support your decision
-            using the information available to
-            FIELD SHIFT. Actual farm results can
-            vary with local conditions, management
-            and seasonal changes.
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/*
- * ---------------------------------------------------------
- * WEIGHT BADGE
- * ---------------------------------------------------------
- */
-
-interface WeightBadgeProps {
-  icon: string;
-  label: string;
-  value: number;
-}
-
-function WeightBadge({
-  icon,
-  label,
-  value,
-}: WeightBadgeProps) {
-  return (
-    <div className="rounded-xl bg-white px-2.5 py-2 shadow-sm">
-      <div className="flex items-center gap-1.5 text-slate-500">
-        <span>{icon}</span>
-
-        <span>{label}</span>
-      </div>
-
-      <p className="mt-0.5 text-sm font-black text-green-700">
-        {Math.round(value * 100)}%
-      </p>
     </div>
   );
 }
+
+
+
+
+

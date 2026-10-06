@@ -18,6 +18,11 @@ export const DEFAULT_PRIORITIES: FarmerPriorities = {
   crop_diversity: 0.1,
 };
 
+export interface FarmerSelection {
+  selectedCrops: string[];
+  priorities: FarmerPriorities;
+}
+
 export const GOAL_LABELS: Record<FarmerGoal, string> = {
   water_conservation: "Save water",
   soil_health: "Protect soil",

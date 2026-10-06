@@ -1,24 +1,13 @@
 import axios from "axios";
 
+import type { FieldResponse } from "../types/field";
+import type { EnvironmentResponse } from "../types/environment";
+import type { SoilResponse } from "../types/soil";
+import type { FarmerPriorities } from "../types/farmer";
+import type { RecommendationResponse } from "../types/recommendation";
 import type {
-  FieldResponse,
-} from "../types/field";
-
-import type {
-  EnvironmentResponse,
-} from "../types/environment";
-
-import type {
-  SoilResponse,
-} from "../types/soil";
-
-import type {
-  FarmerPriorities,
-} from "../types/farmer";
-
-import type {
-  RecommendationResponse,
-} from "../types/recommendation";
+  CropResponse,
+} from "../types/crop";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
@@ -73,10 +62,11 @@ export async function getSoil(
   return response.data;
 }
 
-export async function getCrops() {
-  const response = await api.get(
-    "/api/offline/crops",
-  );
+export async function getCrops(): Promise<CropResponse> {
+  const response =
+    await api.get<CropResponse>(
+      "/api/offline/crops",
+    );
 
   return response.data;
 }
@@ -101,14 +91,6 @@ export async function getEvaluatedRotations(
   return response.data;
 }
 
-/**
- * Recalculate crop-rotation recommendations
- * using the farmer's selected priority profile.
- *
- * IMPORTANT:
- * The backend currently expects the priority
- * object directly in the POST body.
- */
 export async function getRecommendations(
   fieldId: string,
   priorities: FarmerPriorities,

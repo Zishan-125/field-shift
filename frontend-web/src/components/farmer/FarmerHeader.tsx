@@ -1,3 +1,18 @@
+import {
+  Bell,
+  ChevronDown,
+  Droplets,
+  Leaf,
+  MapPin,
+  Menu,
+  Satellite,
+  Sprout,
+  Sun,
+  Waves,
+} from "lucide-react";
+
+import fieldImage from "../../assets/field.jpg";
+
 import OfflineStatus from "../OfflineStatus";
 
 interface FarmerHeaderProps {
@@ -16,48 +31,311 @@ export default function FarmerHeader({
     farmerName.trim().split(/\s+/)[0] || "Farmer";
 
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-green-700 text-sm font-black tracking-tight text-white shadow-sm">
-              FS
+    <>
+      {/* =====================================================
+          DESKTOP / WEB HEADER
+      ====================================================== */}
+      <header className="fs-dashboard-header">
+        <div className="fs-header-inner">
+          {/* Brand */}
+          <div className="fs-brand">
+            <div className="fs-brand-mark">
+              <Leaf
+                size={25}
+                strokeWidth={2.2}
+              />
             </div>
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-black tracking-tight text-slate-950">
-                  FIELD SHIFT
-                </h1>
-
-                <span className="hidden rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-green-700 sm:inline-flex">
-                  Farm intelligence
-                </span>
+            <div>
+              <div className="fs-brand-name">
+                Field Shift
               </div>
 
-              <p className="truncate text-xs text-slate-500">
-                {fieldName}
-              </p>
+              <div className="fs-brand-subtitle">
+                Adapting Farms with NASA Data
+              </div>
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-3">
-            <div className="hidden text-right sm:block">
-              <p className="text-xs text-slate-400">
-                Good to see you
-              </p>
+          {/* NASA message */}
+          <div className="fs-header-center">
+            <div className="fs-nasa-badge">
+              <Satellite size={17} />
 
-              <p className="text-sm font-bold text-slate-800">
-                {firstName}
-              </p>
+              <div>
+                <strong>
+                  NASA Space Apps Challenge 2026
+                </strong>
+
+                <span>
+                  Real Earth data&nbsp;&nbsp; + &nbsp;&nbsp;
+                  Local knowledge&nbsp;&nbsp; + &nbsp;&nbsp;
+                  Farmer priorities
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* User controls */}
+          <div className="fs-header-actions">
+            <button
+              type="button"
+              className="fs-icon-button"
+              aria-label="Notifications"
+            >
+              <Bell size={18} />
+
+              <span className="fs-notification-dot" />
+            </button>
+
+            <div className="fs-user-avatar">
+              {firstName.charAt(0).toUpperCase()}
             </div>
 
-            <OfflineStatus
-              backendAvailable={backendAvailable}
+            <div className="fs-user-copy">
+              <strong>{firstName}</strong>
+
+              <span>
+                Farm owner
+              </span>
+            </div>
+
+            <ChevronDown
+              size={16}
+              className="fs-user-chevron"
             />
           </div>
         </div>
+      </header>
+
+      {/* =====================================================
+          HERO / FIELD OVERVIEW
+      ====================================================== */}
+      <section className="fs-hero-wrap">
+        <div className="fs-hero">
+          {/* Image */}
+          <img
+            src={fieldImage}
+            alt="Agricultural field"
+            className="fs-hero-image"
+          />
+
+          <div className="fs-hero-overlay" />
+
+          {/* Hero content */}
+          <div className="fs-hero-content">
+            <div className="fs-hero-topline">
+              <span className="fs-hero-location">
+                <MapPin size={14} />
+
+                {fieldName}
+              </span>
+
+              <span className="fs-live-pill">
+                <span />
+                Live field view
+              </span>
+            </div>
+
+            <div className="fs-hero-copy">
+              <div className="fs-hero-eyebrow">
+                NASA EARTH OBSERVATIONS + LOCAL DATA
+              </div>
+
+              <h1>
+                Your field is shifting.
+                <br />
+                <span>
+                  Plan with confidence.
+                </span>
+              </h1>
+
+              <p>
+                Explore crop rotations using NASA
+                Earth observations, soil information,
+                crop characteristics and your farming
+                priorities.
+              </p>
+
+              <div className="fs-hero-buttons">
+                <button
+                  type="button"
+                  className="fs-hero-primary"
+                  onClick={() =>
+                    document
+                      .getElementById(
+                        "recommendations",
+                      )
+                      ?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      })
+                  }
+                >
+                  <Sprout size={17} />
+
+                  Explore rotation
+
+                  <span>→</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="fs-hero-secondary"
+                  onClick={() =>
+                    document
+                      .getElementById(
+                        "earth-observations",
+                      )
+                      ?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      })
+                  }
+                >
+                  <Satellite size={16} />
+
+                  View NASA data
+                </button>
+              </div>
+            </div>
+
+            {/* Hero field metrics */}
+            <div className="fs-hero-metrics">
+              <div className="fs-hero-metric">
+                <div className="fs-hero-metric-icon temperature">
+                  <Sun size={17} />
+                </div>
+
+                <div>
+                  <span>Climate</span>
+
+                  <strong>
+                    NASA monitored
+                  </strong>
+                </div>
+              </div>
+
+              <div className="fs-hero-metric">
+                <div className="fs-hero-metric-icon water">
+                  <Droplets size={17} />
+                </div>
+
+                <div>
+                  <span>Water</span>
+
+                  <strong>
+                    Conservation ready
+                  </strong>
+                </div>
+              </div>
+
+              <div className="fs-hero-metric">
+                <div className="fs-hero-metric-icon soil">
+                  <Leaf size={17} />
+                </div>
+
+                <div>
+                  <span>Soil</span>
+
+                  <strong>
+                    Health monitored
+                  </strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hero supporting strip */}
+        <div className="fs-hero-strip">
+          <div className="fs-hero-strip-item">
+            <Satellite size={18} />
+
+            <div>
+              <strong>
+                NASA Earth data
+              </strong>
+
+              <span>
+                Weather, vegetation & land surface
+              </span>
+            </div>
+          </div>
+
+          <div className="fs-hero-strip-divider" />
+
+          <div className="fs-hero-strip-item">
+            <Waves size={18} />
+
+            <div>
+              <strong>
+                Water efficiency
+              </strong>
+
+              <span>
+                Compare water-aware crop rotations
+              </span>
+            </div>
+          </div>
+
+          <div className="fs-hero-strip-divider" />
+
+          <div className="fs-hero-strip-item">
+            <Sprout size={18} />
+
+            <div>
+              <strong>
+                Resilient farming
+              </strong>
+
+              <span>
+                Decisions built around your priorities
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Existing connection status */}
+      <div className="fs-status-holder">
+        <OfflineStatus
+          backendAvailable={
+            backendAvailable
+          }
+        />
       </div>
-    </header>
+
+      {/* =====================================================
+          MOBILE HEADER
+      ====================================================== */}
+      <div className="fs-mobile-header">
+        <div className="fs-mobile-brand">
+          <div className="fs-brand-mark">
+            <Leaf size={21} />
+          </div>
+
+          <div>
+            <strong>
+              Field Shift
+            </strong>
+
+            <span>
+              {fieldName}
+            </span>
+          </div>
+        </div>
+
+        <div className="fs-mobile-actions">
+          <button
+            type="button"
+            className="fs-icon-button"
+            aria-label="Menu"
+          >
+            <Menu size={20} />
+          </button>
+        </div>
+      </div>
+    </>
   );
 }

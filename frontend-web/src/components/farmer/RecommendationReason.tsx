@@ -2,23 +2,32 @@ import type { RotationRecommendation } from "../../types/recommendation";
 
 interface RecommendationReasonProps {
   recommendation: RotationRecommendation;
+  language?: "bn" | "en";
 }
 
 export default function RecommendationReason({
   recommendation,
+  language = "bn",
 }: RecommendationReasonProps) {
-  const reasons = buildReasons(recommendation);
+  const reasons = buildReasons(
+    recommendation,
+    language,
+  );
 
   return (
     <details className="group mt-5 border-t border-slate-100 pt-5">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
         <div>
           <p className="text-sm font-bold text-slate-800">
-            Why this rotation?
+            {language === "bn"
+              ? "কেন এই আবর্তন?"
+              : "Why this rotation?"}
           </p>
 
           <p className="mt-1 text-xs text-slate-400">
-            See what influenced the recommendation
+            {language === "bn"
+              ? "কোন বিষয়গুলো এই সুপারিশকে প্রভাবিত করেছে দেখুন"
+              : "See what influenced the recommendation"}
           </p>
         </div>
 
@@ -66,6 +75,7 @@ interface Reason {
 
 function buildReasons(
   recommendation: RotationRecommendation,
+  language: "bn" | "en",
 ): Reason[] {
   const reasons: Reason[] = [];
 
@@ -91,17 +101,27 @@ function buildReasons(
 
   if (water >= 0.7) {
     reasons.push({
-      title: "Uses water efficiently",
+      title:
+        language === "bn"
+          ? "পানি দক্ষতার সঙ্গে ব্যবহার করে"
+          : "Uses water efficiently",
       description:
-        "This rotation has a strong water-conservation score for your field.",
+        language === "bn"
+          ? "এই আবর্তনের পানি সংরক্ষণ স্কোর আপনার জমির জন্য ভালো।"
+          : "This rotation has a strong water-conservation score for your field.",
       icon: "💧",
       iconBg: "bg-blue-100",
     });
   } else {
     reasons.push({
-      title: "Water use considered",
+      title:
+        language === "bn"
+          ? "পানির ব্যবহার বিবেচনা করা হয়েছে"
+          : "Water use considered",
       description:
-        "Water conservation is included in the recommendation for your field.",
+        language === "bn"
+          ? "আপনার জমির জন্য সুপারিশে পানি সংরক্ষণ বিবেচনা করা হয়েছে।"
+          : "Water conservation is included in the recommendation for your field.",
       icon: "💧",
       iconBg: "bg-blue-100",
     });
@@ -109,17 +129,27 @@ function buildReasons(
 
   if (soil >= 0.7) {
     reasons.push({
-      title: "Supports soil health",
+      title:
+        language === "bn"
+          ? "মাটির স্বাস্থ্য সমর্থন করে"
+          : "Supports soil health",
       description:
-        "This rotation has a strong soil-health score.",
+        language === "bn"
+          ? "এই আবর্তনের মাটির স্বাস্থ্য স্কোর ভালো।"
+          : "This rotation has a strong soil-health score.",
       icon: "🌱",
       iconBg: "bg-green-100",
     });
   } else {
     reasons.push({
-      title: "Soil health considered",
+      title:
+        language === "bn"
+          ? "মাটির স্বাস্থ্য বিবেচনা করা হয়েছে"
+          : "Soil health considered",
       description:
-        "The rotation was evaluated using your field's soil conditions.",
+        language === "bn"
+          ? "আপনার জমির মাটির অবস্থা ব্যবহার করে এই আবর্তন মূল্যায়ন করা হয়েছে।"
+          : "The rotation was evaluated using your field's soil conditions.",
       icon: "🌱",
       iconBg: "bg-green-100",
     });
@@ -127,9 +157,14 @@ function buildReasons(
 
   if (climate >= 0.7) {
     reasons.push({
-      title: "Better climate resilience",
+      title:
+        language === "bn"
+          ? "জলবায়ু সহনশীলতা ভালো"
+          : "Better climate resilience",
       description:
-        "The rotation performs well against changing environmental conditions.",
+        language === "bn"
+          ? "পরিবর্তিত পরিবেশগত অবস্থার মধ্যে এই আবর্তন ভালোভাবে কাজ করে।"
+          : "The rotation performs well against changing environmental conditions.",
       icon: "☀️",
       iconBg: "bg-amber-100",
     });
@@ -137,9 +172,14 @@ function buildReasons(
 
   if (diversity >= 0.7) {
     reasons.push({
-      title: "Adds crop diversity",
+      title:
+        language === "bn"
+          ? "ফসলের বৈচিত্র্য বাড়ায়"
+          : "Adds crop diversity",
       description:
-        "The crop sequence contributes strongly to crop diversity.",
+        language === "bn"
+          ? "এই ফসলের ক্রম ফসলের বৈচিত্র্যে উল্লেখযোগ্য অবদান রাখে।"
+          : "The crop sequence contributes strongly to crop diversity.",
       icon: "🌾",
       iconBg: "bg-purple-100",
     });
@@ -147,9 +187,14 @@ function buildReasons(
 
   if (reasons.length < 3) {
     reasons.push({
-      title: "Matched to your priorities",
+      title:
+        language === "bn"
+          ? "আপনার অগ্রাধিকারের সঙ্গে সামঞ্জস্যপূর্ণ"
+          : "Matched to your priorities",
       description:
-        "The recommendation combines your selected farming priorities with field conditions.",
+        language === "bn"
+          ? "এই সুপারিশ আপনার নির্বাচিত কৃষি অগ্রাধিকার ও জমির অবস্থাকে একসঙ্গে বিবেচনা করে।"
+          : "The recommendation combines your selected farming priorities with field conditions.",
       icon: "✓",
       iconBg: "bg-slate-200",
     });

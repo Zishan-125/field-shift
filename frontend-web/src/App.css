@@ -1,11 +1,10 @@
-
 /*
  * FIELD SHIFT
  *
- * Application-level styles only.
+ * Application-level layout styles.
  *
- * Component styling is handled through Tailwind classes
- * and the global FIELD SHIFT design system in index.css.
+ * The product UI is primarily styled through
+ * Tailwind utilities and index.css.
  */
 
 .app {
@@ -13,6 +12,61 @@
 }
 
 .app-main {
-  min-height: calc(100vh - 72px);
+  min-height: 100vh;
 }
 
+/* =========================================================
+   FIELD SHIFT CONTENT FLOW
+   ========================================================= */
+
+.fs-page > .fs-container {
+  position: relative;
+}
+
+/* Keep the language selector visually integrated
+   with the new dashboard header. */
+.fs-page > .fs-container.pt-4 {
+  width: min(
+    calc(100% - 48px),
+    1320px
+  );
+
+  margin-inline: auto;
+
+  padding-top: 12px !important;
+
+  position: relative;
+  z-index: 45;
+}
+
+.fs-page
+  > .fs-container.pt-4
+  > div {
+  min-height: 0;
+}
+
+/* =========================================================
+   BETTER SPACING AFTER HERO
+   ========================================================= */
+
+.fs-hero-wrap + .fs-page-content {
+  margin-top: 30px;
+}
+
+/* =========================================================
+   MOBILE LANGUAGE SWITCHER
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .fs-page > .fs-container.pt-4 {
+    width: calc(100% - 20px);
+
+    padding-top: 7px !important;
+  }
+
+  .fs-page
+    > .fs-container.pt-4
+    > div {
+    justify-content: flex-end;
+  }
+}
