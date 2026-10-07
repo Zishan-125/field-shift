@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
     """
     try:
         async with engine.begin() as conn:
-            if settings.ENVIRONMENT == "local":
+            if getattr(settings, "ENVIRONMENT", "local") == "local":
                 await conn.run_sync(Base.metadata.create_all)
         print("Database connected and schema initialized successfully.")
     except Exception as e:
@@ -52,21 +52,25 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Web dashboard (React/Vite) and mobile app (Expo) both call this API
-# from different origins, so CORS is intentionally permissive in the
-# demo build. Tighten `allow_origins` to real domains before any
-# production deployment.
+# Parse or fallback allowed origins
+cors_origins = getattr(settings, "CORS_ORIGINS", ["*"])
+if isinstance(cors_origins, str):
+    cors_origins = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
+
+# Explicitly ensure production frontend origins are allowed
+allowed_origins = list(cors_origins)
+if "https://field-shift-five.vercel.app" not in allowed_origins and "*" not in allowed_origins:
+    allowed_origins.append("https://field-shift-five.vercel.app")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=allowed_origins if allowed_origins else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Each router owns one bounded concern of the product. Keeping them
-# separate means a teammate can work on, say, the SMS webhook without
-# touching the recommendation engine's code.
+# Each router owns one bounded concern of the product.
 app.include_router(fields.router, prefix="/api/v1/fields", tags=["fields"])
 app.include_router(shift_advice.router, prefix="/api/v1/shift-advice", tags=["shift-advice"])
 app.include_router(copilot.router, prefix="/api/v1/copilot", tags=["copilot"])
