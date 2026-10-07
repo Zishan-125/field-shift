@@ -23,9 +23,8 @@ from pydantic import BaseModel, Field
 # CONFIGURATION
 # ---------------------------------------------------------------------
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
-
-DB_PATH = ROOT_DIR / "backend" / "offline" / "field_shift.db"
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "field_shift.db"
 
 FIELD_ID = "426e9d97-78cf-45d2-82ae-8131040b5ee7"
 
