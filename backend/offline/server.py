@@ -1,4 +1,4 @@
-"""
+""""
 FIELD SHIFT — Offline FastAPI Runtime
 
 Runtime characteristics:
@@ -51,20 +51,17 @@ app = FastAPI(
 # CORS
 # ---------------------------------------------------------------------
 
-# Allow the local React/Vite frontend to communicate with
-# the offline FastAPI backend.
-#
-# Typical development URLs:
-#   http://localhost:5173
-#   http://127.0.0.1:5173
-#
-# No internet access is required.
+# Allow local Vite frontend and production Vercel frontend to communicate
+# with this FastAPI backend.
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://field-shift-five.vercel.app",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "*",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -906,7 +903,7 @@ def startup_validation():
     )
 
     print(
-        "[OK] CORS: localhost:5173 and 127.0.0.1:5173"
+        "[OK] CORS: Enabled for localhost and Vercel"
     )
 
     print("=" * 70)
