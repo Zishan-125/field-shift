@@ -12,6 +12,10 @@
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![Turso](https://img.shields.io/badge/Turso-4FF8D2?style=for-the-badge&logo=turso&logoColor=black)
+![LibSQL](https://img.shields.io/badge/LibSQL-Edge%20Database-4FF8D2?style=for-the-badge&logo=sqlite&logoColor=black)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)
 ![Google Earth Engine](https://img.shields.io/badge/Google%20Earth%20Engine-4285F4?style=for-the-badge&logo=googleearth&logoColor=white)
@@ -21,6 +25,18 @@ Field Shift is an **offline-first NASA Earth-observation decision-support system
 It translates complex Earth-observation and agricultural signals into one plain-language question for farmers facing shifting rainfall, water stress, climate variability, and soil-health challenges:
 
 > **Should I keep this crop, adjust my priorities, or shift my rotation?**
+
+---
+
+## 🌐 Live Deployments
+
+| Layer | Platform | Role | Link |
+|---|---|---|---|
+| **Frontend** | [Vercel](https://vercel.com) | React + TypeScript farmer dashboard | [field-shift-five.vercel.app](https://field-shift-five.vercel.app/) |
+| **Backend API** | [Render](https://render.com) | Hosted FastAPI decision engine | Render web service |
+| **Database** | [Turso](https://turso.tech) | Hosted LibSQL — distributed SQLite at the edge | Turso database |
+
+**Production data path:** Vercel Dashboard → Render FastAPI → Turso (LibSQL), with IndexedDB / Local Storage on the client as the offline fallback.
 
 ---
 
@@ -149,18 +165,18 @@ NASA Earth Data / Google Earth Engine
        ML / Decision Dataset
 ```
 
-### 📴 Phase 2 — Offline Decision Support
+### 📴 Phase 2 — Production Decision Support
 
-After data preparation, the farmer-facing decision layer can operate using a local database.
+After data preparation, the prepared dataset is loaded into Turso (LibSQL). The FastAPI decision engine on Render serves it to the Vercel-hosted dashboard, and the client caches results locally so the farmer-facing layer keeps working offline.
 
 ```text
               Prepared Dataset
                      │
                      ▼
-              Local SQLite DB
+        Turso (LibSQL, edge-hosted)
                      │
                      ▼
-                  FastAPI
+              FastAPI (Render)
                      │
           ┌──────────┴──────────┐
           │                     │
@@ -212,32 +228,19 @@ flowchart TD
 
     F --> G["🧠 ML / Decision-Ready Dataset"]
 
-    G --> H["💾 Local SQLite Database"]
+    G --> H["🗄️ Turso Database (LibSQL)"]
 
-    H --> I["⚡ Offline FastAPI"]
+    H --> I["⚡ FastAPI on Render"]
 
-    I --> J["🌾 Field Information"]
+    I --> J["📊 Priority-Aware Scoring"]
 
-    I --> K["🌍 Environmental Information"]
+    J --> K["🏆 Rotation Ranking"]
 
-    I --> L["🌱 Soil Information"]
+    K --> L["🔎 Explainability Layer"]
 
-    I --> M["🌾 Crop & Rotation Scenarios"]
+    L --> M["🖥️ Vercel Dashboard"]
 
-    J --> N["🎯 Farmer Priorities"]
-    K --> N
-    L --> N
-    M --> N
-
-    N --> O["📊 Priority-Aware Scoring"]
-
-    O --> P["🏆 Rotation Ranking"]
-
-    P --> Q["🔎 Explainability Layer"]
-
-    Q --> R["🖥️ Field Shift Dashboard"]
-
-    R --> S["👨‍🌾 Farmer Decision Support"]
+    M --> N["👨‍🌾 Farmer UI"]
 ```
 
 ---
@@ -254,29 +257,31 @@ flowchart LR
         FEATURES["Feature Engineering"]
     end
 
-    subgraph LOCAL["💻 Offline Runtime"]
-        DB["SQLite"]
+    subgraph EDGE["🗄️ Data Layer"]
+        DB["Turso Edge Database<br/>(LibSQL)"]
+    end
+
+    subgraph BACKEND["⚡ Render — Backend API"]
         API["FastAPI"]
         ENGINE["Decision Engine"]
     end
 
-    subgraph FRONTEND["🌐 Farmer Interface"]
-        WEB["React + TypeScript"]
-        STORAGE["IndexedDB / Local Storage"]
+    subgraph CLIENT["🌐 Vercel — Client App"]
+        WEB["React + TypeScript Dashboard"]
+        STORAGE["IndexedDB / Local Storage<br/>(offline fallback)"]
     end
 
     NASA --> PIPE
     GEE --> PIPE
     PIPE --> FEATURES
-    FEATURES --> DB
+    FEATURES -->|"load prepared dataset"| DB
 
-    DB --> API
+    WEB -->|"HTTPS requests"| API
     API --> ENGINE
+    API <-->|"sync / query"| DB
+    API -->|"JSON responses"| WEB
 
-    ENGINE --> WEB
-    API --> WEB
-
-    WEB <--> STORAGE
+    WEB <-->|"cache / read when offline"| STORAGE
 ```
 
 ---
@@ -563,10 +568,10 @@ This distinction is intentional: a decision-support score should not be presente
 ### Backend
 
 - Python
-- FastAPI
-- SQLite
+- FastAPI (hosted on Render)
+- Turso — hosted LibSQL / distributed SQLite at the edge
+- SQLite-compatible local database for development
 - REST API
-- Offline runtime
 - Local decision-support services
 
 ### Data & Earth Observation
@@ -593,9 +598,10 @@ This distinction is intentional: a decision-support score should not be presente
 
 - Git
 - GitHub
+- Vercel (frontend hosting)
+- Render (backend hosting)
+- Turso (database hosting)
 - Vite
-- FastAPI
-- SQLite
 - PWA / Service Worker roadmap
 - IndexedDB
 - Local browser caching
@@ -615,7 +621,7 @@ This distinction is intentional: a decision-support score should not be presente
 ├──────────────────────────────────────────────────────┤
 │                                                      │
 │  ⚡ BACKEND                                          │
-│  Python + FastAPI + SQLite                           │
+│  Python + FastAPI (Render) + Turso / LibSQL          │
 │                                                      │
 ├──────────────────────────────────────────────────────┤
 │                                                      │
@@ -632,7 +638,7 @@ This distinction is intentional: a decision-support score should not be presente
 ├──────────────────────────────────────────────────────┤
 │                                                      │
 │  💾 OFFLINE                                          │
-│  SQLite + IndexedDB + Local Storage                  │
+│  IndexedDB + Local Storage client cache              │
 │                                                      │
 └──────────────────────────────────────────────────────┘
 ```
@@ -728,25 +734,27 @@ Local database
 
 from:
 
-**Offline**
+**Production runtime**
 
 ```text
-Local SQLite
+Turso (LibSQL)
     ↓
-FastAPI
+FastAPI on Render
     ↓
 Decision engine
     ↓
-Frontend
+Vercel dashboard
+    ↓
+IndexedDB / Local Storage cache
     ↓
 Farmer
 ```
 
-This means the farmer-facing decision layer does not need to continuously query NASA or Google Earth Engine.
+This means the farmer-facing decision layer does not need to continuously query NASA or Google Earth Engine. When the network or API is unreachable, the dashboard falls back to the last data cached on the device.
 
-### 💾 Offline Runtime
+### 💾 Local Development Runtime
 
-The current offline runtime is located at:
+For local development, the same API can run against a local SQLite database, located at:
 
 ```text
 backend/offline/server.py
@@ -772,6 +780,18 @@ GET  /api/offline/fields/{field_id}/rotations/evaluated
 
 POST /api/offline/fields/{field_id}/recommendations
 ```
+
+---
+
+## ☁️ Production Deployment
+
+| Component | Platform | Notes |
+|---|---|---|
+| Frontend | Vercel | Deploys `frontend-web/` (Vite build). Set `VITE_API_BASE_URL` to the Render API URL. |
+| Backend API | Render | Runs the FastAPI service as a web service. |
+| Database | Turso | Hosted LibSQL database holding the prepared dataset. |
+
+Configure the Render service with your Turso connection details as environment variables (Turso's standard names are `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`). Never commit database tokens to the repository.
 
 ---
 
@@ -837,31 +857,33 @@ VITE_API_BASE_URL=http://127.0.0.1:8001
 sequenceDiagram
 
     participant F as 👨‍🌾 Farmer
-    participant W as 🌐 React Dashboard
-    participant A as ⚡ FastAPI
-    participant D as 💾 SQLite
-    participant E as 🧠 Decision Engine
+    participant W as 🌐 Vercel Dashboard
+    participant C as 📴 Offline Local Cache
+    participant A as ⚡ Render API (FastAPI)
+    participant D as 🗄️ Turso DB (LibSQL)
 
     F->>W: Open Field Shift
-    W->>A: Request field data
-    A->>D: Read local data
-    D-->>A: Field information
-    A-->>W: Field information
-
-    W->>A: Request environment
-    A->>D: Read environmental features
-    D-->>A: NASA-derived features
-    A-->>W: Environment information
+    W->>A: GET field & environment data
+    A->>D: Query field + NASA-derived features
+    D-->>A: Rows
+    A-->>W: JSON response
+    W->>C: Cache response (IndexedDB)
 
     F->>W: Select crops & priorities
-    W->>A: Request recommendations
-    A->>E: Evaluate scenarios
-    E->>D: Read rotation scenarios
-    D-->>E: Scenario data
-    E-->>A: Ranked recommendations
-    A-->>W: Recommendation results
-
+    W->>A: POST /recommendations
+    A->>D: Read rotation scenarios
+    D-->>A: Scenario data
+    A->>A: Priority-aware scoring & ranking
+    A-->>W: Ranked, explainable recommendations
+    W->>C: Cache recommendations
     W-->>F: Explainable crop-rotation options
+
+    alt Network or API unavailable
+        W->>A: Request fails / times out
+        W->>C: Read last cached data
+        C-->>W: Cached field, environment & recommendations
+        W-->>F: Show cached results with offline status
+    end
 ```
 
 ---
@@ -1130,7 +1152,10 @@ field-shift/
 
 ### 💾 Offline Runtime
 
-- [x] Local SQLite database
+- [x] Local SQLite database (development)
+- [x] Turso (LibSQL) hosted database
+- [x] FastAPI service deployed on Render
+- [x] Frontend deployed on Vercel
 - [x] FastAPI offline service
 - [x] Health endpoint
 - [x] Field endpoint
