@@ -5,12 +5,8 @@ Responsibilities of this file ONLY:
   1. create the FastAPI app
   2. wire up startup/shutdown (DB engine lifecycle)
   3. mount CORS so the web + mobile clients can call the API
-  4. include every feature router under /api/v1
-  5. expose a health check judges/graders can hit in demo mode
-
-Everything domain-specific (DB models, scoring logic, NASA data pulls)
-intentionally lives OUTSIDE this file — main.py should stay thin and
-readable in under a minute.
+  4. include feature routers under /api/v1 and offline routes under /api/offline
+  5. expose health check endpoints for app and graders
 """
 
 from contextlib import asynccontextmanager
@@ -28,9 +24,7 @@ from app.api import fields, shift_advice, copilot, sms_webhook
 async def lifespan(app: FastAPI):
     """
     Runs once when the server boots and once when it shuts down.
-    In a hackathon build this is where you'd normally call
-    Base.metadata.create_all() for a quick local demo DB; in a real
-    deployment you'd swap that for Alembic migrations run beforehand.
+    Handles optional local DB auto-creation and engine disposal.
     """
     try:
         async with engine.begin() as conn:
@@ -70,7 +64,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Each router owns one bounded concern of the product.
+# Primary API v1 Routers
 app.include_router(fields.router, prefix="/api/v1/fields", tags=["fields"])
 app.include_router(shift_advice.router, prefix="/api/v1/shift-advice", tags=["shift-advice"])
 app.include_router(copilot.router, prefix="/api/v1/copilot", tags=["copilot"])
@@ -78,10 +72,9 @@ app.include_router(sms_webhook.router, prefix="/api/v1/sms", tags=["sms"])
 
 
 @app.get("/health", tags=["system"])
+@app.get("/api/offline/health", tags=["system"])
 async def health_check():
     """
-    Cheap liveness probe. Also useful as the very first thing you show
-    judges: hit this endpoint to prove the one-command Docker setup
-    actually came up before diving into the real demo.
+    Liveness probe endpoint supporting both /health and /api/offline/health.
     """
     return {"status": "ok", "service": "terrashift-api", "version": app.version}
