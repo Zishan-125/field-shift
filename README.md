@@ -48,14 +48,14 @@ It translates complex Earth-observation and agricultural signals into one plain-
 
 **Focus Areas:**
 
-- 🌍 Earth Observation
-- 🌾 Climate-Resilient Agriculture
-- 💧 Water Conservation
-- 🌱 Soil Health
-- ☀️ Climate Resilience
-- 🤖 Machine Learning
-- 📊 Decision Support
-- 📱 Offline-First Technology
+-  Earth Observation
+-  Climate-Resilient Agriculture
+-  Water Conservation
+-  Soil Health
+-  Climate Resilience
+-  Machine Learning
+-  Decision Support
+-  Offline-First Technology
 
 ---
 
@@ -106,19 +106,19 @@ Field Shift connects Earth observation data with farmer-centered decision suppor
 
 The system can:
 
-- 🛰️ Process NASA Earth-observation datasets
-- 🌧️ Analyze rainfall and precipitation signals
-- 💧 Analyze root-zone soil moisture
-- 🌿 Monitor vegetation-condition indicators
-- 🌡️ Examine land-surface temperature
-- 🌍 Incorporate land-water-storage signals
-- 🌱 Incorporate soil information
-- 🌾 Compare crop-rotation scenarios
-- 🎯 Allow farmers to define their priorities
-- 📊 Rank rotation scenarios
-- 🔎 Explain why a recommendation received its score
-- 📴 Run the farmer-facing decision layer offline
-- 🌐 Separate online data preparation from offline decision support
+-  Process NASA Earth-observation datasets
+-  Analyze rainfall and precipitation signals
+-  Analyze root-zone soil moisture
+-  Monitor vegetation-condition indicators
+-  Examine land-surface temperature
+-  Incorporate land-water-storage signals
+-  Incorporate soil information
+-  Compare crop-rotation scenarios
+-  Allow farmers to define their priorities
+-  Rank rotation scenarios
+-  Explain why a recommendation received its score
+-  Run the farmer-facing decision layer offline
+-  Separate online data preparation from offline decision support
 
 ---
 
@@ -947,12 +947,12 @@ The dashboard can surface environmental information derived from the prepared da
 
 Examples include:
 
-- 🌧️ GPM precipitation
-- 💧 SMAP root-zone soil moisture
-- 🌿 MODIS NDVI
-- 🌡️ ECOSTRESS land-surface temperature
-- 🌍 GRACE water-storage anomaly
-- ☀️ NASA POWER climate variables
+-  GPM precipitation
+-  SMAP root-zone soil moisture
+-  MODIS NDVI
+-  ECOSTRESS land-surface temperature
+-  GRACE water-storage anomaly
+-  NASA POWER climate variables
 
 The purpose is to make scientific observations understandable without forcing farmers to interpret raw satellite datasets.
 
