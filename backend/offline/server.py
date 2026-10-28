@@ -10,6 +10,7 @@ Runtime characteristics:
     - Explainable farmer-priority evaluation
 """
 
+import json
 from pathlib import Path
 import sqlite3
 from typing import Optional
@@ -526,7 +527,10 @@ def get_crops():
 # ROTATIONS
 # ---------------------------------------------------------------------
 
-@app.get("/api/offline/fields/{field_id}/rotations")
+@app.get(
+    "/api/offline/fields/{field_id}/rotations",
+    deprecated=True,  # crop permutations without a season check; use /patterns
+)
 def get_rotations(
     field_id: str,
     limit: int = Query(
@@ -575,7 +579,8 @@ def get_rotations(
 # ---------------------------------------------------------------------
 
 @app.get(
-    "/api/offline/fields/{field_id}/rotations/evaluated"
+    "/api/offline/fields/{field_id}/rotations/evaluated",
+    deprecated=True,
 )
 def get_evaluated_rotations(
     field_id: str,
@@ -626,7 +631,8 @@ def get_evaluated_rotations(
 # ---------------------------------------------------------------------
 
 @app.post(
-    "/api/offline/fields/{field_id}/recommendations"
+    "/api/offline/fields/{field_id}/recommendations",
+    deprecated=True,  # use /pattern-recommendations
 )
 def recommendations(
     field_id: str,
@@ -790,6 +796,405 @@ def recommendations(
 
 
 # ---------------------------------------------------------------------
+# SEASON-AWARE CROPPING PATTERNS
+# ---------------------------------------------------------------------
+
+PATTERN_METHODOLOGY_VERSION = "season_patterns_v1"
+
+DEFAULT_CURRENT_PATTERN_ID = "boro_fallow_taman"
+
+SEASONS = ("rabi", "kharif1", "kharif2")
+
+RECOMMENDABLE_STATUSES = ("feasible", "tight")
+
+INDICATOR_KEYS = (
+    "water_conservation_score",
+    "soil_health_score",
+    "climate_resilience_score",
+    "crop_diversity_score",
+)
+
+PRIORITY_TO_INDICATOR = {
+    "water_conservation": "water_conservation_score",
+    "soil_health": "soil_health_score",
+    "climate_resilience": "climate_resilience_score",
+    "crop_diversity": "crop_diversity_score",
+}
+
+
+class PatternRecommendationRequest(FarmerPriorityRequest):
+    """
+    Farmer priorities plus the pattern the farmer grows today.
+    """
+
+    current_pattern_id: str = Field(
+        default=DEFAULT_CURRENT_PATTERN_ID,
+    )
+
+
+def crop_names() -> dict:
+    """
+    English and Bangla crop names from the crop calendar.
+    """
+
+    rows = fetch_all(
+        """
+        SELECT crop_id, crop_name_en, crop_name_bn
+        FROM crop_calendar
+        """
+    )
+
+    names = {"fallow": {"en": "Fallow", "bn": "পতিত"}}
+
+    for row in rows:
+        names.setdefault(
+            row["crop_id"],
+            {"en": row["crop_name_en"], "bn": row["crop_name_bn"]},
+        )
+
+    return names
+
+
+def crop_label(crop_id: str, names: dict) -> dict:
+    name = names.get(crop_id, {"en": crop_id, "bn": crop_id})
+
+    return {
+        "crop_id": crop_id,
+        "name_en": name["en"],
+        "name_bn": name["bn"],
+        "is_fallow": crop_id == "fallow",
+    }
+
+
+def load_upazilas() -> dict:
+    by_pattern: dict = {}
+
+    for row in fetch_all(
+        """
+        SELECT *
+        FROM feni_upazila_patterns
+        ORDER BY area_ha DESC
+        """
+    ):
+        by_pattern.setdefault(row["pattern_id"], []).append(
+            {
+                "upazila": row["upazila"],
+                "area_ha": row["area_ha"],
+                "pct_of_upazila_nca": row["pct_of_upazila_nca"],
+            }
+        )
+
+    return by_pattern
+
+
+def serialize_pattern(row: dict, names: dict, upazilas: dict) -> dict:
+    """
+    Turn a cropping_patterns row into the API shape.
+    """
+
+    schedule = json.loads(row["schedule_json"] or "[]")
+
+    for item in schedule:
+        item.update(crop_label(item["crop_id"], names))
+
+    indicators = (
+        {key: row[key] for key in INDICATOR_KEYS}
+        if row["indicators_available"]
+        else None
+    )
+
+    return {
+        "pattern_id": row["pattern_id"],
+        "name": row["pattern_name_source"],
+        "seasons": {
+            "rabi": crop_label(row["rabi_crop"], names),
+            "kharif1": crop_label(row["kharif1_crop"], names),
+            "kharif2": crop_label(row["kharif2_crop"], names),
+        },
+        "schedule": schedule,
+        "facts": {
+            "crop_count": row["crop_count"],
+            "rice_crop_count": row["rice_crop_count"],
+            "legume_crop_count": row["legume_crop_count"],
+        },
+        "feasibility": {
+            "status": row["feasibility_status"],
+            "reasons": json.loads(row["feasibility_reasons"] or "[]"),
+            "calendar_conflict": bool(row["calendar_conflict"]),
+            "min_gap_days": row["min_gap_days"],
+            "total_field_days": row["total_field_days"],
+            "turnaround_days_assumed": row["turnaround_days_assumed"],
+            "turnaround_is_assumption": True,
+        },
+        "adoption": {
+            "region": "Chittagong agricultural region (incl. Feni)",
+            "region_area_ha": row["region_area_ha"],
+            "region_pct_nca": row["region_pct_nca"],
+            "region_upazila_count": row["region_upazila_count"],
+            "national_area_ha": row["national_area_ha"],
+            "national_pct_nca": row["national_pct_nca"],
+            "national_upazila_count": row["national_upazila_count"],
+            "observed_in_region": row["region_area_ha"] is not None,
+            "feni_upazilas": upazilas.get(row["pattern_id"], []),
+            "source_id": row["source_id"],
+            "source_detail": row["source_detail"],
+            "reference_year": "2014-15",
+        },
+        "notes": row["notes"],
+        "indicators": indicators,
+        "indicator_type": row["indicator_type"],
+        "missing_profile_crops": json.loads(row["missing_profile_crops"] or "[]"),
+    }
+
+
+def season_changes(current: dict, candidate: dict) -> list:
+    """
+    Season-by-season difference between two patterns.
+    """
+
+    changes = []
+
+    for season in SEASONS:
+        before = current["seasons"][season]
+        after = candidate["seasons"][season]
+
+        if before["crop_id"] == after["crop_id"]:
+            change = "same"
+        elif before["is_fallow"]:
+            change = "added"
+        elif after["is_fallow"]:
+            change = "removed"
+        else:
+            change = "replaced"
+
+        changes.append(
+            {
+                "season": season,
+                "change": change,
+                "from": before,
+                "to": after,
+            }
+        )
+
+    return changes
+
+
+def load_patterns_or_404() -> list:
+    if not table_exists("cropping_patterns"):
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Cropping patterns are not built. "
+                "Run backend/offline/build_pattern_tables.py."
+            ),
+        )
+
+    return fetch_all(
+        """
+        SELECT *
+        FROM cropping_patterns
+        ORDER BY region_area_ha DESC
+        """
+    )
+
+
+@app.get("/api/offline/crop-calendar")
+def get_crop_calendar():
+    """
+    Sourced sowing/harvest windows per crop (all variants).
+    Empty windows mean no source has been found yet.
+    """
+
+    rows = fetch_all(
+        """
+        SELECT *
+        FROM crop_calendar
+        ORDER BY crop_id, variant_id
+        """
+    )
+
+    return {
+        "count": len(rows),
+        "calendar": rows,
+        "dates_are_month_day": True,
+        "runtime": "offline",
+        "internet_required": False,
+    }
+
+
+@app.get("/api/offline/patterns")
+def get_patterns():
+    """
+    All curated cropping patterns with their feasibility check,
+    including rejected ones and the reason.
+    """
+
+    names = crop_names()
+    upazilas = load_upazilas()
+
+    patterns = [
+        serialize_pattern(row, names, upazilas)
+        for row in load_patterns_or_404()
+    ]
+
+    status_counts: dict = {}
+
+    for pattern in patterns:
+        status = pattern["feasibility"]["status"]
+        status_counts[status] = status_counts.get(status, 0) + 1
+
+    return {
+        "count": len(patterns),
+        "status_counts": status_counts,
+        "default_current_pattern_id": DEFAULT_CURRENT_PATTERN_ID,
+        "patterns": patterns,
+        "methodology_version": PATTERN_METHODOLOGY_VERSION,
+        "runtime": "offline",
+        "internet_required": False,
+    }
+
+
+@app.post("/api/offline/fields/{field_id}/pattern-recommendations")
+def pattern_recommendations(
+    field_id: str,
+    request: PatternRecommendationRequest,
+):
+    """
+    Rank feasible cropping patterns for the farmer's priorities and show
+    each one as a change from the farmer's current pattern.
+    """
+
+    field = require_field(field_id)
+    weights = normalize_priorities(request)
+
+    names = crop_names()
+    upazilas = load_upazilas()
+
+    patterns = {
+        row["pattern_id"]: serialize_pattern(row, names, upazilas)
+        for row in load_patterns_or_404()
+    }
+
+    if request.current_pattern_id not in patterns:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Pattern not found: {request.current_pattern_id}",
+        )
+
+    def score(pattern: dict):
+        if pattern["indicators"] is None:
+            return None, None
+
+        contributions = {
+            priority: pattern["indicators"][indicator] * weights[priority]
+            for priority, indicator in PRIORITY_TO_INDICATOR.items()
+        }
+
+        return round(sum(contributions.values()), 6), {
+            key: round(value, 6) for key, value in contributions.items()
+        }
+
+    current = patterns[request.current_pattern_id]
+    current_score, current_contributions = score(current)
+    current = {
+        **current,
+        "score": current_score,
+        "priority_contributions": current_contributions,
+    }
+
+    recommended = []
+    not_scored = []
+    not_recommended = []
+
+    for pattern_id, pattern in patterns.items():
+        if pattern_id == request.current_pattern_id:
+            continue
+
+        if pattern["feasibility"]["status"] not in RECOMMENDABLE_STATUSES:
+            not_recommended.append(pattern)
+            continue
+
+        pattern_score, contributions = score(pattern)
+
+        item = {
+            **pattern,
+            "score": pattern_score,
+            "priority_contributions": contributions,
+            "season_changes": season_changes(current, pattern),
+        }
+
+        if pattern_score is None:
+            not_scored.append(item)
+            continue
+
+        item["score_change"] = (
+            round(pattern_score - current_score, 6)
+            if current_score is not None
+            else None
+        )
+
+        item["indicator_changes"] = (
+            {
+                key: round(
+                    pattern["indicators"][key] - current["indicators"][key],
+                    6,
+                )
+                for key in INDICATOR_KEYS
+            }
+            if current["indicators"] is not None
+            else None
+        )
+
+        recommended.append(item)
+
+    recommended.sort(key=lambda item: item["score"], reverse=True)
+
+    for rank, item in enumerate(recommended, start=1):
+        item["rank"] = rank
+
+    not_scored.sort(
+        key=lambda item: item["adoption"]["region_area_ha"] or 0,
+        reverse=True,
+    )
+
+    return {
+        "field": {
+            "field_id": field["field_id"],
+            "name": field.get("name"),
+        },
+        "priority_profile": weights,
+        "current": current,
+        "results": recommended,
+        "not_scored": not_scored,
+        "not_recommended": not_recommended,
+        "counts": {
+            "patterns": len(patterns),
+            "recommended": len(recommended),
+            "not_scored": len(not_scored),
+            "not_recommended": len(not_recommended),
+        },
+        "methodology": {
+            "version": PATTERN_METHODOLOGY_VERSION,
+            "score_type": "scenario_indicator_not_yield_prediction",
+            "indicator_type": "provisional_indicator_from_unvalidated_crop_priors",
+            "synthetic_yield_target": False,
+            "notes": [
+                "Patterns are real annual cropping patterns recorded in the "
+                "Chittagong agricultural region (Shahidullah et al. 2017).",
+                "Feasibility uses sourced DAE/BRRI/BARI crop calendars; the "
+                "turnaround time between crops is an assumption.",
+                "Indicator scores use hand-set crop parameters that are not "
+                "validated, and do not include yield, cost or income.",
+            ],
+        },
+        "runtime": {
+            "mode": "offline",
+            "internet_required": False,
+        },
+    }
+
+
+# ---------------------------------------------------------------------
 # STARTUP VALIDATION
 # ---------------------------------------------------------------------
 
@@ -824,6 +1229,9 @@ def startup_validation():
         "rotation_scenarios",
         "evaluated_rotation_scenarios",
         "database_metadata",
+        "crop_calendar",
+        "cropping_patterns",
+        "feni_upazila_patterns",
     ]
 
     for table in required_tables:
