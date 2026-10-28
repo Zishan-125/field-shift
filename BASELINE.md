@@ -85,7 +85,7 @@ The dashboard shows the same order (#1 মুগ ডাল → সরিষা, 
 8. **The soil card shows "—" for pH, organic carbon, clay, sand and silt.** `Dashboard.tsx` looks for keys `soil` / `profile` / `data` in the API response, but the API returns `soil_profile`.
 9. **The weather card shows "—°C", "—" and "— m/s".** `Dashboard.tsx` passes the whole 69-row `data` array as `environment` instead of the latest row.
 10. **NDVI shows "0.00" for the latest month.** The real value is null (monsoon cloud), and the null is displayed as zero.
-11. The page header says "NASA Space Apps Challenge 2024". It should say 2026.
+11. ~~The page header says "NASA Space Apps Challenge 2024".~~ Correction: the header already says 2026 (`FarmerHeader.tsx:67`); the small screenshot was misread.
 12. Lint warning: `useEffect` in `Dashboard.tsx:594` is missing the `language` dependency.
 
 ### Other

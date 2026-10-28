@@ -22,7 +22,8 @@ Goal: help a farmer decide whether to keep, adjust, or shift their crop rotation
 - 1 field: "Feni Test Plot", a ~1 km box at 23.00–23.01 N, 91.39–91.40 E.
 - 69 monthly rows, 2019-01 → 2024-09, NASA EO + POWER + SoilGrids.
 - 8 crops (Aman/Aus/Boro rice, maize, wheat, lentil, mungbean, mustard), parameters hand-set.
-- 272 rotation scenarios (56 two-crop + 216 three-crop permutations).
+- 272 rotation scenarios (56 two-crop + 216 three-crop permutations) — deprecated.
+- 31 real annual cropping patterns (Shahidullah et al. 2017, Chittagong region incl. Feni) with a sourced crop calendar (DAE BAMIS, BRRI, BARI) and a feasibility check: `data-pipeline/reference/`, `data-pipeline/rotation/feasibility.py`, built into the DB by `backend/offline/build_pattern_tables.py`, served by `POST /api/offline/fields/{id}/pattern-recommendations`. Open data gaps: `docs/data-gaps.md`.
 
 ## Known problems (fix in this priority order)
 

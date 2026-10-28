@@ -19,16 +19,22 @@ function format(value: number | null, digits = 2): string {
 
 export default function FarmerSoilView({ soil, language = "bn" }: Props) {
   const ph = numberValue(soil, ["soil_topsoil_ph", "soil_ph_0-5cm", "ph"]);
+  // The /soil endpoint returns SoilGrids values per depth ("_0-5cm" = topsoil).
   const organicCarbon = numberValue(soil, [
     "soil_topsoil_organic_carbon",
+    "soil_organic_carbon_0-5cm",
     "organic_carbon",
     "soil_organic_carbon",
   ]);
-  const clay = numberValue(soil, ["soil_topsoil_clay", "clay"]);
-  const sand = numberValue(soil, ["soil_topsoil_sand", "sand"]);
-  const silt = numberValue(soil, ["soil_topsoil_silt", "silt"]);
-  const cec = numberValue(soil, ["soil_topsoil_cec", "cec"]);
-  const nitrogen = numberValue(soil, ["soil_topsoil_nitrogen", "nitrogen"]);
+  const clay = numberValue(soil, ["soil_topsoil_clay", "soil_clay_0-5cm", "clay"]);
+  const sand = numberValue(soil, ["soil_topsoil_sand", "soil_sand_0-5cm", "sand"]);
+  const silt = numberValue(soil, ["soil_topsoil_silt", "soil_silt_0-5cm", "silt"]);
+  const cec = numberValue(soil, ["soil_topsoil_cec", "soil_cec_0-5cm", "cec"]);
+  const nitrogen = numberValue(soil, [
+    "soil_topsoil_nitrogen",
+    "soil_nitrogen_0-5cm",
+    "nitrogen",
+  ]);
   const depth = numberValue(soil, ["soil_depth_cm", "depth_cm"]);
 
   const rawSoil = soil as Record<string, unknown>;
@@ -47,8 +53,9 @@ export default function FarmerSoilView({ soil, language = "bn" }: Props) {
     },
     {
       label: language === "bn" ? "জৈব কার্বন" : "Organic carbon",
-      value: format(organicCarbon),
-      unit: organicCarbon === null ? "" : "%",
+      value: format(organicCarbon, 1),
+      // SoilGrids SOC is converted to g/kg in data-pipeline/build_soil_profile.py
+      unit: organicCarbon === null ? "" : "g/kg",
     },
     {
       label: language === "bn" ? "কাদা" : "Clay",

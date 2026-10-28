@@ -33,6 +33,9 @@ interface Row {
 }
 
 function finite(value: unknown): number | null {
+  // Number(null) and Number("") are 0: treat missing values as missing,
+  // e.g. MODIS NDVI during monsoon cloud cover.
+  if (value === null || value === undefined || value === "") return null;
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
 }
