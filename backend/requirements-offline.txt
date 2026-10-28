@@ -23,3 +23,6 @@ python-dotenv==1.2.4       # _common.py, test_ecostress_qc.py
 # --- data-pipeline/ Google Earth Engine ingestion (ingest_*.py, gee_field_clip.py, build_soil_profile.py) ---
 earthengine-api==1.7.50
 shapely==2.2.0             # only test_soilgrids_field_polygon.py
+
+# --- tests (cd data-pipeline && python -m pytest) ---
+pytest==9.2.0
