@@ -1,0 +1,25 @@
+# Dependencies for the code that actually runs: backend/offline/ and data-pipeline/.
+# (backend/requirements.txt is for the legacy backend/app/ Postgres design.)
+#
+# Setup (from backend/):
+#   python -m venv .venv
+#   .venv\Scripts\activate          (Windows)   |   source .venv/bin/activate   (Linux/macOS)
+#   pip install -r requirements-offline.txt
+#
+# Pinned to the versions verified on 2026-10-28 with Python 3.13.
+
+# --- backend/offline/server.py ---
+fastapi==0.162.0
+pydantic==2.14.1
+uvicorn==0.54.0            # ASGI server used to run server.py
+
+# --- data-pipeline/ (build_*.py, fetch_nasa_power.py, scoring/) ---
+pandas==3.1.0
+numpy==2.5.4
+requests==2.34.2           # fetch_nasa_power.py, test_ecostress_qc.py
+httpx==0.28.1              # _common.py, dags/refresh_daily.py
+python-dotenv==1.2.4       # _common.py, test_ecostress_qc.py
+
+# --- data-pipeline/ Google Earth Engine ingestion (ingest_*.py, gee_field_clip.py, build_soil_profile.py) ---
+earthengine-api==1.7.50
+shapely==2.2.0             # only test_soilgrids_field_polygon.py
