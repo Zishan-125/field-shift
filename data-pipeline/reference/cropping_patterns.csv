@@ -1,0 +1,32 @@
+pattern_id,rabi_crop,kharif1_crop,kharif2_crop,pattern_name_source,region_area_ha,region_pct_nca,region_upazila_count,national_area_ha,national_pct_nca,national_upazila_count,feni_upazilas,source_id,source_detail,notes
+boro_fallow_taman,rice_boro,fallow,rice_aman,Boro-Fallow-T. Aman,150280,22.92,38,2306005,26.919,426,Feni; Chhagalnaiya; Dagonbhuiyan; Fulgazi; Parshuram; Sonagazi,SHAHIDULLAH_2017,"Table 2 row 01 (region); Nasim et al. 2017 Table 2 row 001 (national); Feni upazilas from Table 8",Most dominant pattern in the region and in Bangladesh. Default 'current pattern' in Field Shift.
+fallow_fallow_taman,fallow,fallow,rice_aman,Fallow-Fallow-T. Aman,125600,19.15,32,,,,Sonagazi; Dagonbhuiyan; Chhagalnaiya; Parshuram; Fulgazi; Feni,SHAHIDULLAH_2017,"Table 2 row 02; Feni upazilas from Table 9",Single T. Aman. Largest share of cropland in Sonagazi (27.29 % of upazila NCA).
+boro_fallow_fallow,rice_boro,fallow,fallow,Boro-Fallow-Fallow,48710,7.43,12,,,,Parshuram,SHAHIDULLAH_2017,"Table 2 row 03; Table 10",
+fallow_aus_taman,fallow,rice_aus,rice_aman,Fallow-Aus-T. Aman,27140,4.14,20,193275,2.256,108,Sonagazi; Chhagalnaiya; Dagonbhuiyan,SHAHIDULLAH_2017,"Table 2 row 04; Table 12; Nasim et al. 2017 Table 2 row 005",
+boro_aus_taman,rice_boro,rice_aus,rice_aman,Boro-Aus-T. Aman,16070,2.45,18,,,,,SHAHIDULLAH_2017,Table 2 row 05,Triple rice.
+boro_aus_fallow,rice_boro,rice_aus,fallow,Boro-Aus-Fallow,1000,0.14,5,,,,,SHAHIDULLAH_2017,Table 2 row 08,
+grasspea_fallow_taman,grasspea,fallow,rice_aman,Grasspea-Fallow-T. Aman,30640,4.67,13,,,,Sonagazi; Feni; Dagonbhuiyan,SHAHIDULLAH_2017,"Table 4 row 01; Table 11",
+grasspea_aus_taman,grasspea,rice_aus,rice_aman,Grasspea-Aus-T. Aman,16740,2.55,11,,,,,SHAHIDULLAH_2017,Table 4 row 02,
+felon_fallow_taman,felon,fallow,rice_aman,Felon-Fallow-T. Aman,14630,2.23,28,,,,,SHAHIDULLAH_2017,Table 4 row 03,
+mungbean_aus_taman,mungbean,rice_aus,rice_aman,Mungbean-Aus-T. Aman,7040,1.07,9,,,,,SHAHIDULLAH_2017,Table 4 row 04,
+felon_aus_taman,felon,rice_aus,rice_aman,Felon-Aus-T. Aman,5045,0.77,11,,,,,SHAHIDULLAH_2017,Table 4 row 05,
+mungbean_fallow_taman,mungbean,fallow,rice_aman,Mungbean-Fallow-T. Aman,4335,0.66,15,,,,,SHAHIDULLAH_2017,Table 4 row 06,
+lentil_fallow_taman,lentil,fallow,rice_aman,Lentil-Fallow-T. Aman,2440,0.37,8,,,,,SHAHIDULLAH_2017,Table 4 row 07,
+lentil_aus_taman,lentil,rice_aus,rice_aman,Lentil-Aus-T. Aman,500,0.08,4,11255,0.131,46,,SHAHIDULLAH_2017,"Table 4 row 09; Nasim et al. 2017 Table 2 row 089",
+groundnut_fallow_taman,groundnut,fallow,rice_aman,Groundnut-Fallow-T. Aman,8630,1.32,16,,,,,SHAHIDULLAH_2017,Table 5 row 04,
+groundnut_aus_taman,groundnut,rice_aus,rice_aman,Groundnut-Aus-T. Aman,8350,1.27,6,,,,,SHAHIDULLAH_2017,Table 5 row 05,
+mustard_fallow_taman,mustard,fallow,rice_aman,Mustard-Fallow-T. Aman,2370,0.36,15,,,,,SHAHIDULLAH_2017,Table 5 row 07,
+mustard_boro_taman,mustard,rice_boro,rice_aman,Mustard-Boro-T. Aman,660,0.10,9,184620,2.155,203,,SHAHIDULLAH_2017,"Table 5 row 11; Nasim et al. 2017 Table 2 row 006","In the pattern notation Boro sits in the second position: mustard is sown after T. Aman and Boro is transplanted after mustard."
+mustard_aus_taman,mustard,rice_aus,rice_aman,Mustard-Aus-T. Aman,345,0.05,5,,,,,SHAHIDULLAH_2017,Table 5 row 13,
+potato_sesame_taman,potato,sesame,rice_aman,Potato-Sesame-T. Aman,200,0.03,1,,,,,SHAHIDULLAH_2017,Table 5 row 15,
+sesame_fallow_taman,sesame,fallow,rice_aman,Sesame-Fallow-T. Aman,175,0.03,5,,,,,SHAHIDULLAH_2017,Table 5 row 16,
+vegetables_fallow_taman,vegetables,fallow,rice_aman,Vegetab-Fallow-T. Aman,17715,2.70,28,,,,,SHAHIDULLAH_2017,Table 6 row 01,
+chili_fallow_taman,chili,fallow,rice_aman,Chilli-Fallow-T. Aman,9450,1.44,30,,,,,SHAHIDULLAH_2017,Table 6 row 02,
+vegetables_boro_taman,vegetables,rice_boro,rice_aman,Vegetab-Boro-T. Aman,8150,1.24,5,,,,,SHAHIDULLAH_2017,Table 6 row 04,
+potato_fallow_taman,potato,fallow,rice_aman,Potato-Fallow-T. Aman,4555,0.69,22,,,,,SHAHIDULLAH_2017,Table 6 row 06,
+chili_aus_taman,chili,rice_aus,rice_aman,Chilli-Aus-T. Aman,2450,0.37,6,,,,,SHAHIDULLAH_2017,Table 6 row 10,
+potato_boro_taman,potato,rice_boro,rice_aman,Potato-Boro-T. Aman,1650,0.25,6,,,,,SHAHIDULLAH_2017,Table 6 row 13,
+potato_aus_taman,potato,rice_aus,rice_aman,Potato-Aus-T. Aman,165,0.03,4,,,,,SHAHIDULLAH_2017,Table 6 row 24,
+wheat_fallow_taman,wheat,fallow,rice_aman,Wheat-Fallow-T. Aman,100,0.02,3,,,,Chhagalnaiya; Parshuram,SHAHIDULLAH_2017,"Table 7 row 02 (rare pattern; upazilas Chhagalnaiya, Parshuram, Companiganj)",Rare in the region but recorded in two Feni upazilas.
+maize_fallow_taman,maize,fallow,rice_aman,Maize-Fallow-T. Aman,,,,101460,1.184,126,,NASIM_2017,Table 2 row 013 (national),Not recorded in the Chittagong region tables of Shahidullah et al. 2017. National pattern only.
+potato_mungbean_taman,potato,mungbean,rice_aman,Potato-Mungbean-T. Aman,,,,1045,0.012,8,,NASIM_2017,Table 2 row 248 (national),Not recorded in the Chittagong region tables of Shahidullah et al. 2017. National pattern only.

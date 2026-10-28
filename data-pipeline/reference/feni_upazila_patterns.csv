@@ -1,0 +1,20 @@
+pattern_id,upazila,area_ha,pct_of_upazila_nca,source_id,source_detail
+boro_fallow_taman,Feni Sadar,9500,56.55,SHAHIDULLAH_2017,"Table 8 (listed as ""Feni"")"
+boro_fallow_taman,Chhagalnaiya,5700,53.93,SHAHIDULLAH_2017,Table 8
+boro_fallow_taman,Dagonbhuiyan,5100,49.76,SHAHIDULLAH_2017,Table 8
+boro_fallow_taman,Fulgazi,4300,60.31,SHAHIDULLAH_2017,Table 8
+boro_fallow_taman,Parshuram,3600,54.05,SHAHIDULLAH_2017,Table 8
+boro_fallow_taman,Sonagazi,700,2.92,SHAHIDULLAH_2017,Table 8
+fallow_fallow_taman,Sonagazi,5600,27.29,SHAHIDULLAH_2017,Table 9
+fallow_fallow_taman,Dagonbhuiyan,3000,29.27,SHAHIDULLAH_2017,Table 9
+fallow_fallow_taman,Chhagalnaiya,2400,22.71,SHAHIDULLAH_2017,Table 9
+fallow_fallow_taman,Parshuram,1800,27.03,SHAHIDULLAH_2017,Table 9
+fallow_fallow_taman,Fulgazi,1800,25.25,SHAHIDULLAH_2017,Table 9
+fallow_fallow_taman,Feni Sadar,1000,5.95,SHAHIDULLAH_2017,"Table 9 (listed as ""Feni"")"
+boro_fallow_fallow,Parshuram,250,3.75,SHAHIDULLAH_2017,Table 10
+grasspea_fallow_taman,Sonagazi,5000,,SHAHIDULLAH_2017,Table 11 (percentage columns not legible in the PDF text)
+grasspea_fallow_taman,Feni Sadar,900,,SHAHIDULLAH_2017,"Table 11 (listed as ""Feni""; percentage columns not legible in the PDF text)"
+grasspea_fallow_taman,Dagonbhuiyan,100,,SHAHIDULLAH_2017,Table 11 (percentage columns not legible in the PDF text)
+fallow_aus_taman,Sonagazi,3800,18.52,SHAHIDULLAH_2017,Table 12
+fallow_aus_taman,Chhagalnaiya,200,1.90,SHAHIDULLAH_2017,Table 12
+fallow_aus_taman,Dagonbhuiyan,200,1.96,SHAHIDULLAH_2017,Table 12
