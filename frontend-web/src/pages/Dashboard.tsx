@@ -9,7 +9,7 @@ import {
   getField,
   getEnvironment,
   getSoil,
-  getRecommendations,
+  getPatternRecommendations,
   getCrops,
 } from "../services/api";
 
@@ -31,10 +31,14 @@ import type {
   FarmerPriorities,
 } from "../types/farmer";
 
+import {
+  DEFAULT_CURRENT_PATTERN_ID,
+} from "../types/pattern";
+
 import type {
-  RecommendationResponse,
-  RotationRecommendation,
-} from "../types/recommendation";
+  PatternRecommendationResponse,
+  RecommendedPattern,
+} from "../types/pattern";
 
 import type {
   Crop,
@@ -48,7 +52,7 @@ import EarthObservationContext from "../components/farmer/EarthObservationContex
 import WeatherSummary from "../components/farmer/WeatherSummary";
 import EnvironmentSummary from "../components/farmer/EnvironmentSummary";
 import FarmerGoalSelector from "../components/farmer/FarmerGoalSelector";
-import RecommendationList from "../components/farmer/RecommendationList";
+import PatternRecommendationList from "../components/farmer/PatternRecommendationList";
 import CropSelector from "../components/farmer/CropSelector";
 import LanguageSwitcher from "../components/farmer/LanguageSwitcher";
 
@@ -158,9 +162,10 @@ function calculateWaterStatus(
   environment: Environment,
 ): "good" | "moderate" | "attention" {
   const precipitation = Number(
-    environment.precipitation ??
-      environment.rainfall ??
-      environment.gpm_precipitation,
+    environment.ag_rainfall_mm ??
+      environment.power_precipitation ??
+      environment.precipitation ??
+      environment.rainfall,
   );
 
   if (!Number.isFinite(precipitation)) {
@@ -262,71 +267,46 @@ function extractCrops(
     .map(normalizeCrop);
 }
 
-function cropTokens(
-  recommendation: RotationRecommendation,
-): string[] {
-  return [
-    recommendation.crop_1_name,
-    recommendation.crop_2_name,
-    recommendation.crop_3_name,
-  ]
-    .filter(
-      (
-        value,
-      ): value is string =>
-        Boolean(value),
-    )
-    .map((value) =>
-      value
-        .trim()
-        .toLowerCase(),
-    );
-}
-
 function matchesSelectedCrops(
-  recommendation: RotationRecommendation,
-  selectedCrops: NormalizedCrop[],
+  pattern: RecommendedPattern,
+  selectedCropIds: string[],
 ): boolean {
-  if (selectedCrops.length === 0) {
+  if (selectedCropIds.length === 0) {
     return true;
   }
 
-  const rotationCrops =
-    cropTokens(
-      recommendation,
-    );
+  /*
+   * A pattern matches when at least one of
+   * its three seasons grows a crop the
+   * farmer selected.
+   */
+  return Object.values(
+    pattern.seasons,
+  ).some((crop) =>
+    selectedCropIds.includes(
+      crop.crop_id,
+    ),
+  );
+}
 
-  if (rotationCrops.length === 0) {
-    return false;
+function latestRow(
+  data: unknown,
+): Environment {
+  const rows = getObject(
+    data,
+    "data",
+  );
+
+  if (
+    Array.isArray(rows) &&
+    rows.length > 0
+  ) {
+    return rows[
+      rows.length - 1
+    ] as Environment;
   }
 
-  const selectedNames =
-    selectedCrops.flatMap(
-      (crop) => [
-        crop.englishName
-          .trim()
-          .toLowerCase(),
-
-        crop.banglaName
-          .trim()
-          .toLowerCase(),
-      ],
-    );
-
-  /*
-   * A rotation matches when at least one
-   * crop in that rotation is among the
-   * farmer's selected crops.
-   *
-   * This keeps the farmer from having
-   * to inspect all scenarios.
-   */
-  return rotationCrops.some(
-    (crop) =>
-      selectedNames.includes(
-        crop,
-      ),
-  );
+  return {};
 }
 
 export default function Dashboard() {
@@ -447,7 +427,7 @@ export default function Dashboard() {
     recommendations,
     setRecommendations,
   ] =
-    useState<RecommendationResponse | null>(
+    useState<PatternRecommendationResponse | null>(
       null,
     );
 
@@ -516,9 +496,10 @@ export default function Dashboard() {
             FIELD_ID,
           ),
 
-          getRecommendations(
+          getPatternRecommendations(
             FIELD_ID,
             DEFAULT_PRIORITIES,
+            DEFAULT_CURRENT_PATTERN_ID,
           ),
 
           getCrops(),
@@ -546,6 +527,7 @@ export default function Dashboard() {
         setSoil(
           getObject(
             soilData,
+            "soil_profile",
             "soil",
             "profile",
             "data",
@@ -598,19 +580,6 @@ export default function Dashboard() {
       return false;
     }
 
-    if (
-      selectedCropIds.length ===
-      0
-    ) {
-      setError(
-        language === "bn"
-          ? "অন্তত একটি ফসল নির্বাচন করুন।"
-          : "Please select at least one crop.",
-      );
-
-      return false;
-    }
-
     try {
       setRecommendationLoading(
         true,
@@ -623,9 +592,10 @@ export default function Dashboard() {
       );
 
       const data =
-        await getRecommendations(
+        await getPatternRecommendations(
           FIELD_ID,
           priorities,
+          DEFAULT_CURRENT_PATTERN_ID,
         );
 
       setRecommendations(
@@ -687,7 +657,7 @@ export default function Dashboard() {
 
   const recommendationResults =
     useMemo<
-      RotationRecommendation[]
+      RecommendedPattern[]
     >(
       () => {
         if (
@@ -699,24 +669,35 @@ export default function Dashboard() {
         }
 
         return recommendations.results.filter(
-          (recommendation) =>
+          (pattern) =>
             matchesSelectedCrops(
-              recommendation,
-              selectedCrops,
+              pattern,
+              selectedCropIds,
             ),
         );
       },
       [
         recommendations,
-        selectedCrops,
+        selectedCropIds,
       ],
     );
 
   const currentSoil =
     soil || {};
 
-  const currentEnvironment =
+  /*
+   * `environment` holds all monthly rows
+   * (the Earth-observation cards need the
+   * history); weather and status cards use
+   * the latest month.
+   */
+  const environmentRows =
     environment || {};
+
+  const currentEnvironment =
+    latestRow({
+      data: environment,
+    });
 
   const soilStatus =
     calculateSoilStatus(
@@ -892,7 +873,7 @@ export default function Dashboard() {
           >
             <EarthObservationContext
               data={
-                currentEnvironment
+                environmentRows
               }
               language={
                 language
@@ -1096,20 +1077,18 @@ export default function Dashboard() {
             )}
           </div>
 
-          {recommendationResults.length >
-          0 ? (
-            <RecommendationList
-              recommendations={
+          {recommendations ? (
+            <PatternRecommendationList
+              data={
+                recommendations
+              }
+              results={
                 recommendationResults
               }
-              priorities={
-                priorities
-              }
-              maxItems={3}
+              initialItems={3}
               language={
                 language
               }
-              crops={crops}
             />
           ) : (
             <div className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 text-center">
@@ -1291,7 +1270,8 @@ export default function Dashboard() {
 
                 <p className="mt-1 text-sm font-bold text-slate-800">
                   {
-                    recommendations?.scenario_count ??
+                    recommendations?.counts
+                      .patterns ??
                     0
                   }
                 </p>

@@ -5,6 +5,7 @@ import type { EnvironmentResponse } from "../types/environment";
 import type { SoilResponse } from "../types/soil";
 import type { FarmerPriorities } from "../types/farmer";
 import type { RecommendationResponse } from "../types/recommendation";
+import type { PatternRecommendationResponse } from "../types/pattern";
 import type {
   CropResponse,
 } from "../types/crop";
@@ -91,6 +92,24 @@ export async function getEvaluatedRotations(
   return response.data;
 }
 
+export async function getPatternRecommendations(
+  fieldId: string,
+  priorities: FarmerPriorities,
+  currentPatternId: string,
+): Promise<PatternRecommendationResponse> {
+  const response =
+    await api.post<PatternRecommendationResponse>(
+      `/api/offline/fields/${fieldId}/pattern-recommendations`,
+      {
+        ...priorities,
+        current_pattern_id: currentPatternId,
+      },
+    );
+
+  return response.data;
+}
+
+/** @deprecated crop permutations without a season check; use getPatternRecommendations */
 export async function getRecommendations(
   fieldId: string,
   priorities: FarmerPriorities,
