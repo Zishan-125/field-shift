@@ -1,0 +1,117 @@
+/* Hallmark · tokens · Field Shift
+ * One colour per role, one type step per size, one radius per level.
+ * The project's own green scale is the only accent; amber survives for
+ * attention states alone. Nothing here is decorative.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Paper and ink: warm, low chroma, tinted toward the green anchor. */
+  --paper: oklch(96.6% 0.008 88);
+  --paper-2: oklch(93.6% 0.011 88);
+  --paper-3: oklch(90.2% 0.013 88);
+  --surface: oklch(99.1% 0.004 88);
+  --ink: oklch(24% 0.018 156);
+  --ink-2: oklch(38% 0.015 156);
+  --ink-3: oklch(46% 0.012 156);
+  --ink-inverse: oklch(97% 0.006 150);
+  --rule: oklch(88.5% 0.008 88);
+  --rule-strong: oklch(77% 0.011 88);
+  --field-edge: oklch(58% 0.014 156);
+
+  /* On ink: the hero photograph is the one dark surface, so it carries
+     its own text and scrim steps instead of borrowing the paper ones. */
+  --on-ink-muted: oklch(97% 0.006 150 / 0.8);
+  --on-ink-accent: color-mix(in oklch, var(--fs-green-500) 78%, var(--ink-inverse));
+  --on-ink-rule: oklch(97% 0.006 150 / 0.36);
+  --on-ink-wash: oklch(97% 0.006 150 / 0.1);
+  --scrim-strong: oklch(24% 0.018 156 / 0.92);
+  --scrim-high: oklch(24% 0.018 156 / 0.78);
+  --scrim-mid: oklch(24% 0.018 156 / 0.44);
+  --scrim-soft: oklch(24% 0.018 156 / 0.12);
+  --scrim-lift: oklch(24% 0.018 156 / 0.62);
+  --scrim-none: oklch(24% 0.018 156 / 0);
+
+  /* The project's green scale, kept by name. */
+  --fs-green-950: #073b2d;
+  --fs-green-900: #084b38;
+  --fs-green-800: #0b6248;
+  --fs-green-700: #087653;
+  --fs-green-600: #15966a;
+  --fs-green-500: #3dbb83;
+  --fs-green-100: #dff4e8;
+  --fs-green-50: #effaf3;
+
+  --accent: var(--fs-green-800);
+  --accent-strong: var(--fs-green-900);
+  --accent-hover: var(--fs-green-700);
+  --accent-wash: var(--fs-green-50);
+  --accent-tint: var(--fs-green-100);
+  --on-accent: oklch(99.4% 0.006 150);
+
+  /* Attention only: a real state, never an ornament. */
+  --attention: oklch(47% 0.085 66);
+  --attention-tint: oklch(94.6% 0.036 78);
+  --attention-rule: oklch(83% 0.06 76);
+
+  --danger: oklch(46% 0.13 27);
+  --danger-tint: oklch(95% 0.022 25);
+  --danger-rule: oklch(82% 0.055 25);
+
+  /* Faces: one family across two scripts, plus a mono for figures only. */
+  --font-sans: "Noto Sans", "Noto Sans Bengali", system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-tight: 1.22;
+  --leading-snug: 1.4;
+  --leading-body: 1.65;
+  --tracking-tight: -0.011em;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
+  --space-9: 3rem;
+  --space-10: 4rem;
+  --space-11: 5rem;
+
+  --radius-sm: 4px;
+  --radius: 8px;
+
+  --shadow-1: 0 1px 1px oklch(24% 0.02 156 / 0.04),
+    0 2px 6px oklch(24% 0.02 156 / 0.05);
+  --shadow-press: inset 0 1px 0 oklch(99% 0.004 150 / 0.16),
+    inset 0 -1px 0 oklch(24% 0.02 156 / 0.12);
+
+  --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --duration: 160ms;
+
+  --measure: 1180px;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --aside-width: 360px;
+  --z-sticky: 10;
+  --z-topbar: 20;
+
+  /* The eight crop photographs read as one set: muted, faintly warm. */
+  --photo-filter: saturate(0.9) contrast(1.03) sepia(0.07);
+}

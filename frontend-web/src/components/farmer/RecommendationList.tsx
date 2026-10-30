@@ -15,6 +15,7 @@ interface RecommendationListProps {
   maxItems?: number;
   language?: "bn" | "en";
   crops?: NormalizedCrop[];
+  selectedCropNames?: string[];
 }
 
 function clampScore(value: unknown): number {
@@ -24,10 +25,7 @@ function clampScore(value: unknown): number {
     return 0;
   }
 
-  return Math.max(
-    0,
-    Math.min(1, parsed),
-  );
+  return Math.max(0, Math.min(1, parsed));
 }
 
 function calculatePriorityFit(
@@ -35,22 +33,12 @@ function calculatePriorityFit(
   priorities: FarmerPriorities,
 ): number {
   return (
-    clampScore(
-      recommendation.water_conservation_score,
-    ) *
+    clampScore(recommendation.water_conservation_score) *
       priorities.water_conservation +
-    clampScore(
-      recommendation.soil_health_score,
-    ) *
-      priorities.soil_health +
-    clampScore(
-      recommendation.climate_resilience_score,
-    ) *
+    clampScore(recommendation.soil_health_score) * priorities.soil_health +
+    clampScore(recommendation.climate_resilience_score) *
       priorities.climate_resilience +
-    clampScore(
-      recommendation.crop_diversity_score,
-    ) *
-      priorities.crop_diversity
+    clampScore(recommendation.crop_diversity_score) * priorities.crop_diversity
   );
 }
 
@@ -60,296 +48,196 @@ export default function RecommendationList({
   maxItems = 3,
   language = "bn",
   crops = [],
+  selectedCropNames = [],
 }: RecommendationListProps) {
-  const t =
-    language === "bn" ? bn : en;
+  const t = language === "bn" ? bn : en;
 
-  const recommendationText = {
-    rankingWeights:
-      "rankingWeights" in
-      t.recommendations
-        ? t.recommendations
-            .rankingWeights
-        : language === "bn"
-          ? "র‍্যাংকিং অগ্রাধিকার"
-          : "Ranking priorities",
+  const rotationUnit =
+    "rotations" in t.recommendations
+      ? t.recommendations.rotations
+      : language === "bn"
+        ? "rotation"
+        : "rotations";
 
-    rankingDescription:
-      "rankingDescription" in
-      t.recommendations
-        ? t.recommendations
-            .rankingDescription
-        : language === "bn"
-          ? "আপনার নির্বাচিত অগ্রাধিকারের ওজন অনুযায়ী rotation-গুলো র‍্যাংক করা হয়েছে।"
-          : "Rotations are ranked according to the weights of your selected priorities.",
+  const rotationDescription =
+    "description" in t.recommendations
+      ? t.recommendations.description
+      : "subtitle" in t.recommendations
+        ? t.recommendations.subtitle
+        : "";
 
-    showMore:
-      language === "bn"
-        ? "আরও দেখুন"
-        : "Show more",
+  const showMore = language === "bn" ? "আরও দেখুন" : "Show more";
 
-    showLess:
-      language === "bn"
-        ? "কম দেখুন"
-        : "Show less",
-  };
+  const showLess = language === "bn" ? "কম দেখুন" : "Show less";
 
-  const [visibleCount, setVisibleCount] =
-    useState(maxItems);
+  const [visibleCount, setVisibleCount] = useState(maxItems);
 
   const ranked = useMemo(() => {
     return recommendations
-      .map(
-        (
-          recommendation,
-          index,
-        ) => ({
-          recommendation,
-          priorityFit:
-            calculatePriorityFit(
-              recommendation,
-              priorities,
-            ),
-          originalIndex: index,
-        }),
-      )
+      .map((recommendation, index) => ({
+        recommendation,
+        priorityFit: calculatePriorityFit(recommendation, priorities),
+        originalIndex: index,
+      }))
       .sort(
         (a, b) =>
-          b.priorityFit -
-            a.priorityFit ||
-          a.originalIndex -
-            b.originalIndex,
+          b.priorityFit - a.priorityFit || a.originalIndex - b.originalIndex,
       );
-  }, [
-    recommendations,
-    priorities,
-  ]);
+  }, [recommendations, priorities]);
 
-  const visible =
-    ranked.slice(
-      0,
-      Math.min(
-        visibleCount,
-        ranked.length,
-      ),
-    );
+  const visible = ranked.slice(0, Math.min(visibleCount, ranked.length));
 
-  const hasMore =
-    visibleCount <
-    ranked.length;
+  const hasMore = visibleCount < ranked.length;
 
-  const remainingCount =
-    Math.max(
-      0,
-      ranked.length -
-        visibleCount,
-    );
+  const remainingCount = Math.max(0, ranked.length - visibleCount);
 
-  const handleShowMore =
-    () => {
-      setVisibleCount(
-        (current) =>
-          Math.min(
-            current + 10,
-            ranked.length,
-          ),
-      );
-    };
+  function handleShowMore() {
+    setVisibleCount((current) => Math.min(current + 10, ranked.length));
+  }
 
-  const handleShowLess =
-    () => {
-      setVisibleCount(
-        maxItems,
-      );
+  function handleShowLess() {
+    setVisibleCount(maxItems);
 
-      window.requestAnimationFrame(
-        () => {
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        },
-      );
-    };
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById("recommendations");
+
+      if (!target) {
+        return;
+      }
+
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      target.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    });
+  }
 
   return (
-    <div>
-      <div className="mb-5 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
-              {
-                recommendationText.rankingWeights
-              }
-            </p>
+    <>
+      <div className="fs-head">
+        <div>
+          <h2 id="rotations-title">{t.recommendations.title}</h2>
 
-            <p className="mt-1 text-sm text-slate-500">
-              {
-                recommendationText.rankingDescription
-              }
+          <p>{rotationDescription}</p>
+
+          {selectedCropNames.length > 0 ? (
+            <p className="fs-head-filter">
+              <span>{language === "bn" ? "নির্বাচিত" : "Filtered by"}</span>{" "}
+              {selectedCropNames.join(" · ")}
             </p>
-          </div>
+          ) : null}
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-xl bg-blue-50 p-3">
-            <p className="text-xs font-black text-blue-700">
-              💧{" "}
-              {language === "bn"
-                ? "পানি"
-                : "Water"}
-            </p>
+        <span className="fs-head-meta">
+          <span className="fs-figure">{ranked.length}</span>
+          {rotationUnit}
+        </span>
+      </div>
 
-            <p className="mt-1 text-lg font-black text-blue-900">
-              {Math.round(
-                priorities.water_conservation *
-                  100,
-              )}
-              %
-            </p>
-          </div>
+      {ranked.length > 0 ? (
+        <div className="fs-panel">
+          <table className="fs-table fs-rotations">
+            <caption className="fs-sr-only">
+              {t.recommendations.title}
+            </caption>
 
-          <div className="rounded-xl bg-green-50 p-3">
-            <p className="text-xs font-black text-green-700">
-              🌱{" "}
-              {language === "bn"
-                ? "মাটি"
-                : "Soil"}
-            </p>
+            <thead>
+              <tr>
+                <th scope="col" className="fs-col-rank">
+                  #
+                </th>
 
-            <p className="mt-1 text-lg font-black text-green-900">
-              {Math.round(
-                priorities.soil_health *
-                  100,
-              )}
-              %
-            </p>
-          </div>
+                <th scope="col">
+                  {language === "bn" ? "ফসলের ক্রম" : "Rotation"}
+                </th>
 
-          <div className="rounded-xl bg-amber-50 p-3">
-            <p className="text-xs font-black text-amber-700">
-              ☀️{" "}
-              {language === "bn"
-                ? "জলবায়ু"
-                : "Climate"}
-            </p>
+                <th scope="col" className="fs-col-fit">
+                  {language === "bn" ? "অগ্রাধিকার মিল" : "Priority fit"}
+                </th>
 
-            <p className="mt-1 text-lg font-black text-amber-900">
-              {Math.round(
-                priorities.climate_resilience *
-                  100,
-              )}
-              %
-            </p>
-          </div>
+                <th scope="col" className="fs-col-toggle">
+                  <span className="fs-sr-only">
+                    {language === "bn" ? "হিসাব" : "Calculation"}
+                  </span>
+                </th>
+              </tr>
+            </thead>
 
-          <div className="rounded-xl bg-purple-50 p-3">
-            <p className="text-xs font-black text-purple-700">
-              🌾{" "}
-              {language === "bn"
-                ? "বৈচিত্র্য"
-                : "Variety"}
-            </p>
-
-            <p className="mt-1 text-lg font-black text-purple-900">
-              {Math.round(
-                priorities.crop_diversity *
-                  100,
-              )}
-              %
-            </p>
-          </div>
+            <tbody>
+              {visible.map(({ recommendation }, index) => (
+                <RecommendationCard
+                  key={recommendation.rotation_id ?? index}
+                  recommendation={recommendation}
+                  rank={index + 1}
+                  featured={index === 0}
+                  priorities={priorities}
+                  language={language}
+                  crops={crops}
+                />
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
+      ) : (
+        <div className="fs-empty">
+          <h3>{t.recommendations.noMatch}</h3>
 
-      <div className="space-y-5">
-        {visible.map(
-          (
-            {
-              recommendation,
-            },
-            index,
-          ) => (
-            <RecommendationCard
-              key={
-                recommendation.rotation_id ??
-                index
-              }
-              recommendation={
-                recommendation
-              }
-              rank={index + 1}
-              featured={
-                index === 0
-              }
-              priorities={
-                priorities
-              }
-              language={
-                language
-              }
-              crops={crops}
-            />
-          ),
-        )}
-      </div>
-
-      {ranked.length >
-        maxItems && (
-        <div className="mt-6">
-          {hasMore ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="text-center text-sm font-black text-slate-700">
-                {language === "bn"
-                  ? `আরও ${remainingCount}টি matching rotation রয়েছে`
-                  : `${remainingCount} more matching rotations`}
-              </p>
-
-              <button
-                type="button"
-                onClick={
-                  handleShowMore
-                }
-                className="mx-auto mt-3 flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800 active:scale-[0.98]"
-              >
-                {
-                  recommendationText.showMore
-                }
-
-                <span className="ml-2 text-base">
-                  ↓
-                </span>
-              </button>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
-              <p className="text-center text-sm font-black text-green-800">
-                {language === "bn"
-                  ? `সব ${ranked.length}টি matching rotation দেখানো হচ্ছে`
-                  : `All ${ranked.length} matching rotations are shown`}
-              </p>
-
-              <button
-                type="button"
-                onClick={
-                  handleShowLess
-                }
-                className="mx-auto mt-3 flex items-center justify-center rounded-xl border border-green-200 bg-white px-5 py-3 text-xs font-black text-green-700 transition hover:bg-green-100 active:scale-[0.98]"
-              >
-                ↑{" "}
-                {
-                  recommendationText.showLess
-                }
-              </button>
-            </div>
-          )}
+          <p>{t.recommendations.changeCrops}</p>
         </div>
       )}
-    </div>
+
+      {ranked.length > maxItems ? (
+        <div className="fs-more-bar">
+          {hasMore ? (
+            <>
+              <p>
+                {language === "bn" ? (
+                  <>
+                    আরও <strong>{remainingCount}</strong>টি matching rotation
+                    রয়েছে
+                  </>
+                ) : (
+                  <>
+                    <strong>{remainingCount}</strong> more matching rotations
+                  </>
+                )}
+              </p>
+
+              <button type="button" className="fs-button" onClick={handleShowMore}>
+                {showMore}
+              </button>
+            </>
+          ) : (
+            <>
+              <p>
+                {language === "bn" ? (
+                  <>
+                    সব <strong>{ranked.length}</strong>টি matching rotation
+                    দেখানো হচ্ছে
+                  </>
+                ) : (
+                  <>
+                    All <strong>{ranked.length}</strong> matching rotations are
+                    shown
+                  </>
+                )}
+              </p>
+
+              <button
+                type="button"
+                className="fs-button-quiet"
+                onClick={handleShowLess}
+              >
+                {showLess}
+              </button>
+            </>
+          )}
+        </div>
+      ) : null}
+    </>
   );
 }
-
-
-
-
-

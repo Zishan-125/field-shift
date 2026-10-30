@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react";
 
-import type {
-  NormalizedCrop,
-} from "../../types/crop";
+import { Sprout } from "lucide-react";
 
-import {
-  getBanglaCropName,
-  getCropIcon,
-} from "../../types/crop";
+import type { NormalizedCrop } from "../../types/crop";
+
+import { getBanglaCropName } from "../../types/crop";
+
+import { getCropImage } from "./cropImages";
 
 import bn from "../../i18n/bn";
 import en from "../../i18n/en";
@@ -15,66 +14,8 @@ import en from "../../i18n/en";
 interface CropSelectorProps {
   crops: NormalizedCrop[];
   selectedCrops: string[];
-  onChange: (
-    cropIds: string[],
-  ) => void;
+  onChange: (cropIds: string[]) => void;
   language?: "bn" | "en";
-}
-
-const cropImages: Record<
-  string,
-  string
-> = {
-  "aman rice": new URL(
-    "../../assets/aman.jpg",
-    import.meta.url,
-  ).href,
-
-  "aus rice": new URL(
-    "../../assets/aus.jpg",
-    import.meta.url,
-  ).href,
-
-  "boro rice": new URL(
-    "../../assets/boro.jpg",
-    import.meta.url,
-  ).href,
-
-  maize: new URL(
-    "../../assets/maize.jpg",
-    import.meta.url,
-  ).href,
-
-  lentil: new URL(
-    "../../assets/lentil.jpg",
-    import.meta.url,
-  ).href,
-
-  mungbean: new URL(
-    "../../assets/mungbean.jpg",
-    import.meta.url,
-  ).href,
-
-  mustard: new URL(
-    "../../assets/mustard.jpg",
-    import.meta.url,
-  ).href,
-
-  wheat: new URL(
-    "../../assets/wheat.jpg",
-    import.meta.url,
-  ).href,
-};
-
-function getCropImage(
-  englishName: string,
-): string | undefined {
-  const key = englishName
-    .trim()
-    .toLowerCase()
-    .replace(/[\s_-]+/g, " ");
-
-  return cropImages[key];
 }
 
 export default function CropSelector({
@@ -83,325 +24,154 @@ export default function CropSelector({
   onChange,
   language = "bn",
 }: CropSelectorProps) {
-  const t =
-    language === "bn" ? bn : en;
+  const t = language === "bn" ? bn : en;
 
-  const cropText = {
-    eyebrow:
-      language === "bn"
-        ? "ফসল নির্বাচন"
-        : "Crop selection",
+  const noResults =
+    "noResults" in t.crops
+      ? t.crops.noResults
+      : language === "bn"
+        ? "কোনো ফসল পাওয়া যায়নি।"
+        : "No crops found.";
 
-    title: t.crops.title,
+  const [search, setSearch] = useState("");
 
-    subtitle:
-      t.crops.subtitle,
+  const preparedCrops = useMemo(() => {
+    return crops.map((crop) => ({
+      ...crop,
 
-    selected:
-      t.crops.selected,
+      banglaName:
+        crop.banglaName && crop.banglaName !== crop.englishName
+          ? crop.banglaName
+          : getBanglaCropName(crop.englishName),
+    }));
+  }, [crops]);
 
-    maximum:
-      t.crops.maximum,
+  const filteredCrops = useMemo(() => {
+    const query = search.trim().toLowerCase();
 
-    searchPlaceholder:
-      t.crops.searchPlaceholder,
+    if (!query) {
+      return preparedCrops;
+    }
 
-    clear:
-      t.crops.clear,
+    return preparedCrops.filter(
+      (crop) =>
+        crop.englishName.toLowerCase().includes(query) ||
+        crop.banglaName.toLowerCase().includes(query),
+    );
+  }, [preparedCrops, search]);
 
-    limitReached:
-      t.crops.limitReached,
-
-    noResults:
-      "noResults" in t.crops
-        ? t.crops.noResults
-        : language === "bn"
-          ? "কোনো ফসল পাওয়া যায়নি।"
-          : "No crops found.",
-
-    selectAtLeastOne:
-      "selectAtLeastOne" in
-      t.crops
-        ? t.crops.selectAtLeastOne
-        : "chooseAtLeastOne" in
-            t.crops
-          ? t.crops
-              .chooseAtLeastOne
-          : language === "bn"
-            ? "অন্তত একটি ফসল নির্বাচন করুন।"
-            : "Please select at least one crop.",
-
-    crop:
-      language === "bn"
-        ? "ফসল"
-        : "Crop",
-  };
-
-  const [search, setSearch] =
-    useState("");
-
-  const preparedCrops =
-    useMemo(() => {
-      return crops.map(
-        (crop) => ({
-          ...crop,
-
-          banglaName:
-            crop.banglaName &&
-            crop.banglaName !==
-              crop.englishName
-              ? crop.banglaName
-              : getBanglaCropName(
-                  crop.englishName,
-                ),
-
-          icon:
-            crop.icon &&
-            crop.icon !== "🌱"
-              ? crop.icon
-              : getCropIcon(
-                  crop.englishName,
-                ),
-        }),
-      );
-    }, [crops]);
-
-  const filteredCrops =
-    useMemo(() => {
-      const query =
-        search
-          .trim()
-          .toLowerCase();
-
-      if (!query) {
-        return preparedCrops;
-      }
-
-      return preparedCrops.filter(
-        (crop) =>
-          crop.englishName
-            .toLowerCase()
-            .includes(query) ||
-          crop.banglaName
-            .toLowerCase()
-            .includes(query),
-      );
-    }, [
-      preparedCrops,
-      search,
-    ]);
-
-  function toggleCrop(
-    cropId: string,
-  ) {
-    if (
-      selectedCrops.includes(
-        cropId,
-      )
-    ) {
-      onChange(
-        selectedCrops.filter(
-          (id) =>
-            id !== cropId,
-        ),
-      );
+  function toggleCrop(cropId: string) {
+    if (selectedCrops.includes(cropId)) {
+      onChange(selectedCrops.filter((id) => id !== cropId));
 
       return;
     }
 
-    if (
-      selectedCrops.length >= 5
-    ) {
+    if (selectedCrops.length >= 5) {
       return;
     }
 
-    onChange([
-      ...selectedCrops,
-      cropId,
-    ]);
+    onChange([...selectedCrops, cropId]);
   }
 
   return (
-    <section className="fs-crop-section">
-      <div className="fs-section-heading-row">
+    <section className="fs-panel-block" aria-labelledby="crops-title">
+      <div className="fs-panel-head">
         <div>
-          <p className="fs-eyebrow">
-            {cropText.eyebrow}
-          </p>
-
-          <h2 className="fs-section-title">
-            {cropText.title}
+          <h2 id="crops-title" className="fs-panel-title">
+            {t.crops.title}
           </h2>
 
-          <p className="fs-section-description">
-            {cropText.subtitle}
-          </p>
+          <p className="fs-panel-sub">{t.crops.subtitle}</p>
         </div>
 
-        <div className="fs-selection-counter">
-          <strong>
-            {selectedCrops.length}
-            <span>/5</span>
-          </strong>
-
-          <small>
-            {cropText.selected}
-          </small>
-        </div>
+        <span className="fs-counter" aria-live="polite">
+          {selectedCrops.length}/5
+        </span>
       </div>
 
-      <div className="fs-crop-toolbar">
-        <div className="fs-search-box">
-          <span>⌕</span>
+      <input
+        className="fs-input"
+        type="search"
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        placeholder={t.crops.searchPlaceholder}
+        aria-label={t.crops.searchPlaceholder}
+      />
 
-          <input
-            type="text"
-            value={search}
-            onChange={(event) =>
-              setSearch(
-                event.target.value,
-              )
-            }
-            placeholder={
-              cropText.searchPlaceholder
-            }
-          />
-        </div>
+      {selectedCrops.length >= 5 ? (
+        <p className="fs-hint">{t.crops.limitReached}</p>
+      ) : null}
 
-        {selectedCrops.length >
-          0 && (
-          <button
-            type="button"
-            onClick={() =>
-              onChange([])
-            }
-            className="fs-clear-button"
-          >
-            {cropText.clear}
-          </button>
-        )}
+      {selectedCrops.length > 0 ? (
+        <button
+          type="button"
+          className="fs-link-button"
+          onClick={() => onChange([])}
+        >
+          {t.crops.clear}
+        </button>
+      ) : null}
+
+      <div className="fs-crops">
+        {filteredCrops.map((crop) => {
+          const selected = selectedCrops.includes(crop.id);
+
+          const disabled = !selected && selectedCrops.length >= 5;
+
+          const banglaName = getBanglaCropName(crop.englishName);
+
+          const primary =
+            language === "bn" ? banglaName : crop.englishName;
+
+          const secondary =
+            language === "bn" ? crop.englishName : banglaName;
+
+          const image = getCropImage(crop.englishName);
+
+          return (
+            <button
+              key={crop.id}
+              type="button"
+              onClick={() => toggleCrop(crop.id)}
+              disabled={disabled}
+              aria-pressed={selected}
+              className="fs-crop"
+            >
+              {image ? (
+                <img
+                  className="fs-crop-thumb"
+                  src={image}
+                  alt=""
+                  width={34}
+                  height={34}
+                  loading="lazy"
+                />
+              ) : (
+                <span
+                  className="fs-crop-thumb"
+                  data-empty="true"
+                  aria-hidden="true"
+                >
+                  <Sprout size={15} strokeWidth={2} />
+                </span>
+              )}
+
+              <span className="fs-crop-text">
+                <span className="fs-crop-name">{primary}</span>
+
+                {secondary && secondary !== primary ? (
+                  <span className="fs-crop-sub">{secondary}</span>
+                ) : null}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      {selectedCrops.length >=
-        5 && (
-        <div className="fs-crop-limit">
-          {cropText.limitReached}
-        </div>
-      )}
-
-      <div className="fs-crop-grid">
-        {filteredCrops.map(
-          (crop) => {
-            const selected =
-              selectedCrops.includes(
-                crop.id,
-              );
-
-            const disabled =
-              !selected &&
-              selectedCrops.length >=
-                5;
-
-            const banglaName =
-              getBanglaCropName(
-                crop.englishName,
-              );
-
-            const icon =
-              getCropIcon(
-                crop.englishName,
-              );
-
-            const image =
-              getCropImage(
-                crop.englishName,
-              );
-
-            return (
-              <button
-                key={crop.id}
-                type="button"
-                onClick={() =>
-                  toggleCrop(
-                    crop.id,
-                  )
-                }
-                disabled={disabled}
-                aria-pressed={
-                  selected
-                }
-                className={[
-                  "fs-crop-card",
-                  selected
-                    ? "selected"
-                    : "",
-                  disabled
-                    ? "disabled"
-                    : "",
-                ].join(" ")}
-              >
-                <div className="fs-crop-image">
-                  {image ? (
-                    <img
-                      src={image}
-                      alt={
-                        crop.englishName
-                      }
-                    />
-                  ) : (
-                    <span>
-                      {icon}
-                    </span>
-                  )}
-
-                  <div className="fs-crop-image-overlay" />
-
-                  {selected && (
-                    <span className="fs-crop-check">
-                      ✓
-                    </span>
-                  )}
-                </div>
-
-                <div className="fs-crop-card-body">
-                  <p>
-                    {language === "bn"
-                      ? banglaName
-                      : crop.englishName}
-                  </p>
-
-                  <span>
-                    {language === "bn"
-                      ? crop.englishName
-                      : banglaName}
-                  </span>
-
-                  <div className="fs-crop-card-footer">
-                    <span>
-                      {cropText.crop}
-                    </span>
-
-                    <span>
-                      →
-                    </span>
-                  </div>
-                </div>
-              </button>
-            );
-          },
-        )}
-      </div>
-
-      {filteredCrops.length ===
-        0 && (
-        <div className="fs-empty-state">
-          <div>🌱</div>
-
-          <p>
-            {cropText.noResults}
-          </p>
-        </div>
-      )}
+      {filteredCrops.length === 0 ? (
+        <p className="fs-empty-line">{noResults}</p>
+      ) : null}
     </section>
   );
 }
