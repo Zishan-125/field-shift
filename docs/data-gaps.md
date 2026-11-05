@@ -17,12 +17,30 @@ the value **and** the source (document, table/page) when you fill one in.
 | Chili | Harvest end used for the next crop | Chili Rabi is harvested until early June (BAMIS weeks 18–22), so Chilli–Aus–T. Aman conflicts. Farmers may clear the field after early pickings | DAE Feni |
 | T. Aman | Which calendar fits Feni | BAMIS Chattogram (133 days, harvest mid-October) and BRRI national (harvest November) differ by about a month; this decides which Rabi crops fit | BRRI Regional Station Sonagazi, Feni; which T. Aman varieties Feni farmers actually use |
 
+## Production and water (`crop_yields.csv`, `food_energy.csv`, `fao56_crop_coefficients.csv`)
+
+| Item | Gap | Effect |
+|---|---|---|
+| Vegetables | No single yield, energy or Kc for a group of crops | Vegetable patterns stay unscored |
+| Groundnut, chili | BBS does not say whether production is in-shell / kernel (groundnut) or green / dry (chili) | Food output not computed for these crops |
+| Grass pea energy | FCT_BD_2013 only has split grass pea (dal); BBS production is whole seed | Small overstatement of grass pea food energy |
+| Small-area yields | Feni sesame (3 ha), wheat (52 ha) and Rabi maize (74 ha) yields come from very small areas; maize (8.9 t/ha) is high and puts Maize–Fallow–T. Aman at the top | Check against DAE Feni or a multi-year BBS average |
+| One year | All yields are 2024-25 (most recent). Aman area that year was cut by the August 2024 floods | Consider a 3-year average once older yearbooks are added |
+| FAO-56 page numbers | Kc values cite Table 11 / Table 12 of the official FAO HTML edition; the printed page numbers were not checked from an accessible copy | Add the page numbers from the printed FAO-56 |
+| Mustard, grass pea, mungbean Kc | No FAO-56 rows: mustard uses Rapeseed (Table 12) with sesame stage proportions (Table 11); mungbean and grass pea use "Beans, dry and Pulses" | Labelled ASSUMPTION in the CSV |
+| Kc climate adjustment | Table 12 values are for RHmin ≈ 45 %, u2 ≈ 2 m/s; the FAO-56 Eq. 62 adjustment for Feni's humidity was not applied | Kc mid/end may be slightly high |
+| Paddy percolation | FAO_IWN "average" 6 mm/day used; Feni topsoil is clay loam (SoilGrids, about 38 % clay) | Rice water need could be 4–8 mm/day × field days; a measured Feni value would be better |
+| Puddling water (SAT) | Charged to the first month in the field (FAO_IWN says the month before planting) | Slightly overstates T. Aman irrigation in July |
+| Rainfall | GPM IMERG (about 2,450 mm/year here) is lower than NASA POWER (about 3,440 mm/year) | Irrigation needs may be overstated; check against the BMD Feni station (BBS Yearbook Table 6.1.x) |
+| Water productivity | Defined as food per m³ of **total** crop water need, not per m³ of irrigation only: a rainfed single T. Aman would otherwise get an infinite score | Irrigation water is shown separately |
+
 ## Assumptions in the code
 
 | Value | Where | Used for |
 |---|---|---|
 | Turnaround between crops = **7 days** | `ASSUMED_TURNAROUND_DAYS` in `data-pipeline/rotation/feasibility.py` | Only separates "feasible" from "tight". Rejections never depend on it. SHAHIDULLAH_2006 says turnaround after T. Aman in coastal Feni is "very short" but gives no number |
-| Crop parameters in `crop_profiles` | `field_shift.db` | All indicator scores (see `docs/data-sources.md`, last section) |
+| Crop parameters in `crop_profiles` | `field_shift.db` | Soil-health and climate-resilience scores (see `docs/data-sources.md`, last section) |
+| Default priority weights (food 0.30, water productivity 0.25, soil 0.20, climate 0.15, variety 0.10) | `DEFAULT_PATTERN_PRIORITIES` in `server.py` and `types/pattern.ts` | A UI starting point, not data; the farmer can change every weight |
 | Historical soil context = **0.5** | `data-pipeline/build_farmer_priority_scenarios.py` (`safe_mean` default) | Soil score. It is a fallback, because `soil_topsoil_fertility_proxy` is null in every month (BASELINE.md) |
 
 ## Suspicious values

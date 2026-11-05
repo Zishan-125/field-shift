@@ -1,0 +1,16 @@
+crop_id,table12_row,kc_ini,kc_ini_from,kc_mid,kc_end,kc_end_as_published,table11_row,l_ini,l_dev,l_mid,l_late,table11_planting_and_region,source_id,notes
+rice_aman,Rice,1.05,Rice row,1.20,0.75,0.90-0.60,Rice,30,30,60,30,"Dec; May — Tropics; Mediterranean",FAO56,Kc end is the midpoint of the published range. Stage lengths are scaled to the crop's field days.
+rice_boro,Rice,1.05,Rice row,1.20,0.75,0.90-0.60,Rice,30,30,60,30,"Dec; May — Tropics; Mediterranean",FAO56,Kc end is the midpoint of the published range.
+rice_aus,Rice,1.05,Rice row,1.20,0.75,0.90-0.60,Rice,30,30,60,30,"Dec; May — Tropics; Mediterranean",FAO56,Kc end is the midpoint of the published range.
+wheat,Spring Wheat,0.3,Cereals group,1.15,0.325,0.25-0.4,Barley/Oats/Wheat,15,25,50,30,"November — Central India",FAO56,Kc end is the midpoint of the published range.
+maize,"Maize, Field (grain) (field corn)",0.3,Cereals group,1.20,0.475,0.60-0.35,Maize (grain),20,35,40,30,"October — India (dry, cool)",FAO56,Kc end is the midpoint of the published range.
+potato,Potato,0.5,Roots and Tubers group,1.15,0.75,0.75,Potato,25,30,30,30,"Jan/Nov — (Semi) Arid Climate",FAO56,"Table 11 gives the mid-season length as 30/45; 30 is used."
+lentil,Lentil,0.4,Legumes group,1.10,0.30,0.30,Lentil,25,35,70,40,"Oct/Nov — Arid Region",FAO56,
+mungbean,"Beans, dry and Pulses",0.4,"Beans, dry and Pulses row",1.15,0.35,0.35,"Green gram, cowpeas",20,30,30,20,"March — Mediterranean",FAO56,No mungbean row in Table 12; the general dry-pulse row is used.
+grasspea,"Beans, dry and Pulses",0.4,"Beans, dry and Pulses row",1.15,0.35,0.35,"Green gram, cowpeas",20,30,30,20,"March — Mediterranean",FAO56,ASSUMPTION: no grass pea row in Tables 11 or 12; the general dry-pulse row and the green gram/cowpea stage lengths are used.
+felon,Cowpeas,0.4,Legumes group,1.05,0.475,0.60-0.35,"Green gram, cowpeas",20,30,30,20,"March — Mediterranean",FAO56,Kc end is the midpoint of the published range.
+mustard,"Rapeseed, Canola",0.35,Oil Crops group,1.075,0.35,0.35,Sesame,20,30,40,20,"June — China",FAO56,"ASSUMPTION: no mustard row (rapeseed is the closest Brassica oilseed; Kc mid is the midpoint of 1.0-1.15). Table 11 has no rapeseed row, so the sesame stage proportions are used."
+sesame,Sesame,0.35,Oil Crops group,1.10,0.25,0.25,Sesame,20,30,40,20,"June — China",FAO56,
+groundnut,Groundnut (Peanut),0.4,Legumes group,1.15,0.60,0.60,Groundnut,25,35,45,25,"Dry season — West Africa",FAO56,
+chili,Sweet Peppers (bell),0.6,Vegetables - Solanum Family group,1.05,0.90,0.90,Sweet peppers (bell),25,35,40,20,"April/June — Europe and Medit.",FAO56,"No chili row; sweet pepper (same genus, Capsicum) is used. Table 11 gives the initial stage as 25/30; 25 is used."
+vegetables,,,,,,,,,,,,,FAO56,Group of many crops; not computed.
