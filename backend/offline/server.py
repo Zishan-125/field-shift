@@ -1354,6 +1354,198 @@ def pattern_recommendations(
 
 
 # ---------------------------------------------------------------------
+# CLIMATE SHIFT (NASA POWER 1984-)
+# ---------------------------------------------------------------------
+
+DEFAULT_UPAZILA = "Feni Sadar"  # contains the test plot
+
+# How each indicator can threaten crops. Rules, not data: documented in
+# docs/methodology/climate-shift.md. "months" = hazard months; a crop is
+# exposed when it is in the field in those months ("flowering" = only when its
+# flowering window from crop_calendar.csv falls in those months).
+CLIMATE_RULES = {
+    "hot_days_mar_may": {"adverse": "increasing", "hazard": "heat_mar_may", "months": [3, 4, 5], "exposure": "flowering"},
+    "hot_days_boro_flowering": {"adverse": "increasing", "hazard": "heat_boro_flowering", "months": [3], "exposure": "flowering"},
+    "extreme_rain_days": {"adverse": "increasing", "hazard": "heavy_rain", "months": [6, 7, 8, 9], "exposure": "in_field"},
+    "annual_rain_mm": {"adverse": "increasing", "hazard": "wetter_monsoon", "months": [6, 7, 8, 9], "exposure": "in_field"},
+    "longest_dry_spell_kharif1": {"adverse": "increasing", "hazard": "kharif1_dry_spell", "months": [3, 4, 5, 6], "exposure": "in_field"},
+    "rabi_rain_mm": {"adverse": "decreasing", "hazard": "drier_rabi", "months": [11, 12, 1, 2], "exposure": "irrigation"},
+    "annual_et0_mm": {"adverse": "increasing", "hazard": "higher_water_demand", "months": [], "exposure": "irrigation"},
+    "rainy_season_onset_doy": {"adverse": "increasing", "hazard": "late_onset", "months": [5, 6, 7], "exposure": "in_field"},
+    "rainy_season_withdrawal_doy": {"adverse": "decreasing", "hazard": "early_withdrawal", "months": [9, 10], "exposure": "in_field"},
+}
+
+
+def months_in_field(item: dict) -> set:
+    from datetime import date, timedelta
+
+    start = date(2001, 1, 1) + timedelta(days=item["start_doy"] - 1)
+    return {(start + timedelta(days=offset)).month for offset in range(item["field_days"])}
+
+
+def flowering_months() -> dict:
+    months = {}
+
+    for row in fetch_all(
+        "SELECT crop_id, flowering_start, flowering_end FROM crop_calendar WHERE flowering_start IS NOT NULL"
+    ):
+        start_month = int(row["flowering_start"].split("-")[0])
+        end_month = int(row["flowering_end"].split("-")[0])
+        months.setdefault(row["crop_id"], set()).update(range(start_month, end_month + 1))
+
+    return months
+
+
+def exposed_crops(pattern: dict, rule: dict, flowering: dict) -> list:
+    exposed = []
+
+    for item in pattern["schedule"]:
+        if rule["exposure"] == "flowering":
+            hit = bool(flowering.get(item["crop_id"], set()) & set(rule["months"]))
+        else:
+            hit = bool(months_in_field(item) & set(rule["months"]))
+
+        if hit:
+            exposed.append({"crop_id": item["crop_id"], "name_en": item["name_en"], "name_bn": item["name_bn"]})
+
+    return exposed
+
+
+def climate_advice(trends: list, recommendations: dict) -> list:
+    """
+    Turn each indicator with a real trend into advice: which crop of the
+    current pattern it threatens and which recommended pattern lowers that
+    exposure. Only status == "trend" is used.
+    """
+
+    current = recommendations["current"]
+    # Plain improvements first, then trade-offs; within each, by rank.
+    ranked = sorted(
+        recommendations["results"],
+        key=lambda p: (p["comparison"]["change_kind"] != "improvement", p["rank"]),
+    )
+    flowering = flowering_months()
+    advice = []
+
+    def summary(pattern: dict, **extra) -> dict:
+        return {
+            "pattern_id": pattern["pattern_id"],
+            "name": pattern["name"],
+            "seasons": pattern["seasons"],
+            "rank": pattern["rank"],
+            "change_kind": pattern["comparison"]["change_kind"],
+            "trade_offs": pattern["comparison"]["trade_offs"],
+            **extra,
+        }
+
+    for trend in trends:
+        rule = CLIMATE_RULES.get(trend["indicator"])
+
+        if rule is None or trend["status"] != "trend":
+            continue
+
+        adverse = trend["direction"] == rule["adverse"]
+        item = {
+            "indicator": trend["indicator"],
+            "hazard": rule["hazard"],
+            "direction": trend["direction"],
+            "adverse": adverse,
+            "change_per_decade": trend["change_per_decade"],
+            "unit": trend["unit"],
+            "gauge_agrees": trend["gauge_agrees"],
+            "threatened_crops": [],
+            "better_patterns": [],
+        }
+
+        if rule["exposure"] == "irrigation":
+            item["current_irrigation_mm"] = current["water"]["irrigation_mm"]
+
+            if adverse:
+                item["better_patterns"] = [
+                    summary(p, irrigation_mm=p["water"]["irrigation_mm"])
+                    for p in ranked
+                    if p["water"]["irrigation_mm"] is not None
+                    and p["water"]["irrigation_mm"] < current["water"]["irrigation_mm"]
+                ][:2]
+        else:
+            threatened = exposed_crops(current, rule, flowering)
+            item["threatened_crops"] = threatened
+
+            if adverse and threatened:
+                item["better_patterns"] = [
+                    summary(p, exposed_crops=exposed_crops(p, rule, flowering))
+                    for p in ranked
+                    if len(exposed_crops(p, rule, flowering)) < len(threatened)
+                ][:2]
+
+        advice.append(item)
+
+    return advice
+
+
+@app.get("/api/offline/climate-shift")
+def climate_shift(upazila: str = Query(default=DEFAULT_UPAZILA)):
+    """
+    Yearly agro-climatic indicators for a Feni upazila from NASA POWER
+    (1984-), with Mann-Kendall / Sen trends, a Pettitt break check, a check
+    against the BMD Feni gauge, and advice linked to the recommendations.
+    """
+
+    if not table_exists("climate_trends"):
+        raise HTTPException(
+            status_code=503,
+            detail="Climate tables are not built. Run backend/offline/build_climate_tables.py.",
+        )
+
+    upazilas = [row["upazila"] for row in fetch_all("SELECT DISTINCT upazila FROM climate_trends ORDER BY upazila")]
+
+    if upazila not in upazilas:
+        raise HTTPException(status_code=404, detail=f"Upazila not found: {upazila}. Available: {upazilas}")
+
+    trends = fetch_all("SELECT * FROM climate_trends WHERE upazila = ? ORDER BY indicator", (upazila,))
+    years = fetch_all(
+        "SELECT indicator, year, value FROM climate_indicator_years WHERE upazila = ? ORDER BY indicator, year",
+        (upazila,),
+    )
+
+    series: dict = {}
+    for row in years:
+        series.setdefault(row["indicator"], []).append({"year": row["year"], "value": row["value"]})
+
+    for trend in trends:
+        trend["series"] = series.get(trend["indicator"], [])
+        trend["significant"] = bool(trend["significant"])
+        trend["gauge_agrees"] = None if trend["gauge_agrees"] is None else bool(trend["gauge_agrees"])
+
+    checks = fetch_all("SELECT * FROM climate_crosscheck")
+    recommendations = pattern_recommendations(FIELD_ID, PatternRecommendationRequest())
+
+    return {
+        "upazila": upazila,
+        "available_upazilas": upazilas,
+        "indicators": trends,
+        "gauge_check": {
+            "station": "BMD Feni (BBS Yearbook of Agricultural Statistics 2025, Tables 6.1.x and 6.2.x)",
+            "annual_rain": [c for c in checks if c["variable"] == "rain_annual"],
+            "monthly_rain": [c for c in checks if c["variable"] == "rain_month"],
+            "monthly_tmax": [c for c in checks if c["variable"] == "tmax_month_mean"],
+        },
+        "repo_file_check": [c for c in checks if c["check"] == "power_vs_repo_power_file"],
+        "advice": climate_advice(trends, recommendations),
+        "notes": {
+            "source": "NASA POWER daily, community AG: MERRA-2 reanalysis (weather) and CERES (solar). "
+                      "Reanalysis model output, not a rain-gauge or station record.",
+            "grid": "All six Feni upazilas fall in the same MERRA-2 grid cell (0.5 x 0.625 degrees), "
+                    "so their temperature and rainfall series are identical; only solar radiation differs.",
+            "significance": "A trend is reported only when Mann-Kendall p < 0.05 and it is not explained by a "
+                            "single break in the record (Pettitt test).",
+        },
+        "runtime": "offline",
+        "internet_required": False,
+    }
+
+
+# ---------------------------------------------------------------------
 # STARTUP VALIDATION
 # ---------------------------------------------------------------------
 

@@ -1,0 +1,2305 @@
+upazila,year,indicator,value
+Feni Sadar,1984,extreme_rain_days,2.0
+Feni Sadar,1984,annual_rain_mm,1458.91
+Feni Sadar,1984,annual_et0_mm,1479.94
+Feni Sadar,1984,hot_days_mar_may,51.0
+Feni Sadar,1984,hot_days_boro_flowering,5.0
+Feni Sadar,1984,longest_dry_spell_kharif1,38.0
+Feni Sadar,1985,extreme_rain_days,0.0
+Feni Sadar,1985,annual_rain_mm,1382.74
+Feni Sadar,1985,annual_et0_mm,1508.74
+Feni Sadar,1985,hot_days_mar_may,32.0
+Feni Sadar,1985,hot_days_boro_flowering,3.0
+Feni Sadar,1985,longest_dry_spell_kharif1,22.0
+Feni Sadar,1985,rabi_rain_mm,10.94
+Feni Sadar,1986,extreme_rain_days,1.0
+Feni Sadar,1986,annual_rain_mm,1377.95
+Feni Sadar,1986,annual_et0_mm,1546.6
+Feni Sadar,1986,hot_days_mar_may,53.0
+Feni Sadar,1986,hot_days_boro_flowering,7.0
+Feni Sadar,1986,longest_dry_spell_kharif1,13.0
+Feni Sadar,1986,rabi_rain_mm,48.19
+Feni Sadar,1987,extreme_rain_days,2.0
+Feni Sadar,1987,annual_rain_mm,1390.38
+Feni Sadar,1987,annual_et0_mm,1467.3
+Feni Sadar,1987,hot_days_mar_may,36.0
+Feni Sadar,1987,hot_days_boro_flowering,0.0
+Feni Sadar,1987,longest_dry_spell_kharif1,23.0
+Feni Sadar,1987,rabi_rain_mm,89.55
+Feni Sadar,1988,extreme_rain_days,3.0
+Feni Sadar,1988,annual_rain_mm,1584.44
+Feni Sadar,1988,annual_et0_mm,1431.78
+Feni Sadar,1988,hot_days_mar_may,42.0
+Feni Sadar,1988,hot_days_boro_flowering,2.0
+Feni Sadar,1988,longest_dry_spell_kharif1,26.0
+Feni Sadar,1988,rabi_rain_mm,41.32
+Feni Sadar,1989,extreme_rain_days,0.0
+Feni Sadar,1989,annual_rain_mm,979.02
+Feni Sadar,1989,annual_et0_mm,1600.71
+Feni Sadar,1989,hot_days_mar_may,47.0
+Feni Sadar,1989,hot_days_boro_flowering,2.0
+Feni Sadar,1989,longest_dry_spell_kharif1,23.0
+Feni Sadar,1989,rabi_rain_mm,76.06
+Feni Sadar,1990,extreme_rain_days,2.0
+Feni Sadar,1990,annual_rain_mm,1138.31
+Feni Sadar,1990,annual_et0_mm,1487.79
+Feni Sadar,1990,hot_days_mar_may,33.0
+Feni Sadar,1990,hot_days_boro_flowering,2.0
+Feni Sadar,1990,longest_dry_spell_kharif1,18.0
+Feni Sadar,1990,rabi_rain_mm,21.85
+Feni Sadar,1991,extreme_rain_days,0.0
+Feni Sadar,1991,annual_rain_mm,1277.89
+Feni Sadar,1991,annual_et0_mm,1476.05
+Feni Sadar,1991,hot_days_mar_may,57.0
+Feni Sadar,1991,hot_days_boro_flowering,7.0
+Feni Sadar,1991,longest_dry_spell_kharif1,22.0
+Feni Sadar,1991,rabi_rain_mm,18.68
+Feni Sadar,1992,extreme_rain_days,0.0
+Feni Sadar,1992,annual_rain_mm,864.9
+Feni Sadar,1992,annual_et0_mm,1531.39
+Feni Sadar,1992,hot_days_mar_may,57.0
+Feni Sadar,1992,hot_days_boro_flowering,3.0
+Feni Sadar,1992,longest_dry_spell_kharif1,38.0
+Feni Sadar,1992,rabi_rain_mm,97.43
+Feni Sadar,1993,extreme_rain_days,2.0
+Feni Sadar,1993,annual_rain_mm,1471.05
+Feni Sadar,1993,annual_et0_mm,1414.38
+Feni Sadar,1993,hot_days_mar_may,27.0
+Feni Sadar,1993,hot_days_boro_flowering,4.0
+Feni Sadar,1993,longest_dry_spell_kharif1,13.0
+Feni Sadar,1993,rabi_rain_mm,55.38
+Feni Sadar,1994,extreme_rain_days,0.0
+Feni Sadar,1994,annual_rain_mm,1085.5
+Feni Sadar,1994,annual_et0_mm,1540.75
+Feni Sadar,1994,hot_days_mar_may,44.0
+Feni Sadar,1994,hot_days_boro_flowering,6.0
+Feni Sadar,1994,longest_dry_spell_kharif1,14.0
+Feni Sadar,1994,rabi_rain_mm,33.63
+Feni Sadar,1995,extreme_rain_days,1.0
+Feni Sadar,1995,annual_rain_mm,1432.5
+Feni Sadar,1995,annual_et0_mm,1492.85
+Feni Sadar,1995,hot_days_mar_may,58.0
+Feni Sadar,1995,hot_days_boro_flowering,5.0
+Feni Sadar,1995,longest_dry_spell_kharif1,30.0
+Feni Sadar,1995,rabi_rain_mm,45.9
+Feni Sadar,1996,extreme_rain_days,0.0
+Feni Sadar,1996,annual_rain_mm,1195.55
+Feni Sadar,1996,annual_et0_mm,1431.84
+Feni Sadar,1996,hot_days_mar_may,35.0
+Feni Sadar,1996,hot_days_boro_flowering,2.0
+Feni Sadar,1996,longest_dry_spell_kharif1,16.0
+Feni Sadar,1996,rabi_rain_mm,116.65
+Feni Sadar,1997,rainy_season_onset_doy,139.0
+Feni Sadar,1997,rainy_season_withdrawal_doy,274.0
+Feni Sadar,1997,rainy_season_length_days,135.0
+Feni Sadar,1997,extreme_rain_days,4.0
+Feni Sadar,1997,annual_rain_mm,1875.42
+Feni Sadar,1997,annual_et0_mm,1366.55
+Feni Sadar,1997,hot_days_mar_may,42.0
+Feni Sadar,1997,hot_days_boro_flowering,6.0
+Feni Sadar,1997,longest_dry_spell_kharif1,22.0
+Feni Sadar,1997,rabi_rain_mm,16.18
+Feni Sadar,1998,rainy_season_onset_doy,109.0
+Feni Sadar,1998,rainy_season_withdrawal_doy,253.0
+Feni Sadar,1998,rainy_season_length_days,144.0
+Feni Sadar,1998,extreme_rain_days,9.0
+Feni Sadar,1998,annual_rain_mm,2630.54
+Feni Sadar,1998,annual_et0_mm,1294.12
+Feni Sadar,1998,hot_days_mar_may,10.0
+Feni Sadar,1998,hot_days_boro_flowering,0.0
+Feni Sadar,1998,longest_dry_spell_kharif1,9.0
+Feni Sadar,1998,rabi_rain_mm,103.76
+Feni Sadar,1999,rainy_season_onset_doy,126.0
+Feni Sadar,1999,rainy_season_withdrawal_doy,266.0
+Feni Sadar,1999,rainy_season_length_days,140.0
+Feni Sadar,1999,extreme_rain_days,6.0
+Feni Sadar,1999,annual_rain_mm,1989.24
+Feni Sadar,1999,annual_et0_mm,1391.93
+Feni Sadar,1999,hot_days_mar_may,46.0
+Feni Sadar,1999,hot_days_boro_flowering,1.0
+Feni Sadar,1999,longest_dry_spell_kharif1,37.0
+Feni Sadar,1999,rabi_rain_mm,114.88
+Feni Sadar,2000,rainy_season_onset_doy,139.0
+Feni Sadar,2000,rainy_season_withdrawal_doy,245.0
+Feni Sadar,2000,rainy_season_length_days,106.0
+Feni Sadar,2000,extreme_rain_days,2.0
+Feni Sadar,2000,annual_rain_mm,1929.46
+Feni Sadar,2000,annual_et0_mm,1315.99
+Feni Sadar,2000,hot_days_mar_may,17.0
+Feni Sadar,2000,hot_days_boro_flowering,0.0
+Feni Sadar,2000,longest_dry_spell_kharif1,26.0
+Feni Sadar,2000,rabi_rain_mm,62.04
+Feni Sadar,2001,rainy_season_onset_doy,120.0
+Feni Sadar,2001,rainy_season_withdrawal_doy,239.0
+Feni Sadar,2001,rainy_season_length_days,119.0
+Feni Sadar,2001,extreme_rain_days,8.0
+Feni Sadar,2001,annual_rain_mm,2123.34
+Feni Sadar,2001,annual_et0_mm,1345.81
+Feni Sadar,2001,hot_days_mar_may,31.0
+Feni Sadar,2001,hot_days_boro_flowering,2.0
+Feni Sadar,2001,longest_dry_spell_kharif1,22.0
+Feni Sadar,2001,rabi_rain_mm,61.28
+Feni Sadar,2002,rainy_season_onset_doy,145.0
+Feni Sadar,2002,rainy_season_withdrawal_doy,240.0
+Feni Sadar,2002,rainy_season_length_days,95.0
+Feni Sadar,2002,extreme_rain_days,2.0
+Feni Sadar,2002,annual_rain_mm,1891.39
+Feni Sadar,2002,annual_et0_mm,1319.01
+Feni Sadar,2002,hot_days_mar_may,26.0
+Feni Sadar,2002,hot_days_boro_flowering,1.0
+Feni Sadar,2002,longest_dry_spell_kharif1,19.0
+Feni Sadar,2002,rabi_rain_mm,81.08
+Feni Sadar,2003,rainy_season_onset_doy,155.0
+Feni Sadar,2003,rainy_season_withdrawal_doy,225.0
+Feni Sadar,2003,rainy_season_length_days,70.0
+Feni Sadar,2003,extreme_rain_days,6.0
+Feni Sadar,2003,annual_rain_mm,1644.93
+Feni Sadar,2003,annual_et0_mm,1356.23
+Feni Sadar,2003,hot_days_mar_may,32.0
+Feni Sadar,2003,hot_days_boro_flowering,0.0
+Feni Sadar,2003,longest_dry_spell_kharif1,15.0
+Feni Sadar,2003,rabi_rain_mm,113.91
+Feni Sadar,2004,rainy_season_onset_doy,167.0
+Feni Sadar,2004,rainy_season_withdrawal_doy,289.0
+Feni Sadar,2004,rainy_season_length_days,122.0
+Feni Sadar,2004,extreme_rain_days,5.0
+Feni Sadar,2004,annual_rain_mm,1937.98
+Feni Sadar,2004,annual_et0_mm,1343.27
+Feni Sadar,2004,hot_days_mar_may,23.0
+Feni Sadar,2004,hot_days_boro_flowering,2.0
+Feni Sadar,2004,longest_dry_spell_kharif1,20.0
+Feni Sadar,2004,rabi_rain_mm,41.34
+Feni Sadar,2005,rainy_season_onset_doy,178.0
+Feni Sadar,2005,rainy_season_withdrawal_doy,297.0
+Feni Sadar,2005,rainy_season_length_days,119.0
+Feni Sadar,2005,extreme_rain_days,3.0
+Feni Sadar,2005,annual_rain_mm,1890.93
+Feni Sadar,2005,annual_et0_mm,1330.45
+Feni Sadar,2005,hot_days_mar_may,14.0
+Feni Sadar,2005,hot_days_boro_flowering,0.0
+Feni Sadar,2005,longest_dry_spell_kharif1,12.0
+Feni Sadar,2005,rabi_rain_mm,9.59
+Feni Sadar,2006,rainy_season_onset_doy,131.0
+Feni Sadar,2006,rainy_season_withdrawal_doy,267.0
+Feni Sadar,2006,rainy_season_length_days,136.0
+Feni Sadar,2006,extreme_rain_days,5.0
+Feni Sadar,2006,annual_rain_mm,1814.63
+Feni Sadar,2006,annual_et0_mm,1367.13
+Feni Sadar,2006,hot_days_mar_may,38.0
+Feni Sadar,2006,hot_days_boro_flowering,0.0
+Feni Sadar,2006,longest_dry_spell_kharif1,31.0
+Feni Sadar,2006,rabi_rain_mm,11.84
+Feni Sadar,2007,rainy_season_onset_doy,129.0
+Feni Sadar,2007,rainy_season_withdrawal_doy,289.0
+Feni Sadar,2007,rainy_season_length_days,160.0
+Feni Sadar,2007,extreme_rain_days,16.0
+Feni Sadar,2007,annual_rain_mm,3061.39
+Feni Sadar,2007,annual_et0_mm,1284.97
+Feni Sadar,2007,hot_days_mar_may,22.0
+Feni Sadar,2007,hot_days_boro_flowering,0.0
+Feni Sadar,2007,longest_dry_spell_kharif1,25.0
+Feni Sadar,2007,rabi_rain_mm,77.92
+Feni Sadar,2008,rainy_season_onset_doy,146.0
+Feni Sadar,2008,rainy_season_withdrawal_doy,301.0
+Feni Sadar,2008,rainy_season_length_days,155.0
+Feni Sadar,2008,extreme_rain_days,4.0
+Feni Sadar,2008,annual_rain_mm,1904.11
+Feni Sadar,2008,annual_et0_mm,1320.0
+Feni Sadar,2008,hot_days_mar_may,26.0
+Feni Sadar,2008,hot_days_boro_flowering,0.0
+Feni Sadar,2008,longest_dry_spell_kharif1,18.0
+Feni Sadar,2008,rabi_rain_mm,124.62
+Feni Sadar,2009,rainy_season_onset_doy,122.0
+Feni Sadar,2009,rainy_season_withdrawal_doy,282.0
+Feni Sadar,2009,rainy_season_length_days,160.0
+Feni Sadar,2009,extreme_rain_days,11.0
+Feni Sadar,2009,annual_rain_mm,2586.04
+Feni Sadar,2009,annual_et0_mm,1336.01
+Feni Sadar,2009,hot_days_mar_may,21.0
+Feni Sadar,2009,hot_days_boro_flowering,0.0
+Feni Sadar,2009,longest_dry_spell_kharif1,26.0
+Feni Sadar,2009,rabi_rain_mm,61.85
+Feni Sadar,2010,rainy_season_onset_doy,140.0
+Feni Sadar,2010,rainy_season_withdrawal_doy,282.0
+Feni Sadar,2010,rainy_season_length_days,142.0
+Feni Sadar,2010,extreme_rain_days,3.0
+Feni Sadar,2010,annual_rain_mm,2402.19
+Feni Sadar,2010,annual_et0_mm,1356.77
+Feni Sadar,2010,hot_days_mar_may,27.0
+Feni Sadar,2010,hot_days_boro_flowering,2.0
+Feni Sadar,2010,longest_dry_spell_kharif1,14.0
+Feni Sadar,2010,rabi_rain_mm,59.44
+Feni Sadar,2011,rainy_season_onset_doy,125.0
+Feni Sadar,2011,rainy_season_withdrawal_doy,261.0
+Feni Sadar,2011,rainy_season_length_days,136.0
+Feni Sadar,2011,extreme_rain_days,9.0
+Feni Sadar,2011,annual_rain_mm,2346.0
+Feni Sadar,2011,annual_et0_mm,1295.83
+Feni Sadar,2011,hot_days_mar_may,6.0
+Feni Sadar,2011,hot_days_boro_flowering,0.0
+Feni Sadar,2011,longest_dry_spell_kharif1,25.0
+Feni Sadar,2011,rabi_rain_mm,104.98
+Feni Sadar,2012,rainy_season_onset_doy,97.0
+Feni Sadar,2012,rainy_season_withdrawal_doy,260.0
+Feni Sadar,2012,rainy_season_length_days,163.0
+Feni Sadar,2012,extreme_rain_days,2.0
+Feni Sadar,2012,annual_rain_mm,2089.68
+Feni Sadar,2012,annual_et0_mm,1330.41
+Feni Sadar,2012,hot_days_mar_may,16.0
+Feni Sadar,2012,hot_days_boro_flowering,1.0
+Feni Sadar,2012,longest_dry_spell_kharif1,17.0
+Feni Sadar,2012,rabi_rain_mm,20.8
+Feni Sadar,2013,rainy_season_onset_doy,124.0
+Feni Sadar,2013,rainy_season_withdrawal_doy,281.0
+Feni Sadar,2013,rainy_season_length_days,157.0
+Feni Sadar,2013,extreme_rain_days,7.0
+Feni Sadar,2013,annual_rain_mm,2287.77
+Feni Sadar,2013,annual_et0_mm,1363.26
+Feni Sadar,2013,hot_days_mar_may,36.0
+Feni Sadar,2013,hot_days_boro_flowering,1.0
+Feni Sadar,2013,longest_dry_spell_kharif1,16.0
+Feni Sadar,2013,rabi_rain_mm,45.44
+Feni Sadar,2014,rainy_season_onset_doy,145.0
+Feni Sadar,2014,rainy_season_withdrawal_doy,269.0
+Feni Sadar,2014,rainy_season_length_days,124.0
+Feni Sadar,2014,extreme_rain_days,10.0
+Feni Sadar,2014,annual_rain_mm,2350.18
+Feni Sadar,2014,annual_et0_mm,1417.63
+Feni Sadar,2014,hot_days_mar_may,42.0
+Feni Sadar,2014,hot_days_boro_flowering,0.0
+Feni Sadar,2014,longest_dry_spell_kharif1,23.0
+Feni Sadar,2014,rabi_rain_mm,13.95
+Feni Sadar,2015,rainy_season_onset_doy,161.0
+Feni Sadar,2015,rainy_season_withdrawal_doy,287.0
+Feni Sadar,2015,rainy_season_length_days,126.0
+Feni Sadar,2015,extreme_rain_days,13.0
+Feni Sadar,2015,annual_rain_mm,2919.58
+Feni Sadar,2015,annual_et0_mm,1293.69
+Feni Sadar,2015,hot_days_mar_may,8.0
+Feni Sadar,2015,hot_days_boro_flowering,3.0
+Feni Sadar,2015,longest_dry_spell_kharif1,19.0
+Feni Sadar,2015,rabi_rain_mm,15.75
+Feni Sadar,2016,rainy_season_onset_doy,134.0
+Feni Sadar,2016,rainy_season_withdrawal_doy,312.0
+Feni Sadar,2016,rainy_season_length_days,178.0
+Feni Sadar,2016,extreme_rain_days,21.0
+Feni Sadar,2016,annual_rain_mm,4007.14
+Feni Sadar,2016,annual_et0_mm,1309.83
+Feni Sadar,2016,hot_days_mar_may,7.0
+Feni Sadar,2016,hot_days_boro_flowering,1.0
+Feni Sadar,2016,longest_dry_spell_kharif1,14.0
+Feni Sadar,2016,rabi_rain_mm,54.38
+Feni Sadar,2017,rainy_season_onset_doy,64.0
+Feni Sadar,2017,rainy_season_withdrawal_doy,295.0
+Feni Sadar,2017,rainy_season_length_days,231.0
+Feni Sadar,2017,extreme_rain_days,43.0
+Feni Sadar,2017,annual_rain_mm,6675.65
+Feni Sadar,2017,annual_et0_mm,1223.78
+Feni Sadar,2017,hot_days_mar_may,0.0
+Feni Sadar,2017,hot_days_boro_flowering,0.0
+Feni Sadar,2017,longest_dry_spell_kharif1,8.0
+Feni Sadar,2017,rabi_rain_mm,311.75
+Feni Sadar,2018,rainy_season_onset_doy,96.0
+Feni Sadar,2018,rainy_season_withdrawal_doy,287.0
+Feni Sadar,2018,rainy_season_length_days,191.0
+Feni Sadar,2018,extreme_rain_days,17.0
+Feni Sadar,2018,annual_rain_mm,4009.79
+Feni Sadar,2018,annual_et0_mm,1235.51
+Feni Sadar,2018,hot_days_mar_may,0.0
+Feni Sadar,2018,hot_days_boro_flowering,0.0
+Feni Sadar,2018,longest_dry_spell_kharif1,26.0
+Feni Sadar,2018,rabi_rain_mm,171.25
+Feni Sadar,2019,rainy_season_onset_doy,123.0
+Feni Sadar,2019,rainy_season_withdrawal_doy,316.0
+Feni Sadar,2019,rainy_season_length_days,193.0
+Feni Sadar,2019,extreme_rain_days,26.0
+Feni Sadar,2019,annual_rain_mm,4379.58
+Feni Sadar,2019,annual_et0_mm,1315.13
+Feni Sadar,2019,hot_days_mar_may,13.0
+Feni Sadar,2019,hot_days_boro_flowering,0.0
+Feni Sadar,2019,longest_dry_spell_kharif1,11.0
+Feni Sadar,2019,rabi_rain_mm,156.06
+Feni Sadar,2020,rainy_season_onset_doy,107.0
+Feni Sadar,2020,rainy_season_withdrawal_doy,309.0
+Feni Sadar,2020,rainy_season_length_days,202.0
+Feni Sadar,2020,extreme_rain_days,9.0
+Feni Sadar,2020,annual_rain_mm,3718.2
+Feni Sadar,2020,annual_et0_mm,1236.89
+Feni Sadar,2020,hot_days_mar_may,0.0
+Feni Sadar,2020,hot_days_boro_flowering,0.0
+Feni Sadar,2020,longest_dry_spell_kharif1,26.0
+Feni Sadar,2020,rabi_rain_mm,337.86
+Feni Sadar,2021,rainy_season_onset_doy,144.0
+Feni Sadar,2021,rainy_season_withdrawal_doy,294.0
+Feni Sadar,2021,rainy_season_length_days,150.0
+Feni Sadar,2021,extreme_rain_days,7.0
+Feni Sadar,2021,annual_rain_mm,2934.38
+Feni Sadar,2021,annual_et0_mm,1308.44
+Feni Sadar,2021,hot_days_mar_may,42.0
+Feni Sadar,2021,hot_days_boro_flowering,0.0
+Feni Sadar,2021,longest_dry_spell_kharif1,19.0
+Feni Sadar,2021,rabi_rain_mm,118.84
+Feni Sadar,2022,rainy_season_onset_doy,129.0
+Feni Sadar,2022,rainy_season_withdrawal_doy,298.0
+Feni Sadar,2022,rainy_season_length_days,169.0
+Feni Sadar,2022,extreme_rain_days,6.0
+Feni Sadar,2022,annual_rain_mm,2562.22
+Feni Sadar,2022,annual_et0_mm,1330.09
+Feni Sadar,2022,hot_days_mar_may,10.0
+Feni Sadar,2022,hot_days_boro_flowering,0.0
+Feni Sadar,2022,longest_dry_spell_kharif1,26.0
+Feni Sadar,2022,rabi_rain_mm,200.95
+Feni Sadar,2023,rainy_season_onset_doy,136.0
+Feni Sadar,2023,rainy_season_withdrawal_doy,282.0
+Feni Sadar,2023,rainy_season_length_days,146.0
+Feni Sadar,2023,extreme_rain_days,8.0
+Feni Sadar,2023,annual_rain_mm,2924.12
+Feni Sadar,2023,annual_et0_mm,1302.79
+Feni Sadar,2023,hot_days_mar_may,10.0
+Feni Sadar,2023,hot_days_boro_flowering,1.0
+Feni Sadar,2023,longest_dry_spell_kharif1,17.0
+Feni Sadar,2023,rabi_rain_mm,24.27
+Feni Sadar,2024,rainy_season_onset_doy,123.0
+Feni Sadar,2024,rainy_season_withdrawal_doy,298.0
+Feni Sadar,2024,rainy_season_length_days,175.0
+Feni Sadar,2024,extreme_rain_days,18.0
+Feni Sadar,2024,annual_rain_mm,4021.23
+Feni Sadar,2024,annual_et0_mm,1252.89
+Feni Sadar,2024,hot_days_mar_may,16.0
+Feni Sadar,2024,hot_days_boro_flowering,0.0
+Feni Sadar,2024,longest_dry_spell_kharif1,15.0
+Feni Sadar,2024,rabi_rain_mm,229.65
+Feni Sadar,2025,rainy_season_onset_doy,105.0
+Feni Sadar,2025,rainy_season_withdrawal_doy,285.0
+Feni Sadar,2025,rainy_season_length_days,180.0
+Feni Sadar,2025,extreme_rain_days,10.0
+Feni Sadar,2025,annual_rain_mm,3641.27
+Feni Sadar,2025,annual_et0_mm,1276.69
+Feni Sadar,2025,hot_days_mar_may,14.0
+Feni Sadar,2025,hot_days_boro_flowering,1.0
+Feni Sadar,2025,longest_dry_spell_kharif1,17.0
+Feni Sadar,2025,rabi_rain_mm,25.78
+Feni Sadar,2026,hot_days_mar_may,6.0
+Feni Sadar,2026,hot_days_boro_flowering,0.0
+Feni Sadar,2026,longest_dry_spell_kharif1,8.0
+Feni Sadar,2026,rabi_rain_mm,50.49
+Chhagalnaiya,1984,extreme_rain_days,2.0
+Chhagalnaiya,1984,annual_rain_mm,1458.91
+Chhagalnaiya,1984,annual_et0_mm,1463.78
+Chhagalnaiya,1984,hot_days_mar_may,51.0
+Chhagalnaiya,1984,hot_days_boro_flowering,5.0
+Chhagalnaiya,1984,longest_dry_spell_kharif1,38.0
+Chhagalnaiya,1985,extreme_rain_days,0.0
+Chhagalnaiya,1985,annual_rain_mm,1382.74
+Chhagalnaiya,1985,annual_et0_mm,1483.41
+Chhagalnaiya,1985,hot_days_mar_may,32.0
+Chhagalnaiya,1985,hot_days_boro_flowering,3.0
+Chhagalnaiya,1985,longest_dry_spell_kharif1,22.0
+Chhagalnaiya,1985,rabi_rain_mm,10.94
+Chhagalnaiya,1986,extreme_rain_days,1.0
+Chhagalnaiya,1986,annual_rain_mm,1377.95
+Chhagalnaiya,1986,annual_et0_mm,1525.92
+Chhagalnaiya,1986,hot_days_mar_may,53.0
+Chhagalnaiya,1986,hot_days_boro_flowering,7.0
+Chhagalnaiya,1986,longest_dry_spell_kharif1,13.0
+Chhagalnaiya,1986,rabi_rain_mm,48.19
+Chhagalnaiya,1987,extreme_rain_days,2.0
+Chhagalnaiya,1987,annual_rain_mm,1390.38
+Chhagalnaiya,1987,annual_et0_mm,1440.65
+Chhagalnaiya,1987,hot_days_mar_may,36.0
+Chhagalnaiya,1987,hot_days_boro_flowering,0.0
+Chhagalnaiya,1987,longest_dry_spell_kharif1,23.0
+Chhagalnaiya,1987,rabi_rain_mm,89.55
+Chhagalnaiya,1988,extreme_rain_days,3.0
+Chhagalnaiya,1988,annual_rain_mm,1584.44
+Chhagalnaiya,1988,annual_et0_mm,1406.05
+Chhagalnaiya,1988,hot_days_mar_may,42.0
+Chhagalnaiya,1988,hot_days_boro_flowering,2.0
+Chhagalnaiya,1988,longest_dry_spell_kharif1,26.0
+Chhagalnaiya,1988,rabi_rain_mm,41.32
+Chhagalnaiya,1989,extreme_rain_days,0.0
+Chhagalnaiya,1989,annual_rain_mm,979.02
+Chhagalnaiya,1989,annual_et0_mm,1573.35
+Chhagalnaiya,1989,hot_days_mar_may,47.0
+Chhagalnaiya,1989,hot_days_boro_flowering,2.0
+Chhagalnaiya,1989,longest_dry_spell_kharif1,23.0
+Chhagalnaiya,1989,rabi_rain_mm,76.06
+Chhagalnaiya,1990,extreme_rain_days,2.0
+Chhagalnaiya,1990,annual_rain_mm,1138.31
+Chhagalnaiya,1990,annual_et0_mm,1470.06
+Chhagalnaiya,1990,hot_days_mar_may,33.0
+Chhagalnaiya,1990,hot_days_boro_flowering,2.0
+Chhagalnaiya,1990,longest_dry_spell_kharif1,18.0
+Chhagalnaiya,1990,rabi_rain_mm,21.85
+Chhagalnaiya,1991,extreme_rain_days,0.0
+Chhagalnaiya,1991,annual_rain_mm,1277.89
+Chhagalnaiya,1991,annual_et0_mm,1449.43
+Chhagalnaiya,1991,hot_days_mar_may,57.0
+Chhagalnaiya,1991,hot_days_boro_flowering,7.0
+Chhagalnaiya,1991,longest_dry_spell_kharif1,22.0
+Chhagalnaiya,1991,rabi_rain_mm,18.68
+Chhagalnaiya,1992,extreme_rain_days,0.0
+Chhagalnaiya,1992,annual_rain_mm,864.9
+Chhagalnaiya,1992,annual_et0_mm,1519.24
+Chhagalnaiya,1992,hot_days_mar_may,57.0
+Chhagalnaiya,1992,hot_days_boro_flowering,3.0
+Chhagalnaiya,1992,longest_dry_spell_kharif1,38.0
+Chhagalnaiya,1992,rabi_rain_mm,97.43
+Chhagalnaiya,1993,extreme_rain_days,2.0
+Chhagalnaiya,1993,annual_rain_mm,1471.05
+Chhagalnaiya,1993,annual_et0_mm,1387.98
+Chhagalnaiya,1993,hot_days_mar_may,27.0
+Chhagalnaiya,1993,hot_days_boro_flowering,4.0
+Chhagalnaiya,1993,longest_dry_spell_kharif1,13.0
+Chhagalnaiya,1993,rabi_rain_mm,55.38
+Chhagalnaiya,1994,extreme_rain_days,0.0
+Chhagalnaiya,1994,annual_rain_mm,1085.5
+Chhagalnaiya,1994,annual_et0_mm,1515.11
+Chhagalnaiya,1994,hot_days_mar_may,44.0
+Chhagalnaiya,1994,hot_days_boro_flowering,6.0
+Chhagalnaiya,1994,longest_dry_spell_kharif1,14.0
+Chhagalnaiya,1994,rabi_rain_mm,33.63
+Chhagalnaiya,1995,extreme_rain_days,1.0
+Chhagalnaiya,1995,annual_rain_mm,1432.5
+Chhagalnaiya,1995,annual_et0_mm,1469.37
+Chhagalnaiya,1995,hot_days_mar_may,58.0
+Chhagalnaiya,1995,hot_days_boro_flowering,5.0
+Chhagalnaiya,1995,longest_dry_spell_kharif1,30.0
+Chhagalnaiya,1995,rabi_rain_mm,45.9
+Chhagalnaiya,1996,extreme_rain_days,0.0
+Chhagalnaiya,1996,annual_rain_mm,1195.55
+Chhagalnaiya,1996,annual_et0_mm,1424.78
+Chhagalnaiya,1996,hot_days_mar_may,35.0
+Chhagalnaiya,1996,hot_days_boro_flowering,2.0
+Chhagalnaiya,1996,longest_dry_spell_kharif1,16.0
+Chhagalnaiya,1996,rabi_rain_mm,116.65
+Chhagalnaiya,1997,rainy_season_onset_doy,139.0
+Chhagalnaiya,1997,rainy_season_withdrawal_doy,274.0
+Chhagalnaiya,1997,rainy_season_length_days,135.0
+Chhagalnaiya,1997,extreme_rain_days,4.0
+Chhagalnaiya,1997,annual_rain_mm,1875.42
+Chhagalnaiya,1997,annual_et0_mm,1361.88
+Chhagalnaiya,1997,hot_days_mar_may,42.0
+Chhagalnaiya,1997,hot_days_boro_flowering,6.0
+Chhagalnaiya,1997,longest_dry_spell_kharif1,22.0
+Chhagalnaiya,1997,rabi_rain_mm,16.18
+Chhagalnaiya,1998,rainy_season_onset_doy,109.0
+Chhagalnaiya,1998,rainy_season_withdrawal_doy,253.0
+Chhagalnaiya,1998,rainy_season_length_days,144.0
+Chhagalnaiya,1998,extreme_rain_days,9.0
+Chhagalnaiya,1998,annual_rain_mm,2630.54
+Chhagalnaiya,1998,annual_et0_mm,1265.32
+Chhagalnaiya,1998,hot_days_mar_may,10.0
+Chhagalnaiya,1998,hot_days_boro_flowering,0.0
+Chhagalnaiya,1998,longest_dry_spell_kharif1,9.0
+Chhagalnaiya,1998,rabi_rain_mm,103.76
+Chhagalnaiya,1999,rainy_season_onset_doy,126.0
+Chhagalnaiya,1999,rainy_season_withdrawal_doy,266.0
+Chhagalnaiya,1999,rainy_season_length_days,140.0
+Chhagalnaiya,1999,extreme_rain_days,6.0
+Chhagalnaiya,1999,annual_rain_mm,1989.24
+Chhagalnaiya,1999,annual_et0_mm,1370.25
+Chhagalnaiya,1999,hot_days_mar_may,46.0
+Chhagalnaiya,1999,hot_days_boro_flowering,1.0
+Chhagalnaiya,1999,longest_dry_spell_kharif1,37.0
+Chhagalnaiya,1999,rabi_rain_mm,114.88
+Chhagalnaiya,2000,rainy_season_onset_doy,139.0
+Chhagalnaiya,2000,rainy_season_withdrawal_doy,245.0
+Chhagalnaiya,2000,rainy_season_length_days,106.0
+Chhagalnaiya,2000,extreme_rain_days,2.0
+Chhagalnaiya,2000,annual_rain_mm,1929.46
+Chhagalnaiya,2000,annual_et0_mm,1283.08
+Chhagalnaiya,2000,hot_days_mar_may,17.0
+Chhagalnaiya,2000,hot_days_boro_flowering,0.0
+Chhagalnaiya,2000,longest_dry_spell_kharif1,26.0
+Chhagalnaiya,2000,rabi_rain_mm,62.04
+Chhagalnaiya,2001,rainy_season_onset_doy,120.0
+Chhagalnaiya,2001,rainy_season_withdrawal_doy,239.0
+Chhagalnaiya,2001,rainy_season_length_days,119.0
+Chhagalnaiya,2001,extreme_rain_days,8.0
+Chhagalnaiya,2001,annual_rain_mm,2123.34
+Chhagalnaiya,2001,annual_et0_mm,1313.38
+Chhagalnaiya,2001,hot_days_mar_may,31.0
+Chhagalnaiya,2001,hot_days_boro_flowering,2.0
+Chhagalnaiya,2001,longest_dry_spell_kharif1,22.0
+Chhagalnaiya,2001,rabi_rain_mm,61.28
+Chhagalnaiya,2002,rainy_season_onset_doy,145.0
+Chhagalnaiya,2002,rainy_season_withdrawal_doy,240.0
+Chhagalnaiya,2002,rainy_season_length_days,95.0
+Chhagalnaiya,2002,extreme_rain_days,2.0
+Chhagalnaiya,2002,annual_rain_mm,1891.39
+Chhagalnaiya,2002,annual_et0_mm,1283.09
+Chhagalnaiya,2002,hot_days_mar_may,26.0
+Chhagalnaiya,2002,hot_days_boro_flowering,1.0
+Chhagalnaiya,2002,longest_dry_spell_kharif1,19.0
+Chhagalnaiya,2002,rabi_rain_mm,81.08
+Chhagalnaiya,2003,rainy_season_onset_doy,155.0
+Chhagalnaiya,2003,rainy_season_withdrawal_doy,225.0
+Chhagalnaiya,2003,rainy_season_length_days,70.0
+Chhagalnaiya,2003,extreme_rain_days,6.0
+Chhagalnaiya,2003,annual_rain_mm,1644.93
+Chhagalnaiya,2003,annual_et0_mm,1319.84
+Chhagalnaiya,2003,hot_days_mar_may,32.0
+Chhagalnaiya,2003,hot_days_boro_flowering,0.0
+Chhagalnaiya,2003,longest_dry_spell_kharif1,15.0
+Chhagalnaiya,2003,rabi_rain_mm,113.91
+Chhagalnaiya,2004,rainy_season_onset_doy,167.0
+Chhagalnaiya,2004,rainy_season_withdrawal_doy,289.0
+Chhagalnaiya,2004,rainy_season_length_days,122.0
+Chhagalnaiya,2004,extreme_rain_days,5.0
+Chhagalnaiya,2004,annual_rain_mm,1937.98
+Chhagalnaiya,2004,annual_et0_mm,1308.34
+Chhagalnaiya,2004,hot_days_mar_may,23.0
+Chhagalnaiya,2004,hot_days_boro_flowering,2.0
+Chhagalnaiya,2004,longest_dry_spell_kharif1,20.0
+Chhagalnaiya,2004,rabi_rain_mm,41.34
+Chhagalnaiya,2005,rainy_season_onset_doy,178.0
+Chhagalnaiya,2005,rainy_season_withdrawal_doy,297.0
+Chhagalnaiya,2005,rainy_season_length_days,119.0
+Chhagalnaiya,2005,extreme_rain_days,3.0
+Chhagalnaiya,2005,annual_rain_mm,1890.93
+Chhagalnaiya,2005,annual_et0_mm,1296.29
+Chhagalnaiya,2005,hot_days_mar_may,14.0
+Chhagalnaiya,2005,hot_days_boro_flowering,0.0
+Chhagalnaiya,2005,longest_dry_spell_kharif1,12.0
+Chhagalnaiya,2005,rabi_rain_mm,9.59
+Chhagalnaiya,2006,rainy_season_onset_doy,131.0
+Chhagalnaiya,2006,rainy_season_withdrawal_doy,267.0
+Chhagalnaiya,2006,rainy_season_length_days,136.0
+Chhagalnaiya,2006,extreme_rain_days,5.0
+Chhagalnaiya,2006,annual_rain_mm,1814.63
+Chhagalnaiya,2006,annual_et0_mm,1325.57
+Chhagalnaiya,2006,hot_days_mar_may,38.0
+Chhagalnaiya,2006,hot_days_boro_flowering,0.0
+Chhagalnaiya,2006,longest_dry_spell_kharif1,31.0
+Chhagalnaiya,2006,rabi_rain_mm,11.84
+Chhagalnaiya,2007,rainy_season_onset_doy,129.0
+Chhagalnaiya,2007,rainy_season_withdrawal_doy,289.0
+Chhagalnaiya,2007,rainy_season_length_days,160.0
+Chhagalnaiya,2007,extreme_rain_days,16.0
+Chhagalnaiya,2007,annual_rain_mm,3061.39
+Chhagalnaiya,2007,annual_et0_mm,1246.81
+Chhagalnaiya,2007,hot_days_mar_may,22.0
+Chhagalnaiya,2007,hot_days_boro_flowering,0.0
+Chhagalnaiya,2007,longest_dry_spell_kharif1,25.0
+Chhagalnaiya,2007,rabi_rain_mm,77.92
+Chhagalnaiya,2008,rainy_season_onset_doy,146.0
+Chhagalnaiya,2008,rainy_season_withdrawal_doy,301.0
+Chhagalnaiya,2008,rainy_season_length_days,155.0
+Chhagalnaiya,2008,extreme_rain_days,4.0
+Chhagalnaiya,2008,annual_rain_mm,1904.11
+Chhagalnaiya,2008,annual_et0_mm,1280.47
+Chhagalnaiya,2008,hot_days_mar_may,26.0
+Chhagalnaiya,2008,hot_days_boro_flowering,0.0
+Chhagalnaiya,2008,longest_dry_spell_kharif1,18.0
+Chhagalnaiya,2008,rabi_rain_mm,124.62
+Chhagalnaiya,2009,rainy_season_onset_doy,122.0
+Chhagalnaiya,2009,rainy_season_withdrawal_doy,282.0
+Chhagalnaiya,2009,rainy_season_length_days,160.0
+Chhagalnaiya,2009,extreme_rain_days,11.0
+Chhagalnaiya,2009,annual_rain_mm,2586.04
+Chhagalnaiya,2009,annual_et0_mm,1314.51
+Chhagalnaiya,2009,hot_days_mar_may,21.0
+Chhagalnaiya,2009,hot_days_boro_flowering,0.0
+Chhagalnaiya,2009,longest_dry_spell_kharif1,26.0
+Chhagalnaiya,2009,rabi_rain_mm,61.85
+Chhagalnaiya,2010,rainy_season_onset_doy,140.0
+Chhagalnaiya,2010,rainy_season_withdrawal_doy,282.0
+Chhagalnaiya,2010,rainy_season_length_days,142.0
+Chhagalnaiya,2010,extreme_rain_days,3.0
+Chhagalnaiya,2010,annual_rain_mm,2402.19
+Chhagalnaiya,2010,annual_et0_mm,1314.35
+Chhagalnaiya,2010,hot_days_mar_may,27.0
+Chhagalnaiya,2010,hot_days_boro_flowering,2.0
+Chhagalnaiya,2010,longest_dry_spell_kharif1,14.0
+Chhagalnaiya,2010,rabi_rain_mm,59.44
+Chhagalnaiya,2011,rainy_season_onset_doy,125.0
+Chhagalnaiya,2011,rainy_season_withdrawal_doy,261.0
+Chhagalnaiya,2011,rainy_season_length_days,136.0
+Chhagalnaiya,2011,extreme_rain_days,9.0
+Chhagalnaiya,2011,annual_rain_mm,2346.0
+Chhagalnaiya,2011,annual_et0_mm,1274.52
+Chhagalnaiya,2011,hot_days_mar_may,6.0
+Chhagalnaiya,2011,hot_days_boro_flowering,0.0
+Chhagalnaiya,2011,longest_dry_spell_kharif1,25.0
+Chhagalnaiya,2011,rabi_rain_mm,104.98
+Chhagalnaiya,2012,rainy_season_onset_doy,97.0
+Chhagalnaiya,2012,rainy_season_withdrawal_doy,260.0
+Chhagalnaiya,2012,rainy_season_length_days,163.0
+Chhagalnaiya,2012,extreme_rain_days,2.0
+Chhagalnaiya,2012,annual_rain_mm,2089.68
+Chhagalnaiya,2012,annual_et0_mm,1299.26
+Chhagalnaiya,2012,hot_days_mar_may,16.0
+Chhagalnaiya,2012,hot_days_boro_flowering,1.0
+Chhagalnaiya,2012,longest_dry_spell_kharif1,17.0
+Chhagalnaiya,2012,rabi_rain_mm,20.8
+Chhagalnaiya,2013,rainy_season_onset_doy,124.0
+Chhagalnaiya,2013,rainy_season_withdrawal_doy,281.0
+Chhagalnaiya,2013,rainy_season_length_days,157.0
+Chhagalnaiya,2013,extreme_rain_days,7.0
+Chhagalnaiya,2013,annual_rain_mm,2287.77
+Chhagalnaiya,2013,annual_et0_mm,1337.8
+Chhagalnaiya,2013,hot_days_mar_may,36.0
+Chhagalnaiya,2013,hot_days_boro_flowering,1.0
+Chhagalnaiya,2013,longest_dry_spell_kharif1,16.0
+Chhagalnaiya,2013,rabi_rain_mm,45.44
+Chhagalnaiya,2014,rainy_season_onset_doy,145.0
+Chhagalnaiya,2014,rainy_season_withdrawal_doy,269.0
+Chhagalnaiya,2014,rainy_season_length_days,124.0
+Chhagalnaiya,2014,extreme_rain_days,10.0
+Chhagalnaiya,2014,annual_rain_mm,2350.18
+Chhagalnaiya,2014,annual_et0_mm,1377.06
+Chhagalnaiya,2014,hot_days_mar_may,42.0
+Chhagalnaiya,2014,hot_days_boro_flowering,0.0
+Chhagalnaiya,2014,longest_dry_spell_kharif1,23.0
+Chhagalnaiya,2014,rabi_rain_mm,13.95
+Chhagalnaiya,2015,rainy_season_onset_doy,161.0
+Chhagalnaiya,2015,rainy_season_withdrawal_doy,287.0
+Chhagalnaiya,2015,rainy_season_length_days,126.0
+Chhagalnaiya,2015,extreme_rain_days,13.0
+Chhagalnaiya,2015,annual_rain_mm,2919.58
+Chhagalnaiya,2015,annual_et0_mm,1257.11
+Chhagalnaiya,2015,hot_days_mar_may,8.0
+Chhagalnaiya,2015,hot_days_boro_flowering,3.0
+Chhagalnaiya,2015,longest_dry_spell_kharif1,19.0
+Chhagalnaiya,2015,rabi_rain_mm,15.75
+Chhagalnaiya,2016,rainy_season_onset_doy,134.0
+Chhagalnaiya,2016,rainy_season_withdrawal_doy,312.0
+Chhagalnaiya,2016,rainy_season_length_days,178.0
+Chhagalnaiya,2016,extreme_rain_days,21.0
+Chhagalnaiya,2016,annual_rain_mm,4007.14
+Chhagalnaiya,2016,annual_et0_mm,1274.38
+Chhagalnaiya,2016,hot_days_mar_may,7.0
+Chhagalnaiya,2016,hot_days_boro_flowering,1.0
+Chhagalnaiya,2016,longest_dry_spell_kharif1,14.0
+Chhagalnaiya,2016,rabi_rain_mm,54.38
+Chhagalnaiya,2017,rainy_season_onset_doy,64.0
+Chhagalnaiya,2017,rainy_season_withdrawal_doy,295.0
+Chhagalnaiya,2017,rainy_season_length_days,231.0
+Chhagalnaiya,2017,extreme_rain_days,43.0
+Chhagalnaiya,2017,annual_rain_mm,6675.65
+Chhagalnaiya,2017,annual_et0_mm,1179.21
+Chhagalnaiya,2017,hot_days_mar_may,0.0
+Chhagalnaiya,2017,hot_days_boro_flowering,0.0
+Chhagalnaiya,2017,longest_dry_spell_kharif1,8.0
+Chhagalnaiya,2017,rabi_rain_mm,311.75
+Chhagalnaiya,2018,rainy_season_onset_doy,96.0
+Chhagalnaiya,2018,rainy_season_withdrawal_doy,287.0
+Chhagalnaiya,2018,rainy_season_length_days,191.0
+Chhagalnaiya,2018,extreme_rain_days,17.0
+Chhagalnaiya,2018,annual_rain_mm,4009.79
+Chhagalnaiya,2018,annual_et0_mm,1194.52
+Chhagalnaiya,2018,hot_days_mar_may,0.0
+Chhagalnaiya,2018,hot_days_boro_flowering,0.0
+Chhagalnaiya,2018,longest_dry_spell_kharif1,26.0
+Chhagalnaiya,2018,rabi_rain_mm,171.25
+Chhagalnaiya,2019,rainy_season_onset_doy,123.0
+Chhagalnaiya,2019,rainy_season_withdrawal_doy,316.0
+Chhagalnaiya,2019,rainy_season_length_days,193.0
+Chhagalnaiya,2019,extreme_rain_days,26.0
+Chhagalnaiya,2019,annual_rain_mm,4379.58
+Chhagalnaiya,2019,annual_et0_mm,1272.54
+Chhagalnaiya,2019,hot_days_mar_may,13.0
+Chhagalnaiya,2019,hot_days_boro_flowering,0.0
+Chhagalnaiya,2019,longest_dry_spell_kharif1,11.0
+Chhagalnaiya,2019,rabi_rain_mm,156.06
+Chhagalnaiya,2020,rainy_season_onset_doy,107.0
+Chhagalnaiya,2020,rainy_season_withdrawal_doy,309.0
+Chhagalnaiya,2020,rainy_season_length_days,202.0
+Chhagalnaiya,2020,extreme_rain_days,9.0
+Chhagalnaiya,2020,annual_rain_mm,3718.2
+Chhagalnaiya,2020,annual_et0_mm,1195.71
+Chhagalnaiya,2020,hot_days_mar_may,0.0
+Chhagalnaiya,2020,hot_days_boro_flowering,0.0
+Chhagalnaiya,2020,longest_dry_spell_kharif1,26.0
+Chhagalnaiya,2020,rabi_rain_mm,337.86
+Chhagalnaiya,2021,rainy_season_onset_doy,144.0
+Chhagalnaiya,2021,rainy_season_withdrawal_doy,294.0
+Chhagalnaiya,2021,rainy_season_length_days,150.0
+Chhagalnaiya,2021,extreme_rain_days,7.0
+Chhagalnaiya,2021,annual_rain_mm,2934.38
+Chhagalnaiya,2021,annual_et0_mm,1281.0
+Chhagalnaiya,2021,hot_days_mar_may,42.0
+Chhagalnaiya,2021,hot_days_boro_flowering,0.0
+Chhagalnaiya,2021,longest_dry_spell_kharif1,19.0
+Chhagalnaiya,2021,rabi_rain_mm,118.84
+Chhagalnaiya,2022,rainy_season_onset_doy,129.0
+Chhagalnaiya,2022,rainy_season_withdrawal_doy,298.0
+Chhagalnaiya,2022,rainy_season_length_days,169.0
+Chhagalnaiya,2022,extreme_rain_days,6.0
+Chhagalnaiya,2022,annual_rain_mm,2562.22
+Chhagalnaiya,2022,annual_et0_mm,1269.48
+Chhagalnaiya,2022,hot_days_mar_may,10.0
+Chhagalnaiya,2022,hot_days_boro_flowering,0.0
+Chhagalnaiya,2022,longest_dry_spell_kharif1,26.0
+Chhagalnaiya,2022,rabi_rain_mm,200.95
+Chhagalnaiya,2023,rainy_season_onset_doy,136.0
+Chhagalnaiya,2023,rainy_season_withdrawal_doy,282.0
+Chhagalnaiya,2023,rainy_season_length_days,146.0
+Chhagalnaiya,2023,extreme_rain_days,8.0
+Chhagalnaiya,2023,annual_rain_mm,2924.12
+Chhagalnaiya,2023,annual_et0_mm,1271.89
+Chhagalnaiya,2023,hot_days_mar_may,10.0
+Chhagalnaiya,2023,hot_days_boro_flowering,1.0
+Chhagalnaiya,2023,longest_dry_spell_kharif1,17.0
+Chhagalnaiya,2023,rabi_rain_mm,24.27
+Chhagalnaiya,2024,rainy_season_onset_doy,123.0
+Chhagalnaiya,2024,rainy_season_withdrawal_doy,298.0
+Chhagalnaiya,2024,rainy_season_length_days,175.0
+Chhagalnaiya,2024,extreme_rain_days,18.0
+Chhagalnaiya,2024,annual_rain_mm,4021.23
+Chhagalnaiya,2024,annual_et0_mm,1201.95
+Chhagalnaiya,2024,hot_days_mar_may,16.0
+Chhagalnaiya,2024,hot_days_boro_flowering,0.0
+Chhagalnaiya,2024,longest_dry_spell_kharif1,15.0
+Chhagalnaiya,2024,rabi_rain_mm,229.65
+Chhagalnaiya,2025,rainy_season_onset_doy,105.0
+Chhagalnaiya,2025,rainy_season_withdrawal_doy,285.0
+Chhagalnaiya,2025,rainy_season_length_days,180.0
+Chhagalnaiya,2025,extreme_rain_days,10.0
+Chhagalnaiya,2025,annual_rain_mm,3641.27
+Chhagalnaiya,2025,annual_et0_mm,1242.29
+Chhagalnaiya,2025,hot_days_mar_may,14.0
+Chhagalnaiya,2025,hot_days_boro_flowering,1.0
+Chhagalnaiya,2025,longest_dry_spell_kharif1,17.0
+Chhagalnaiya,2025,rabi_rain_mm,25.78
+Chhagalnaiya,2026,hot_days_mar_may,6.0
+Chhagalnaiya,2026,hot_days_boro_flowering,0.0
+Chhagalnaiya,2026,longest_dry_spell_kharif1,8.0
+Chhagalnaiya,2026,rabi_rain_mm,50.49
+Daganbhuiyan,1984,extreme_rain_days,2.0
+Daganbhuiyan,1984,annual_rain_mm,1458.91
+Daganbhuiyan,1984,annual_et0_mm,1480.04
+Daganbhuiyan,1984,hot_days_mar_may,51.0
+Daganbhuiyan,1984,hot_days_boro_flowering,5.0
+Daganbhuiyan,1984,longest_dry_spell_kharif1,38.0
+Daganbhuiyan,1985,extreme_rain_days,0.0
+Daganbhuiyan,1985,annual_rain_mm,1382.74
+Daganbhuiyan,1985,annual_et0_mm,1508.84
+Daganbhuiyan,1985,hot_days_mar_may,32.0
+Daganbhuiyan,1985,hot_days_boro_flowering,3.0
+Daganbhuiyan,1985,longest_dry_spell_kharif1,22.0
+Daganbhuiyan,1985,rabi_rain_mm,10.94
+Daganbhuiyan,1986,extreme_rain_days,1.0
+Daganbhuiyan,1986,annual_rain_mm,1377.95
+Daganbhuiyan,1986,annual_et0_mm,1546.69
+Daganbhuiyan,1986,hot_days_mar_may,53.0
+Daganbhuiyan,1986,hot_days_boro_flowering,7.0
+Daganbhuiyan,1986,longest_dry_spell_kharif1,13.0
+Daganbhuiyan,1986,rabi_rain_mm,48.19
+Daganbhuiyan,1987,extreme_rain_days,2.0
+Daganbhuiyan,1987,annual_rain_mm,1390.38
+Daganbhuiyan,1987,annual_et0_mm,1467.4
+Daganbhuiyan,1987,hot_days_mar_may,36.0
+Daganbhuiyan,1987,hot_days_boro_flowering,0.0
+Daganbhuiyan,1987,longest_dry_spell_kharif1,23.0
+Daganbhuiyan,1987,rabi_rain_mm,89.55
+Daganbhuiyan,1988,extreme_rain_days,3.0
+Daganbhuiyan,1988,annual_rain_mm,1584.44
+Daganbhuiyan,1988,annual_et0_mm,1431.88
+Daganbhuiyan,1988,hot_days_mar_may,42.0
+Daganbhuiyan,1988,hot_days_boro_flowering,2.0
+Daganbhuiyan,1988,longest_dry_spell_kharif1,26.0
+Daganbhuiyan,1988,rabi_rain_mm,41.32
+Daganbhuiyan,1989,extreme_rain_days,0.0
+Daganbhuiyan,1989,annual_rain_mm,979.02
+Daganbhuiyan,1989,annual_et0_mm,1600.81
+Daganbhuiyan,1989,hot_days_mar_may,47.0
+Daganbhuiyan,1989,hot_days_boro_flowering,2.0
+Daganbhuiyan,1989,longest_dry_spell_kharif1,23.0
+Daganbhuiyan,1989,rabi_rain_mm,76.06
+Daganbhuiyan,1990,extreme_rain_days,2.0
+Daganbhuiyan,1990,annual_rain_mm,1138.31
+Daganbhuiyan,1990,annual_et0_mm,1487.89
+Daganbhuiyan,1990,hot_days_mar_may,33.0
+Daganbhuiyan,1990,hot_days_boro_flowering,2.0
+Daganbhuiyan,1990,longest_dry_spell_kharif1,18.0
+Daganbhuiyan,1990,rabi_rain_mm,21.85
+Daganbhuiyan,1991,extreme_rain_days,0.0
+Daganbhuiyan,1991,annual_rain_mm,1277.89
+Daganbhuiyan,1991,annual_et0_mm,1476.15
+Daganbhuiyan,1991,hot_days_mar_may,57.0
+Daganbhuiyan,1991,hot_days_boro_flowering,7.0
+Daganbhuiyan,1991,longest_dry_spell_kharif1,22.0
+Daganbhuiyan,1991,rabi_rain_mm,18.68
+Daganbhuiyan,1992,extreme_rain_days,0.0
+Daganbhuiyan,1992,annual_rain_mm,864.9
+Daganbhuiyan,1992,annual_et0_mm,1531.5
+Daganbhuiyan,1992,hot_days_mar_may,57.0
+Daganbhuiyan,1992,hot_days_boro_flowering,3.0
+Daganbhuiyan,1992,longest_dry_spell_kharif1,38.0
+Daganbhuiyan,1992,rabi_rain_mm,97.43
+Daganbhuiyan,1993,extreme_rain_days,2.0
+Daganbhuiyan,1993,annual_rain_mm,1471.05
+Daganbhuiyan,1993,annual_et0_mm,1414.49
+Daganbhuiyan,1993,hot_days_mar_may,27.0
+Daganbhuiyan,1993,hot_days_boro_flowering,4.0
+Daganbhuiyan,1993,longest_dry_spell_kharif1,13.0
+Daganbhuiyan,1993,rabi_rain_mm,55.38
+Daganbhuiyan,1994,extreme_rain_days,0.0
+Daganbhuiyan,1994,annual_rain_mm,1085.5
+Daganbhuiyan,1994,annual_et0_mm,1540.87
+Daganbhuiyan,1994,hot_days_mar_may,44.0
+Daganbhuiyan,1994,hot_days_boro_flowering,6.0
+Daganbhuiyan,1994,longest_dry_spell_kharif1,14.0
+Daganbhuiyan,1994,rabi_rain_mm,33.63
+Daganbhuiyan,1995,extreme_rain_days,1.0
+Daganbhuiyan,1995,annual_rain_mm,1432.5
+Daganbhuiyan,1995,annual_et0_mm,1492.95
+Daganbhuiyan,1995,hot_days_mar_may,58.0
+Daganbhuiyan,1995,hot_days_boro_flowering,5.0
+Daganbhuiyan,1995,longest_dry_spell_kharif1,30.0
+Daganbhuiyan,1995,rabi_rain_mm,45.9
+Daganbhuiyan,1996,extreme_rain_days,0.0
+Daganbhuiyan,1996,annual_rain_mm,1195.55
+Daganbhuiyan,1996,annual_et0_mm,1431.94
+Daganbhuiyan,1996,hot_days_mar_may,35.0
+Daganbhuiyan,1996,hot_days_boro_flowering,2.0
+Daganbhuiyan,1996,longest_dry_spell_kharif1,16.0
+Daganbhuiyan,1996,rabi_rain_mm,116.65
+Daganbhuiyan,1997,rainy_season_onset_doy,139.0
+Daganbhuiyan,1997,rainy_season_withdrawal_doy,274.0
+Daganbhuiyan,1997,rainy_season_length_days,135.0
+Daganbhuiyan,1997,extreme_rain_days,4.0
+Daganbhuiyan,1997,annual_rain_mm,1875.42
+Daganbhuiyan,1997,annual_et0_mm,1366.64
+Daganbhuiyan,1997,hot_days_mar_may,42.0
+Daganbhuiyan,1997,hot_days_boro_flowering,6.0
+Daganbhuiyan,1997,longest_dry_spell_kharif1,22.0
+Daganbhuiyan,1997,rabi_rain_mm,16.18
+Daganbhuiyan,1998,rainy_season_onset_doy,109.0
+Daganbhuiyan,1998,rainy_season_withdrawal_doy,253.0
+Daganbhuiyan,1998,rainy_season_length_days,144.0
+Daganbhuiyan,1998,extreme_rain_days,9.0
+Daganbhuiyan,1998,annual_rain_mm,2630.54
+Daganbhuiyan,1998,annual_et0_mm,1294.2
+Daganbhuiyan,1998,hot_days_mar_may,10.0
+Daganbhuiyan,1998,hot_days_boro_flowering,0.0
+Daganbhuiyan,1998,longest_dry_spell_kharif1,9.0
+Daganbhuiyan,1998,rabi_rain_mm,103.76
+Daganbhuiyan,1999,rainy_season_onset_doy,126.0
+Daganbhuiyan,1999,rainy_season_withdrawal_doy,266.0
+Daganbhuiyan,1999,rainy_season_length_days,140.0
+Daganbhuiyan,1999,extreme_rain_days,6.0
+Daganbhuiyan,1999,annual_rain_mm,1989.24
+Daganbhuiyan,1999,annual_et0_mm,1392.02
+Daganbhuiyan,1999,hot_days_mar_may,46.0
+Daganbhuiyan,1999,hot_days_boro_flowering,1.0
+Daganbhuiyan,1999,longest_dry_spell_kharif1,37.0
+Daganbhuiyan,1999,rabi_rain_mm,114.88
+Daganbhuiyan,2000,rainy_season_onset_doy,139.0
+Daganbhuiyan,2000,rainy_season_withdrawal_doy,245.0
+Daganbhuiyan,2000,rainy_season_length_days,106.0
+Daganbhuiyan,2000,extreme_rain_days,2.0
+Daganbhuiyan,2000,annual_rain_mm,1929.46
+Daganbhuiyan,2000,annual_et0_mm,1316.08
+Daganbhuiyan,2000,hot_days_mar_may,17.0
+Daganbhuiyan,2000,hot_days_boro_flowering,0.0
+Daganbhuiyan,2000,longest_dry_spell_kharif1,26.0
+Daganbhuiyan,2000,rabi_rain_mm,62.04
+Daganbhuiyan,2001,rainy_season_onset_doy,120.0
+Daganbhuiyan,2001,rainy_season_withdrawal_doy,239.0
+Daganbhuiyan,2001,rainy_season_length_days,119.0
+Daganbhuiyan,2001,extreme_rain_days,8.0
+Daganbhuiyan,2001,annual_rain_mm,2123.34
+Daganbhuiyan,2001,annual_et0_mm,1345.91
+Daganbhuiyan,2001,hot_days_mar_may,31.0
+Daganbhuiyan,2001,hot_days_boro_flowering,2.0
+Daganbhuiyan,2001,longest_dry_spell_kharif1,22.0
+Daganbhuiyan,2001,rabi_rain_mm,61.28
+Daganbhuiyan,2002,rainy_season_onset_doy,145.0
+Daganbhuiyan,2002,rainy_season_withdrawal_doy,240.0
+Daganbhuiyan,2002,rainy_season_length_days,95.0
+Daganbhuiyan,2002,extreme_rain_days,2.0
+Daganbhuiyan,2002,annual_rain_mm,1891.39
+Daganbhuiyan,2002,annual_et0_mm,1319.1
+Daganbhuiyan,2002,hot_days_mar_may,26.0
+Daganbhuiyan,2002,hot_days_boro_flowering,1.0
+Daganbhuiyan,2002,longest_dry_spell_kharif1,19.0
+Daganbhuiyan,2002,rabi_rain_mm,81.08
+Daganbhuiyan,2003,rainy_season_onset_doy,155.0
+Daganbhuiyan,2003,rainy_season_withdrawal_doy,225.0
+Daganbhuiyan,2003,rainy_season_length_days,70.0
+Daganbhuiyan,2003,extreme_rain_days,6.0
+Daganbhuiyan,2003,annual_rain_mm,1644.93
+Daganbhuiyan,2003,annual_et0_mm,1356.32
+Daganbhuiyan,2003,hot_days_mar_may,32.0
+Daganbhuiyan,2003,hot_days_boro_flowering,0.0
+Daganbhuiyan,2003,longest_dry_spell_kharif1,15.0
+Daganbhuiyan,2003,rabi_rain_mm,113.91
+Daganbhuiyan,2004,rainy_season_onset_doy,167.0
+Daganbhuiyan,2004,rainy_season_withdrawal_doy,289.0
+Daganbhuiyan,2004,rainy_season_length_days,122.0
+Daganbhuiyan,2004,extreme_rain_days,5.0
+Daganbhuiyan,2004,annual_rain_mm,1937.98
+Daganbhuiyan,2004,annual_et0_mm,1343.36
+Daganbhuiyan,2004,hot_days_mar_may,23.0
+Daganbhuiyan,2004,hot_days_boro_flowering,2.0
+Daganbhuiyan,2004,longest_dry_spell_kharif1,20.0
+Daganbhuiyan,2004,rabi_rain_mm,41.34
+Daganbhuiyan,2005,rainy_season_onset_doy,178.0
+Daganbhuiyan,2005,rainy_season_withdrawal_doy,297.0
+Daganbhuiyan,2005,rainy_season_length_days,119.0
+Daganbhuiyan,2005,extreme_rain_days,3.0
+Daganbhuiyan,2005,annual_rain_mm,1890.93
+Daganbhuiyan,2005,annual_et0_mm,1330.54
+Daganbhuiyan,2005,hot_days_mar_may,14.0
+Daganbhuiyan,2005,hot_days_boro_flowering,0.0
+Daganbhuiyan,2005,longest_dry_spell_kharif1,12.0
+Daganbhuiyan,2005,rabi_rain_mm,9.59
+Daganbhuiyan,2006,rainy_season_onset_doy,131.0
+Daganbhuiyan,2006,rainy_season_withdrawal_doy,267.0
+Daganbhuiyan,2006,rainy_season_length_days,136.0
+Daganbhuiyan,2006,extreme_rain_days,5.0
+Daganbhuiyan,2006,annual_rain_mm,1814.63
+Daganbhuiyan,2006,annual_et0_mm,1367.22
+Daganbhuiyan,2006,hot_days_mar_may,38.0
+Daganbhuiyan,2006,hot_days_boro_flowering,0.0
+Daganbhuiyan,2006,longest_dry_spell_kharif1,31.0
+Daganbhuiyan,2006,rabi_rain_mm,11.84
+Daganbhuiyan,2007,rainy_season_onset_doy,129.0
+Daganbhuiyan,2007,rainy_season_withdrawal_doy,289.0
+Daganbhuiyan,2007,rainy_season_length_days,160.0
+Daganbhuiyan,2007,extreme_rain_days,16.0
+Daganbhuiyan,2007,annual_rain_mm,3061.39
+Daganbhuiyan,2007,annual_et0_mm,1285.06
+Daganbhuiyan,2007,hot_days_mar_may,22.0
+Daganbhuiyan,2007,hot_days_boro_flowering,0.0
+Daganbhuiyan,2007,longest_dry_spell_kharif1,25.0
+Daganbhuiyan,2007,rabi_rain_mm,77.92
+Daganbhuiyan,2008,rainy_season_onset_doy,146.0
+Daganbhuiyan,2008,rainy_season_withdrawal_doy,301.0
+Daganbhuiyan,2008,rainy_season_length_days,155.0
+Daganbhuiyan,2008,extreme_rain_days,4.0
+Daganbhuiyan,2008,annual_rain_mm,1904.11
+Daganbhuiyan,2008,annual_et0_mm,1320.09
+Daganbhuiyan,2008,hot_days_mar_may,26.0
+Daganbhuiyan,2008,hot_days_boro_flowering,0.0
+Daganbhuiyan,2008,longest_dry_spell_kharif1,18.0
+Daganbhuiyan,2008,rabi_rain_mm,124.62
+Daganbhuiyan,2009,rainy_season_onset_doy,122.0
+Daganbhuiyan,2009,rainy_season_withdrawal_doy,282.0
+Daganbhuiyan,2009,rainy_season_length_days,160.0
+Daganbhuiyan,2009,extreme_rain_days,11.0
+Daganbhuiyan,2009,annual_rain_mm,2586.04
+Daganbhuiyan,2009,annual_et0_mm,1336.1
+Daganbhuiyan,2009,hot_days_mar_may,21.0
+Daganbhuiyan,2009,hot_days_boro_flowering,0.0
+Daganbhuiyan,2009,longest_dry_spell_kharif1,26.0
+Daganbhuiyan,2009,rabi_rain_mm,61.85
+Daganbhuiyan,2010,rainy_season_onset_doy,140.0
+Daganbhuiyan,2010,rainy_season_withdrawal_doy,282.0
+Daganbhuiyan,2010,rainy_season_length_days,142.0
+Daganbhuiyan,2010,extreme_rain_days,3.0
+Daganbhuiyan,2010,annual_rain_mm,2402.19
+Daganbhuiyan,2010,annual_et0_mm,1356.86
+Daganbhuiyan,2010,hot_days_mar_may,27.0
+Daganbhuiyan,2010,hot_days_boro_flowering,2.0
+Daganbhuiyan,2010,longest_dry_spell_kharif1,14.0
+Daganbhuiyan,2010,rabi_rain_mm,59.44
+Daganbhuiyan,2011,rainy_season_onset_doy,125.0
+Daganbhuiyan,2011,rainy_season_withdrawal_doy,261.0
+Daganbhuiyan,2011,rainy_season_length_days,136.0
+Daganbhuiyan,2011,extreme_rain_days,9.0
+Daganbhuiyan,2011,annual_rain_mm,2346.0
+Daganbhuiyan,2011,annual_et0_mm,1295.92
+Daganbhuiyan,2011,hot_days_mar_may,6.0
+Daganbhuiyan,2011,hot_days_boro_flowering,0.0
+Daganbhuiyan,2011,longest_dry_spell_kharif1,25.0
+Daganbhuiyan,2011,rabi_rain_mm,104.98
+Daganbhuiyan,2012,rainy_season_onset_doy,97.0
+Daganbhuiyan,2012,rainy_season_withdrawal_doy,260.0
+Daganbhuiyan,2012,rainy_season_length_days,163.0
+Daganbhuiyan,2012,extreme_rain_days,2.0
+Daganbhuiyan,2012,annual_rain_mm,2089.68
+Daganbhuiyan,2012,annual_et0_mm,1330.5
+Daganbhuiyan,2012,hot_days_mar_may,16.0
+Daganbhuiyan,2012,hot_days_boro_flowering,1.0
+Daganbhuiyan,2012,longest_dry_spell_kharif1,17.0
+Daganbhuiyan,2012,rabi_rain_mm,20.8
+Daganbhuiyan,2013,rainy_season_onset_doy,124.0
+Daganbhuiyan,2013,rainy_season_withdrawal_doy,281.0
+Daganbhuiyan,2013,rainy_season_length_days,157.0
+Daganbhuiyan,2013,extreme_rain_days,7.0
+Daganbhuiyan,2013,annual_rain_mm,2287.77
+Daganbhuiyan,2013,annual_et0_mm,1363.35
+Daganbhuiyan,2013,hot_days_mar_may,36.0
+Daganbhuiyan,2013,hot_days_boro_flowering,1.0
+Daganbhuiyan,2013,longest_dry_spell_kharif1,16.0
+Daganbhuiyan,2013,rabi_rain_mm,45.44
+Daganbhuiyan,2014,rainy_season_onset_doy,145.0
+Daganbhuiyan,2014,rainy_season_withdrawal_doy,269.0
+Daganbhuiyan,2014,rainy_season_length_days,124.0
+Daganbhuiyan,2014,extreme_rain_days,10.0
+Daganbhuiyan,2014,annual_rain_mm,2350.18
+Daganbhuiyan,2014,annual_et0_mm,1417.73
+Daganbhuiyan,2014,hot_days_mar_may,42.0
+Daganbhuiyan,2014,hot_days_boro_flowering,0.0
+Daganbhuiyan,2014,longest_dry_spell_kharif1,23.0
+Daganbhuiyan,2014,rabi_rain_mm,13.95
+Daganbhuiyan,2015,rainy_season_onset_doy,161.0
+Daganbhuiyan,2015,rainy_season_withdrawal_doy,287.0
+Daganbhuiyan,2015,rainy_season_length_days,126.0
+Daganbhuiyan,2015,extreme_rain_days,13.0
+Daganbhuiyan,2015,annual_rain_mm,2919.58
+Daganbhuiyan,2015,annual_et0_mm,1293.78
+Daganbhuiyan,2015,hot_days_mar_may,8.0
+Daganbhuiyan,2015,hot_days_boro_flowering,3.0
+Daganbhuiyan,2015,longest_dry_spell_kharif1,19.0
+Daganbhuiyan,2015,rabi_rain_mm,15.75
+Daganbhuiyan,2016,rainy_season_onset_doy,134.0
+Daganbhuiyan,2016,rainy_season_withdrawal_doy,312.0
+Daganbhuiyan,2016,rainy_season_length_days,178.0
+Daganbhuiyan,2016,extreme_rain_days,21.0
+Daganbhuiyan,2016,annual_rain_mm,4007.14
+Daganbhuiyan,2016,annual_et0_mm,1309.92
+Daganbhuiyan,2016,hot_days_mar_may,7.0
+Daganbhuiyan,2016,hot_days_boro_flowering,1.0
+Daganbhuiyan,2016,longest_dry_spell_kharif1,14.0
+Daganbhuiyan,2016,rabi_rain_mm,54.38
+Daganbhuiyan,2017,rainy_season_onset_doy,64.0
+Daganbhuiyan,2017,rainy_season_withdrawal_doy,295.0
+Daganbhuiyan,2017,rainy_season_length_days,231.0
+Daganbhuiyan,2017,extreme_rain_days,43.0
+Daganbhuiyan,2017,annual_rain_mm,6675.65
+Daganbhuiyan,2017,annual_et0_mm,1223.87
+Daganbhuiyan,2017,hot_days_mar_may,0.0
+Daganbhuiyan,2017,hot_days_boro_flowering,0.0
+Daganbhuiyan,2017,longest_dry_spell_kharif1,8.0
+Daganbhuiyan,2017,rabi_rain_mm,311.75
+Daganbhuiyan,2018,rainy_season_onset_doy,96.0
+Daganbhuiyan,2018,rainy_season_withdrawal_doy,287.0
+Daganbhuiyan,2018,rainy_season_length_days,191.0
+Daganbhuiyan,2018,extreme_rain_days,17.0
+Daganbhuiyan,2018,annual_rain_mm,4009.79
+Daganbhuiyan,2018,annual_et0_mm,1235.59
+Daganbhuiyan,2018,hot_days_mar_may,0.0
+Daganbhuiyan,2018,hot_days_boro_flowering,0.0
+Daganbhuiyan,2018,longest_dry_spell_kharif1,26.0
+Daganbhuiyan,2018,rabi_rain_mm,171.25
+Daganbhuiyan,2019,rainy_season_onset_doy,123.0
+Daganbhuiyan,2019,rainy_season_withdrawal_doy,316.0
+Daganbhuiyan,2019,rainy_season_length_days,193.0
+Daganbhuiyan,2019,extreme_rain_days,26.0
+Daganbhuiyan,2019,annual_rain_mm,4379.58
+Daganbhuiyan,2019,annual_et0_mm,1315.22
+Daganbhuiyan,2019,hot_days_mar_may,13.0
+Daganbhuiyan,2019,hot_days_boro_flowering,0.0
+Daganbhuiyan,2019,longest_dry_spell_kharif1,11.0
+Daganbhuiyan,2019,rabi_rain_mm,156.06
+Daganbhuiyan,2020,rainy_season_onset_doy,107.0
+Daganbhuiyan,2020,rainy_season_withdrawal_doy,309.0
+Daganbhuiyan,2020,rainy_season_length_days,202.0
+Daganbhuiyan,2020,extreme_rain_days,9.0
+Daganbhuiyan,2020,annual_rain_mm,3718.2
+Daganbhuiyan,2020,annual_et0_mm,1236.98
+Daganbhuiyan,2020,hot_days_mar_may,0.0
+Daganbhuiyan,2020,hot_days_boro_flowering,0.0
+Daganbhuiyan,2020,longest_dry_spell_kharif1,26.0
+Daganbhuiyan,2020,rabi_rain_mm,337.86
+Daganbhuiyan,2021,rainy_season_onset_doy,144.0
+Daganbhuiyan,2021,rainy_season_withdrawal_doy,294.0
+Daganbhuiyan,2021,rainy_season_length_days,150.0
+Daganbhuiyan,2021,extreme_rain_days,7.0
+Daganbhuiyan,2021,annual_rain_mm,2934.38
+Daganbhuiyan,2021,annual_et0_mm,1308.52
+Daganbhuiyan,2021,hot_days_mar_may,42.0
+Daganbhuiyan,2021,hot_days_boro_flowering,0.0
+Daganbhuiyan,2021,longest_dry_spell_kharif1,19.0
+Daganbhuiyan,2021,rabi_rain_mm,118.84
+Daganbhuiyan,2022,rainy_season_onset_doy,129.0
+Daganbhuiyan,2022,rainy_season_withdrawal_doy,298.0
+Daganbhuiyan,2022,rainy_season_length_days,169.0
+Daganbhuiyan,2022,extreme_rain_days,6.0
+Daganbhuiyan,2022,annual_rain_mm,2562.22
+Daganbhuiyan,2022,annual_et0_mm,1330.18
+Daganbhuiyan,2022,hot_days_mar_may,10.0
+Daganbhuiyan,2022,hot_days_boro_flowering,0.0
+Daganbhuiyan,2022,longest_dry_spell_kharif1,26.0
+Daganbhuiyan,2022,rabi_rain_mm,200.95
+Daganbhuiyan,2023,rainy_season_onset_doy,136.0
+Daganbhuiyan,2023,rainy_season_withdrawal_doy,282.0
+Daganbhuiyan,2023,rainy_season_length_days,146.0
+Daganbhuiyan,2023,extreme_rain_days,8.0
+Daganbhuiyan,2023,annual_rain_mm,2924.12
+Daganbhuiyan,2023,annual_et0_mm,1302.87
+Daganbhuiyan,2023,hot_days_mar_may,10.0
+Daganbhuiyan,2023,hot_days_boro_flowering,1.0
+Daganbhuiyan,2023,longest_dry_spell_kharif1,17.0
+Daganbhuiyan,2023,rabi_rain_mm,24.27
+Daganbhuiyan,2024,rainy_season_onset_doy,123.0
+Daganbhuiyan,2024,rainy_season_withdrawal_doy,298.0
+Daganbhuiyan,2024,rainy_season_length_days,175.0
+Daganbhuiyan,2024,extreme_rain_days,18.0
+Daganbhuiyan,2024,annual_rain_mm,4021.23
+Daganbhuiyan,2024,annual_et0_mm,1252.97
+Daganbhuiyan,2024,hot_days_mar_may,16.0
+Daganbhuiyan,2024,hot_days_boro_flowering,0.0
+Daganbhuiyan,2024,longest_dry_spell_kharif1,15.0
+Daganbhuiyan,2024,rabi_rain_mm,229.65
+Daganbhuiyan,2025,rainy_season_onset_doy,105.0
+Daganbhuiyan,2025,rainy_season_withdrawal_doy,285.0
+Daganbhuiyan,2025,rainy_season_length_days,180.0
+Daganbhuiyan,2025,extreme_rain_days,10.0
+Daganbhuiyan,2025,annual_rain_mm,3641.27
+Daganbhuiyan,2025,annual_et0_mm,1276.78
+Daganbhuiyan,2025,hot_days_mar_may,14.0
+Daganbhuiyan,2025,hot_days_boro_flowering,1.0
+Daganbhuiyan,2025,longest_dry_spell_kharif1,17.0
+Daganbhuiyan,2025,rabi_rain_mm,25.78
+Daganbhuiyan,2026,hot_days_mar_may,6.0
+Daganbhuiyan,2026,hot_days_boro_flowering,0.0
+Daganbhuiyan,2026,longest_dry_spell_kharif1,8.0
+Daganbhuiyan,2026,rabi_rain_mm,50.49
+Parshuram,1984,extreme_rain_days,2.0
+Parshuram,1984,annual_rain_mm,1458.91
+Parshuram,1984,annual_et0_mm,1462.77
+Parshuram,1984,hot_days_mar_may,51.0
+Parshuram,1984,hot_days_boro_flowering,5.0
+Parshuram,1984,longest_dry_spell_kharif1,38.0
+Parshuram,1985,extreme_rain_days,0.0
+Parshuram,1985,annual_rain_mm,1382.74
+Parshuram,1985,annual_et0_mm,1482.43
+Parshuram,1985,hot_days_mar_may,32.0
+Parshuram,1985,hot_days_boro_flowering,3.0
+Parshuram,1985,longest_dry_spell_kharif1,22.0
+Parshuram,1985,rabi_rain_mm,10.94
+Parshuram,1986,extreme_rain_days,1.0
+Parshuram,1986,annual_rain_mm,1377.95
+Parshuram,1986,annual_et0_mm,1524.99
+Parshuram,1986,hot_days_mar_may,53.0
+Parshuram,1986,hot_days_boro_flowering,7.0
+Parshuram,1986,longest_dry_spell_kharif1,13.0
+Parshuram,1986,rabi_rain_mm,48.19
+Parshuram,1987,extreme_rain_days,2.0
+Parshuram,1987,annual_rain_mm,1390.38
+Parshuram,1987,annual_et0_mm,1439.7
+Parshuram,1987,hot_days_mar_may,36.0
+Parshuram,1987,hot_days_boro_flowering,0.0
+Parshuram,1987,longest_dry_spell_kharif1,23.0
+Parshuram,1987,rabi_rain_mm,89.55
+Parshuram,1988,extreme_rain_days,3.0
+Parshuram,1988,annual_rain_mm,1584.44
+Parshuram,1988,annual_et0_mm,1405.08
+Parshuram,1988,hot_days_mar_may,42.0
+Parshuram,1988,hot_days_boro_flowering,2.0
+Parshuram,1988,longest_dry_spell_kharif1,26.0
+Parshuram,1988,rabi_rain_mm,41.32
+Parshuram,1989,extreme_rain_days,0.0
+Parshuram,1989,annual_rain_mm,979.02
+Parshuram,1989,annual_et0_mm,1572.35
+Parshuram,1989,hot_days_mar_may,47.0
+Parshuram,1989,hot_days_boro_flowering,2.0
+Parshuram,1989,longest_dry_spell_kharif1,23.0
+Parshuram,1989,rabi_rain_mm,76.06
+Parshuram,1990,extreme_rain_days,2.0
+Parshuram,1990,annual_rain_mm,1138.31
+Parshuram,1990,annual_et0_mm,1469.11
+Parshuram,1990,hot_days_mar_may,33.0
+Parshuram,1990,hot_days_boro_flowering,2.0
+Parshuram,1990,longest_dry_spell_kharif1,18.0
+Parshuram,1990,rabi_rain_mm,21.85
+Parshuram,1991,extreme_rain_days,0.0
+Parshuram,1991,annual_rain_mm,1277.89
+Parshuram,1991,annual_et0_mm,1448.5
+Parshuram,1991,hot_days_mar_may,57.0
+Parshuram,1991,hot_days_boro_flowering,7.0
+Parshuram,1991,longest_dry_spell_kharif1,22.0
+Parshuram,1991,rabi_rain_mm,18.68
+Parshuram,1992,extreme_rain_days,0.0
+Parshuram,1992,annual_rain_mm,864.9
+Parshuram,1992,annual_et0_mm,1518.26
+Parshuram,1992,hot_days_mar_may,57.0
+Parshuram,1992,hot_days_boro_flowering,3.0
+Parshuram,1992,longest_dry_spell_kharif1,38.0
+Parshuram,1992,rabi_rain_mm,97.43
+Parshuram,1993,extreme_rain_days,2.0
+Parshuram,1993,annual_rain_mm,1471.05
+Parshuram,1993,annual_et0_mm,1386.96
+Parshuram,1993,hot_days_mar_may,27.0
+Parshuram,1993,hot_days_boro_flowering,4.0
+Parshuram,1993,longest_dry_spell_kharif1,13.0
+Parshuram,1993,rabi_rain_mm,55.38
+Parshuram,1994,extreme_rain_days,0.0
+Parshuram,1994,annual_rain_mm,1085.5
+Parshuram,1994,annual_et0_mm,1514.04
+Parshuram,1994,hot_days_mar_may,44.0
+Parshuram,1994,hot_days_boro_flowering,6.0
+Parshuram,1994,longest_dry_spell_kharif1,14.0
+Parshuram,1994,rabi_rain_mm,33.63
+Parshuram,1995,extreme_rain_days,1.0
+Parshuram,1995,annual_rain_mm,1432.5
+Parshuram,1995,annual_et0_mm,1468.45
+Parshuram,1995,hot_days_mar_may,58.0
+Parshuram,1995,hot_days_boro_flowering,5.0
+Parshuram,1995,longest_dry_spell_kharif1,30.0
+Parshuram,1995,rabi_rain_mm,45.9
+Parshuram,1996,extreme_rain_days,0.0
+Parshuram,1996,annual_rain_mm,1195.55
+Parshuram,1996,annual_et0_mm,1423.81
+Parshuram,1996,hot_days_mar_may,35.0
+Parshuram,1996,hot_days_boro_flowering,2.0
+Parshuram,1996,longest_dry_spell_kharif1,16.0
+Parshuram,1996,rabi_rain_mm,116.65
+Parshuram,1997,rainy_season_onset_doy,139.0
+Parshuram,1997,rainy_season_withdrawal_doy,274.0
+Parshuram,1997,rainy_season_length_days,135.0
+Parshuram,1997,extreme_rain_days,4.0
+Parshuram,1997,annual_rain_mm,1875.42
+Parshuram,1997,annual_et0_mm,1361.0
+Parshuram,1997,hot_days_mar_may,42.0
+Parshuram,1997,hot_days_boro_flowering,6.0
+Parshuram,1997,longest_dry_spell_kharif1,22.0
+Parshuram,1997,rabi_rain_mm,16.18
+Parshuram,1998,rainy_season_onset_doy,109.0
+Parshuram,1998,rainy_season_withdrawal_doy,253.0
+Parshuram,1998,rainy_season_length_days,144.0
+Parshuram,1998,extreme_rain_days,9.0
+Parshuram,1998,annual_rain_mm,2630.54
+Parshuram,1998,annual_et0_mm,1264.5
+Parshuram,1998,hot_days_mar_may,10.0
+Parshuram,1998,hot_days_boro_flowering,0.0
+Parshuram,1998,longest_dry_spell_kharif1,9.0
+Parshuram,1998,rabi_rain_mm,103.76
+Parshuram,1999,rainy_season_onset_doy,126.0
+Parshuram,1999,rainy_season_withdrawal_doy,266.0
+Parshuram,1999,rainy_season_length_days,140.0
+Parshuram,1999,extreme_rain_days,6.0
+Parshuram,1999,annual_rain_mm,1989.24
+Parshuram,1999,annual_et0_mm,1369.35
+Parshuram,1999,hot_days_mar_may,46.0
+Parshuram,1999,hot_days_boro_flowering,1.0
+Parshuram,1999,longest_dry_spell_kharif1,37.0
+Parshuram,1999,rabi_rain_mm,114.88
+Parshuram,2000,rainy_season_onset_doy,139.0
+Parshuram,2000,rainy_season_withdrawal_doy,245.0
+Parshuram,2000,rainy_season_length_days,106.0
+Parshuram,2000,extreme_rain_days,2.0
+Parshuram,2000,annual_rain_mm,1929.46
+Parshuram,2000,annual_et0_mm,1282.24
+Parshuram,2000,hot_days_mar_may,17.0
+Parshuram,2000,hot_days_boro_flowering,0.0
+Parshuram,2000,longest_dry_spell_kharif1,26.0
+Parshuram,2000,rabi_rain_mm,62.04
+Parshuram,2001,rainy_season_onset_doy,120.0
+Parshuram,2001,rainy_season_withdrawal_doy,239.0
+Parshuram,2001,rainy_season_length_days,119.0
+Parshuram,2001,extreme_rain_days,8.0
+Parshuram,2001,annual_rain_mm,2123.34
+Parshuram,2001,annual_et0_mm,1312.53
+Parshuram,2001,hot_days_mar_may,31.0
+Parshuram,2001,hot_days_boro_flowering,2.0
+Parshuram,2001,longest_dry_spell_kharif1,22.0
+Parshuram,2001,rabi_rain_mm,61.28
+Parshuram,2002,rainy_season_onset_doy,145.0
+Parshuram,2002,rainy_season_withdrawal_doy,240.0
+Parshuram,2002,rainy_season_length_days,95.0
+Parshuram,2002,extreme_rain_days,2.0
+Parshuram,2002,annual_rain_mm,1891.39
+Parshuram,2002,annual_et0_mm,1282.24
+Parshuram,2002,hot_days_mar_may,26.0
+Parshuram,2002,hot_days_boro_flowering,1.0
+Parshuram,2002,longest_dry_spell_kharif1,19.0
+Parshuram,2002,rabi_rain_mm,81.08
+Parshuram,2003,rainy_season_onset_doy,155.0
+Parshuram,2003,rainy_season_withdrawal_doy,225.0
+Parshuram,2003,rainy_season_length_days,70.0
+Parshuram,2003,extreme_rain_days,6.0
+Parshuram,2003,annual_rain_mm,1644.93
+Parshuram,2003,annual_et0_mm,1319.03
+Parshuram,2003,hot_days_mar_may,32.0
+Parshuram,2003,hot_days_boro_flowering,0.0
+Parshuram,2003,longest_dry_spell_kharif1,15.0
+Parshuram,2003,rabi_rain_mm,113.91
+Parshuram,2004,rainy_season_onset_doy,167.0
+Parshuram,2004,rainy_season_withdrawal_doy,289.0
+Parshuram,2004,rainy_season_length_days,122.0
+Parshuram,2004,extreme_rain_days,5.0
+Parshuram,2004,annual_rain_mm,1937.98
+Parshuram,2004,annual_et0_mm,1307.51
+Parshuram,2004,hot_days_mar_may,23.0
+Parshuram,2004,hot_days_boro_flowering,2.0
+Parshuram,2004,longest_dry_spell_kharif1,20.0
+Parshuram,2004,rabi_rain_mm,41.34
+Parshuram,2005,rainy_season_onset_doy,178.0
+Parshuram,2005,rainy_season_withdrawal_doy,297.0
+Parshuram,2005,rainy_season_length_days,119.0
+Parshuram,2005,extreme_rain_days,3.0
+Parshuram,2005,annual_rain_mm,1890.93
+Parshuram,2005,annual_et0_mm,1295.5
+Parshuram,2005,hot_days_mar_may,14.0
+Parshuram,2005,hot_days_boro_flowering,0.0
+Parshuram,2005,longest_dry_spell_kharif1,12.0
+Parshuram,2005,rabi_rain_mm,9.59
+Parshuram,2006,rainy_season_onset_doy,131.0
+Parshuram,2006,rainy_season_withdrawal_doy,267.0
+Parshuram,2006,rainy_season_length_days,136.0
+Parshuram,2006,extreme_rain_days,5.0
+Parshuram,2006,annual_rain_mm,1814.63
+Parshuram,2006,annual_et0_mm,1324.74
+Parshuram,2006,hot_days_mar_may,38.0
+Parshuram,2006,hot_days_boro_flowering,0.0
+Parshuram,2006,longest_dry_spell_kharif1,31.0
+Parshuram,2006,rabi_rain_mm,11.84
+Parshuram,2007,rainy_season_onset_doy,129.0
+Parshuram,2007,rainy_season_withdrawal_doy,289.0
+Parshuram,2007,rainy_season_length_days,160.0
+Parshuram,2007,extreme_rain_days,16.0
+Parshuram,2007,annual_rain_mm,3061.39
+Parshuram,2007,annual_et0_mm,1246.01
+Parshuram,2007,hot_days_mar_may,22.0
+Parshuram,2007,hot_days_boro_flowering,0.0
+Parshuram,2007,longest_dry_spell_kharif1,25.0
+Parshuram,2007,rabi_rain_mm,77.92
+Parshuram,2008,rainy_season_onset_doy,146.0
+Parshuram,2008,rainy_season_withdrawal_doy,301.0
+Parshuram,2008,rainy_season_length_days,155.0
+Parshuram,2008,extreme_rain_days,4.0
+Parshuram,2008,annual_rain_mm,1904.11
+Parshuram,2008,annual_et0_mm,1279.67
+Parshuram,2008,hot_days_mar_may,26.0
+Parshuram,2008,hot_days_boro_flowering,0.0
+Parshuram,2008,longest_dry_spell_kharif1,18.0
+Parshuram,2008,rabi_rain_mm,124.62
+Parshuram,2009,rainy_season_onset_doy,122.0
+Parshuram,2009,rainy_season_withdrawal_doy,282.0
+Parshuram,2009,rainy_season_length_days,160.0
+Parshuram,2009,extreme_rain_days,11.0
+Parshuram,2009,annual_rain_mm,2586.04
+Parshuram,2009,annual_et0_mm,1313.68
+Parshuram,2009,hot_days_mar_may,21.0
+Parshuram,2009,hot_days_boro_flowering,0.0
+Parshuram,2009,longest_dry_spell_kharif1,26.0
+Parshuram,2009,rabi_rain_mm,61.85
+Parshuram,2010,rainy_season_onset_doy,140.0
+Parshuram,2010,rainy_season_withdrawal_doy,282.0
+Parshuram,2010,rainy_season_length_days,142.0
+Parshuram,2010,extreme_rain_days,3.0
+Parshuram,2010,annual_rain_mm,2402.19
+Parshuram,2010,annual_et0_mm,1313.54
+Parshuram,2010,hot_days_mar_may,27.0
+Parshuram,2010,hot_days_boro_flowering,2.0
+Parshuram,2010,longest_dry_spell_kharif1,14.0
+Parshuram,2010,rabi_rain_mm,59.44
+Parshuram,2011,rainy_season_onset_doy,125.0
+Parshuram,2011,rainy_season_withdrawal_doy,261.0
+Parshuram,2011,rainy_season_length_days,136.0
+Parshuram,2011,extreme_rain_days,9.0
+Parshuram,2011,annual_rain_mm,2346.0
+Parshuram,2011,annual_et0_mm,1273.69
+Parshuram,2011,hot_days_mar_may,6.0
+Parshuram,2011,hot_days_boro_flowering,0.0
+Parshuram,2011,longest_dry_spell_kharif1,25.0
+Parshuram,2011,rabi_rain_mm,104.98
+Parshuram,2012,rainy_season_onset_doy,97.0
+Parshuram,2012,rainy_season_withdrawal_doy,260.0
+Parshuram,2012,rainy_season_length_days,163.0
+Parshuram,2012,extreme_rain_days,2.0
+Parshuram,2012,annual_rain_mm,2089.68
+Parshuram,2012,annual_et0_mm,1298.46
+Parshuram,2012,hot_days_mar_may,16.0
+Parshuram,2012,hot_days_boro_flowering,1.0
+Parshuram,2012,longest_dry_spell_kharif1,17.0
+Parshuram,2012,rabi_rain_mm,20.8
+Parshuram,2013,rainy_season_onset_doy,124.0
+Parshuram,2013,rainy_season_withdrawal_doy,281.0
+Parshuram,2013,rainy_season_length_days,157.0
+Parshuram,2013,extreme_rain_days,7.0
+Parshuram,2013,annual_rain_mm,2287.77
+Parshuram,2013,annual_et0_mm,1336.96
+Parshuram,2013,hot_days_mar_may,36.0
+Parshuram,2013,hot_days_boro_flowering,1.0
+Parshuram,2013,longest_dry_spell_kharif1,16.0
+Parshuram,2013,rabi_rain_mm,45.44
+Parshuram,2014,rainy_season_onset_doy,145.0
+Parshuram,2014,rainy_season_withdrawal_doy,269.0
+Parshuram,2014,rainy_season_length_days,124.0
+Parshuram,2014,extreme_rain_days,10.0
+Parshuram,2014,annual_rain_mm,2350.18
+Parshuram,2014,annual_et0_mm,1376.21
+Parshuram,2014,hot_days_mar_may,42.0
+Parshuram,2014,hot_days_boro_flowering,0.0
+Parshuram,2014,longest_dry_spell_kharif1,23.0
+Parshuram,2014,rabi_rain_mm,13.95
+Parshuram,2015,rainy_season_onset_doy,161.0
+Parshuram,2015,rainy_season_withdrawal_doy,287.0
+Parshuram,2015,rainy_season_length_days,126.0
+Parshuram,2015,extreme_rain_days,13.0
+Parshuram,2015,annual_rain_mm,2919.58
+Parshuram,2015,annual_et0_mm,1256.27
+Parshuram,2015,hot_days_mar_may,8.0
+Parshuram,2015,hot_days_boro_flowering,3.0
+Parshuram,2015,longest_dry_spell_kharif1,19.0
+Parshuram,2015,rabi_rain_mm,15.75
+Parshuram,2016,rainy_season_onset_doy,134.0
+Parshuram,2016,rainy_season_withdrawal_doy,312.0
+Parshuram,2016,rainy_season_length_days,178.0
+Parshuram,2016,extreme_rain_days,21.0
+Parshuram,2016,annual_rain_mm,4007.14
+Parshuram,2016,annual_et0_mm,1273.58
+Parshuram,2016,hot_days_mar_may,7.0
+Parshuram,2016,hot_days_boro_flowering,1.0
+Parshuram,2016,longest_dry_spell_kharif1,14.0
+Parshuram,2016,rabi_rain_mm,54.38
+Parshuram,2017,rainy_season_onset_doy,64.0
+Parshuram,2017,rainy_season_withdrawal_doy,295.0
+Parshuram,2017,rainy_season_length_days,231.0
+Parshuram,2017,extreme_rain_days,43.0
+Parshuram,2017,annual_rain_mm,6675.65
+Parshuram,2017,annual_et0_mm,1178.41
+Parshuram,2017,hot_days_mar_may,0.0
+Parshuram,2017,hot_days_boro_flowering,0.0
+Parshuram,2017,longest_dry_spell_kharif1,8.0
+Parshuram,2017,rabi_rain_mm,311.75
+Parshuram,2018,rainy_season_onset_doy,96.0
+Parshuram,2018,rainy_season_withdrawal_doy,287.0
+Parshuram,2018,rainy_season_length_days,191.0
+Parshuram,2018,extreme_rain_days,17.0
+Parshuram,2018,annual_rain_mm,4009.79
+Parshuram,2018,annual_et0_mm,1193.71
+Parshuram,2018,hot_days_mar_may,0.0
+Parshuram,2018,hot_days_boro_flowering,0.0
+Parshuram,2018,longest_dry_spell_kharif1,26.0
+Parshuram,2018,rabi_rain_mm,171.25
+Parshuram,2019,rainy_season_onset_doy,123.0
+Parshuram,2019,rainy_season_withdrawal_doy,316.0
+Parshuram,2019,rainy_season_length_days,193.0
+Parshuram,2019,extreme_rain_days,26.0
+Parshuram,2019,annual_rain_mm,4379.58
+Parshuram,2019,annual_et0_mm,1271.72
+Parshuram,2019,hot_days_mar_may,13.0
+Parshuram,2019,hot_days_boro_flowering,0.0
+Parshuram,2019,longest_dry_spell_kharif1,11.0
+Parshuram,2019,rabi_rain_mm,156.06
+Parshuram,2020,rainy_season_onset_doy,107.0
+Parshuram,2020,rainy_season_withdrawal_doy,309.0
+Parshuram,2020,rainy_season_length_days,202.0
+Parshuram,2020,extreme_rain_days,9.0
+Parshuram,2020,annual_rain_mm,3718.2
+Parshuram,2020,annual_et0_mm,1194.96
+Parshuram,2020,hot_days_mar_may,0.0
+Parshuram,2020,hot_days_boro_flowering,0.0
+Parshuram,2020,longest_dry_spell_kharif1,26.0
+Parshuram,2020,rabi_rain_mm,337.86
+Parshuram,2021,rainy_season_onset_doy,144.0
+Parshuram,2021,rainy_season_withdrawal_doy,294.0
+Parshuram,2021,rainy_season_length_days,150.0
+Parshuram,2021,extreme_rain_days,7.0
+Parshuram,2021,annual_rain_mm,2934.38
+Parshuram,2021,annual_et0_mm,1280.24
+Parshuram,2021,hot_days_mar_may,42.0
+Parshuram,2021,hot_days_boro_flowering,0.0
+Parshuram,2021,longest_dry_spell_kharif1,19.0
+Parshuram,2021,rabi_rain_mm,118.84
+Parshuram,2022,rainy_season_onset_doy,129.0
+Parshuram,2022,rainy_season_withdrawal_doy,298.0
+Parshuram,2022,rainy_season_length_days,169.0
+Parshuram,2022,extreme_rain_days,6.0
+Parshuram,2022,annual_rain_mm,2562.22
+Parshuram,2022,annual_et0_mm,1268.69
+Parshuram,2022,hot_days_mar_may,10.0
+Parshuram,2022,hot_days_boro_flowering,0.0
+Parshuram,2022,longest_dry_spell_kharif1,26.0
+Parshuram,2022,rabi_rain_mm,200.95
+Parshuram,2023,rainy_season_onset_doy,136.0
+Parshuram,2023,rainy_season_withdrawal_doy,282.0
+Parshuram,2023,rainy_season_length_days,146.0
+Parshuram,2023,extreme_rain_days,8.0
+Parshuram,2023,annual_rain_mm,2924.12
+Parshuram,2023,annual_et0_mm,1271.12
+Parshuram,2023,hot_days_mar_may,10.0
+Parshuram,2023,hot_days_boro_flowering,1.0
+Parshuram,2023,longest_dry_spell_kharif1,17.0
+Parshuram,2023,rabi_rain_mm,24.27
+Parshuram,2024,rainy_season_onset_doy,123.0
+Parshuram,2024,rainy_season_withdrawal_doy,298.0
+Parshuram,2024,rainy_season_length_days,175.0
+Parshuram,2024,extreme_rain_days,18.0
+Parshuram,2024,annual_rain_mm,4021.23
+Parshuram,2024,annual_et0_mm,1201.22
+Parshuram,2024,hot_days_mar_may,16.0
+Parshuram,2024,hot_days_boro_flowering,0.0
+Parshuram,2024,longest_dry_spell_kharif1,15.0
+Parshuram,2024,rabi_rain_mm,229.65
+Parshuram,2025,rainy_season_onset_doy,105.0
+Parshuram,2025,rainy_season_withdrawal_doy,285.0
+Parshuram,2025,rainy_season_length_days,180.0
+Parshuram,2025,extreme_rain_days,10.0
+Parshuram,2025,annual_rain_mm,3641.27
+Parshuram,2025,annual_et0_mm,1241.51
+Parshuram,2025,hot_days_mar_may,14.0
+Parshuram,2025,hot_days_boro_flowering,1.0
+Parshuram,2025,longest_dry_spell_kharif1,17.0
+Parshuram,2025,rabi_rain_mm,25.78
+Parshuram,2026,hot_days_mar_may,6.0
+Parshuram,2026,hot_days_boro_flowering,0.0
+Parshuram,2026,longest_dry_spell_kharif1,8.0
+Parshuram,2026,rabi_rain_mm,50.49
+Fulgazi,1984,extreme_rain_days,2.0
+Fulgazi,1984,annual_rain_mm,1458.91
+Fulgazi,1984,annual_et0_mm,1463.23
+Fulgazi,1984,hot_days_mar_may,51.0
+Fulgazi,1984,hot_days_boro_flowering,5.0
+Fulgazi,1984,longest_dry_spell_kharif1,38.0
+Fulgazi,1985,extreme_rain_days,0.0
+Fulgazi,1985,annual_rain_mm,1382.74
+Fulgazi,1985,annual_et0_mm,1482.87
+Fulgazi,1985,hot_days_mar_may,32.0
+Fulgazi,1985,hot_days_boro_flowering,3.0
+Fulgazi,1985,longest_dry_spell_kharif1,22.0
+Fulgazi,1985,rabi_rain_mm,10.94
+Fulgazi,1986,extreme_rain_days,1.0
+Fulgazi,1986,annual_rain_mm,1377.95
+Fulgazi,1986,annual_et0_mm,1525.41
+Fulgazi,1986,hot_days_mar_may,53.0
+Fulgazi,1986,hot_days_boro_flowering,7.0
+Fulgazi,1986,longest_dry_spell_kharif1,13.0
+Fulgazi,1986,rabi_rain_mm,48.19
+Fulgazi,1987,extreme_rain_days,2.0
+Fulgazi,1987,annual_rain_mm,1390.38
+Fulgazi,1987,annual_et0_mm,1440.13
+Fulgazi,1987,hot_days_mar_may,36.0
+Fulgazi,1987,hot_days_boro_flowering,0.0
+Fulgazi,1987,longest_dry_spell_kharif1,23.0
+Fulgazi,1987,rabi_rain_mm,89.55
+Fulgazi,1988,extreme_rain_days,3.0
+Fulgazi,1988,annual_rain_mm,1584.44
+Fulgazi,1988,annual_et0_mm,1405.52
+Fulgazi,1988,hot_days_mar_may,42.0
+Fulgazi,1988,hot_days_boro_flowering,2.0
+Fulgazi,1988,longest_dry_spell_kharif1,26.0
+Fulgazi,1988,rabi_rain_mm,41.32
+Fulgazi,1989,extreme_rain_days,0.0
+Fulgazi,1989,annual_rain_mm,979.02
+Fulgazi,1989,annual_et0_mm,1572.8
+Fulgazi,1989,hot_days_mar_may,47.0
+Fulgazi,1989,hot_days_boro_flowering,2.0
+Fulgazi,1989,longest_dry_spell_kharif1,23.0
+Fulgazi,1989,rabi_rain_mm,76.06
+Fulgazi,1990,extreme_rain_days,2.0
+Fulgazi,1990,annual_rain_mm,1138.31
+Fulgazi,1990,annual_et0_mm,1469.54
+Fulgazi,1990,hot_days_mar_may,33.0
+Fulgazi,1990,hot_days_boro_flowering,2.0
+Fulgazi,1990,longest_dry_spell_kharif1,18.0
+Fulgazi,1990,rabi_rain_mm,21.85
+Fulgazi,1991,extreme_rain_days,0.0
+Fulgazi,1991,annual_rain_mm,1277.89
+Fulgazi,1991,annual_et0_mm,1448.92
+Fulgazi,1991,hot_days_mar_may,57.0
+Fulgazi,1991,hot_days_boro_flowering,7.0
+Fulgazi,1991,longest_dry_spell_kharif1,22.0
+Fulgazi,1991,rabi_rain_mm,18.68
+Fulgazi,1992,extreme_rain_days,0.0
+Fulgazi,1992,annual_rain_mm,864.9
+Fulgazi,1992,annual_et0_mm,1518.7
+Fulgazi,1992,hot_days_mar_may,57.0
+Fulgazi,1992,hot_days_boro_flowering,3.0
+Fulgazi,1992,longest_dry_spell_kharif1,38.0
+Fulgazi,1992,rabi_rain_mm,97.43
+Fulgazi,1993,extreme_rain_days,2.0
+Fulgazi,1993,annual_rain_mm,1471.05
+Fulgazi,1993,annual_et0_mm,1387.42
+Fulgazi,1993,hot_days_mar_may,27.0
+Fulgazi,1993,hot_days_boro_flowering,4.0
+Fulgazi,1993,longest_dry_spell_kharif1,13.0
+Fulgazi,1993,rabi_rain_mm,55.38
+Fulgazi,1994,extreme_rain_days,0.0
+Fulgazi,1994,annual_rain_mm,1085.5
+Fulgazi,1994,annual_et0_mm,1514.53
+Fulgazi,1994,hot_days_mar_may,44.0
+Fulgazi,1994,hot_days_boro_flowering,6.0
+Fulgazi,1994,longest_dry_spell_kharif1,14.0
+Fulgazi,1994,rabi_rain_mm,33.63
+Fulgazi,1995,extreme_rain_days,1.0
+Fulgazi,1995,annual_rain_mm,1432.5
+Fulgazi,1995,annual_et0_mm,1468.86
+Fulgazi,1995,hot_days_mar_may,58.0
+Fulgazi,1995,hot_days_boro_flowering,5.0
+Fulgazi,1995,longest_dry_spell_kharif1,30.0
+Fulgazi,1995,rabi_rain_mm,45.9
+Fulgazi,1996,extreme_rain_days,0.0
+Fulgazi,1996,annual_rain_mm,1195.55
+Fulgazi,1996,annual_et0_mm,1424.25
+Fulgazi,1996,hot_days_mar_may,35.0
+Fulgazi,1996,hot_days_boro_flowering,2.0
+Fulgazi,1996,longest_dry_spell_kharif1,16.0
+Fulgazi,1996,rabi_rain_mm,116.65
+Fulgazi,1997,rainy_season_onset_doy,139.0
+Fulgazi,1997,rainy_season_withdrawal_doy,274.0
+Fulgazi,1997,rainy_season_length_days,135.0
+Fulgazi,1997,extreme_rain_days,4.0
+Fulgazi,1997,annual_rain_mm,1875.42
+Fulgazi,1997,annual_et0_mm,1361.4
+Fulgazi,1997,hot_days_mar_may,42.0
+Fulgazi,1997,hot_days_boro_flowering,6.0
+Fulgazi,1997,longest_dry_spell_kharif1,22.0
+Fulgazi,1997,rabi_rain_mm,16.18
+Fulgazi,1998,rainy_season_onset_doy,109.0
+Fulgazi,1998,rainy_season_withdrawal_doy,253.0
+Fulgazi,1998,rainy_season_length_days,144.0
+Fulgazi,1998,extreme_rain_days,9.0
+Fulgazi,1998,annual_rain_mm,2630.54
+Fulgazi,1998,annual_et0_mm,1264.87
+Fulgazi,1998,hot_days_mar_may,10.0
+Fulgazi,1998,hot_days_boro_flowering,0.0
+Fulgazi,1998,longest_dry_spell_kharif1,9.0
+Fulgazi,1998,rabi_rain_mm,103.76
+Fulgazi,1999,rainy_season_onset_doy,126.0
+Fulgazi,1999,rainy_season_withdrawal_doy,266.0
+Fulgazi,1999,rainy_season_length_days,140.0
+Fulgazi,1999,extreme_rain_days,6.0
+Fulgazi,1999,annual_rain_mm,1989.24
+Fulgazi,1999,annual_et0_mm,1369.76
+Fulgazi,1999,hot_days_mar_may,46.0
+Fulgazi,1999,hot_days_boro_flowering,1.0
+Fulgazi,1999,longest_dry_spell_kharif1,37.0
+Fulgazi,1999,rabi_rain_mm,114.88
+Fulgazi,2000,rainy_season_onset_doy,139.0
+Fulgazi,2000,rainy_season_withdrawal_doy,245.0
+Fulgazi,2000,rainy_season_length_days,106.0
+Fulgazi,2000,extreme_rain_days,2.0
+Fulgazi,2000,annual_rain_mm,1929.46
+Fulgazi,2000,annual_et0_mm,1282.62
+Fulgazi,2000,hot_days_mar_may,17.0
+Fulgazi,2000,hot_days_boro_flowering,0.0
+Fulgazi,2000,longest_dry_spell_kharif1,26.0
+Fulgazi,2000,rabi_rain_mm,62.04
+Fulgazi,2001,rainy_season_onset_doy,120.0
+Fulgazi,2001,rainy_season_withdrawal_doy,239.0
+Fulgazi,2001,rainy_season_length_days,119.0
+Fulgazi,2001,extreme_rain_days,8.0
+Fulgazi,2001,annual_rain_mm,2123.34
+Fulgazi,2001,annual_et0_mm,1312.92
+Fulgazi,2001,hot_days_mar_may,31.0
+Fulgazi,2001,hot_days_boro_flowering,2.0
+Fulgazi,2001,longest_dry_spell_kharif1,22.0
+Fulgazi,2001,rabi_rain_mm,61.28
+Fulgazi,2002,rainy_season_onset_doy,145.0
+Fulgazi,2002,rainy_season_withdrawal_doy,240.0
+Fulgazi,2002,rainy_season_length_days,95.0
+Fulgazi,2002,extreme_rain_days,2.0
+Fulgazi,2002,annual_rain_mm,1891.39
+Fulgazi,2002,annual_et0_mm,1282.63
+Fulgazi,2002,hot_days_mar_may,26.0
+Fulgazi,2002,hot_days_boro_flowering,1.0
+Fulgazi,2002,longest_dry_spell_kharif1,19.0
+Fulgazi,2002,rabi_rain_mm,81.08
+Fulgazi,2003,rainy_season_onset_doy,155.0
+Fulgazi,2003,rainy_season_withdrawal_doy,225.0
+Fulgazi,2003,rainy_season_length_days,70.0
+Fulgazi,2003,extreme_rain_days,6.0
+Fulgazi,2003,annual_rain_mm,1644.93
+Fulgazi,2003,annual_et0_mm,1319.39
+Fulgazi,2003,hot_days_mar_may,32.0
+Fulgazi,2003,hot_days_boro_flowering,0.0
+Fulgazi,2003,longest_dry_spell_kharif1,15.0
+Fulgazi,2003,rabi_rain_mm,113.91
+Fulgazi,2004,rainy_season_onset_doy,167.0
+Fulgazi,2004,rainy_season_withdrawal_doy,289.0
+Fulgazi,2004,rainy_season_length_days,122.0
+Fulgazi,2004,extreme_rain_days,5.0
+Fulgazi,2004,annual_rain_mm,1937.98
+Fulgazi,2004,annual_et0_mm,1307.89
+Fulgazi,2004,hot_days_mar_may,23.0
+Fulgazi,2004,hot_days_boro_flowering,2.0
+Fulgazi,2004,longest_dry_spell_kharif1,20.0
+Fulgazi,2004,rabi_rain_mm,41.34
+Fulgazi,2005,rainy_season_onset_doy,178.0
+Fulgazi,2005,rainy_season_withdrawal_doy,297.0
+Fulgazi,2005,rainy_season_length_days,119.0
+Fulgazi,2005,extreme_rain_days,3.0
+Fulgazi,2005,annual_rain_mm,1890.93
+Fulgazi,2005,annual_et0_mm,1295.86
+Fulgazi,2005,hot_days_mar_may,14.0
+Fulgazi,2005,hot_days_boro_flowering,0.0
+Fulgazi,2005,longest_dry_spell_kharif1,12.0
+Fulgazi,2005,rabi_rain_mm,9.59
+Fulgazi,2006,rainy_season_onset_doy,131.0
+Fulgazi,2006,rainy_season_withdrawal_doy,267.0
+Fulgazi,2006,rainy_season_length_days,136.0
+Fulgazi,2006,extreme_rain_days,5.0
+Fulgazi,2006,annual_rain_mm,1814.63
+Fulgazi,2006,annual_et0_mm,1325.12
+Fulgazi,2006,hot_days_mar_may,38.0
+Fulgazi,2006,hot_days_boro_flowering,0.0
+Fulgazi,2006,longest_dry_spell_kharif1,31.0
+Fulgazi,2006,rabi_rain_mm,11.84
+Fulgazi,2007,rainy_season_onset_doy,129.0
+Fulgazi,2007,rainy_season_withdrawal_doy,289.0
+Fulgazi,2007,rainy_season_length_days,160.0
+Fulgazi,2007,extreme_rain_days,16.0
+Fulgazi,2007,annual_rain_mm,3061.39
+Fulgazi,2007,annual_et0_mm,1246.37
+Fulgazi,2007,hot_days_mar_may,22.0
+Fulgazi,2007,hot_days_boro_flowering,0.0
+Fulgazi,2007,longest_dry_spell_kharif1,25.0
+Fulgazi,2007,rabi_rain_mm,77.92
+Fulgazi,2008,rainy_season_onset_doy,146.0
+Fulgazi,2008,rainy_season_withdrawal_doy,301.0
+Fulgazi,2008,rainy_season_length_days,155.0
+Fulgazi,2008,extreme_rain_days,4.0
+Fulgazi,2008,annual_rain_mm,1904.11
+Fulgazi,2008,annual_et0_mm,1280.03
+Fulgazi,2008,hot_days_mar_may,26.0
+Fulgazi,2008,hot_days_boro_flowering,0.0
+Fulgazi,2008,longest_dry_spell_kharif1,18.0
+Fulgazi,2008,rabi_rain_mm,124.62
+Fulgazi,2009,rainy_season_onset_doy,122.0
+Fulgazi,2009,rainy_season_withdrawal_doy,282.0
+Fulgazi,2009,rainy_season_length_days,160.0
+Fulgazi,2009,extreme_rain_days,11.0
+Fulgazi,2009,annual_rain_mm,2586.04
+Fulgazi,2009,annual_et0_mm,1314.05
+Fulgazi,2009,hot_days_mar_may,21.0
+Fulgazi,2009,hot_days_boro_flowering,0.0
+Fulgazi,2009,longest_dry_spell_kharif1,26.0
+Fulgazi,2009,rabi_rain_mm,61.85
+Fulgazi,2010,rainy_season_onset_doy,140.0
+Fulgazi,2010,rainy_season_withdrawal_doy,282.0
+Fulgazi,2010,rainy_season_length_days,142.0
+Fulgazi,2010,extreme_rain_days,3.0
+Fulgazi,2010,annual_rain_mm,2402.19
+Fulgazi,2010,annual_et0_mm,1313.91
+Fulgazi,2010,hot_days_mar_may,27.0
+Fulgazi,2010,hot_days_boro_flowering,2.0
+Fulgazi,2010,longest_dry_spell_kharif1,14.0
+Fulgazi,2010,rabi_rain_mm,59.44
+Fulgazi,2011,rainy_season_onset_doy,125.0
+Fulgazi,2011,rainy_season_withdrawal_doy,261.0
+Fulgazi,2011,rainy_season_length_days,136.0
+Fulgazi,2011,extreme_rain_days,9.0
+Fulgazi,2011,annual_rain_mm,2346.0
+Fulgazi,2011,annual_et0_mm,1274.07
+Fulgazi,2011,hot_days_mar_may,6.0
+Fulgazi,2011,hot_days_boro_flowering,0.0
+Fulgazi,2011,longest_dry_spell_kharif1,25.0
+Fulgazi,2011,rabi_rain_mm,104.98
+Fulgazi,2012,rainy_season_onset_doy,97.0
+Fulgazi,2012,rainy_season_withdrawal_doy,260.0
+Fulgazi,2012,rainy_season_length_days,163.0
+Fulgazi,2012,extreme_rain_days,2.0
+Fulgazi,2012,annual_rain_mm,2089.68
+Fulgazi,2012,annual_et0_mm,1298.82
+Fulgazi,2012,hot_days_mar_may,16.0
+Fulgazi,2012,hot_days_boro_flowering,1.0
+Fulgazi,2012,longest_dry_spell_kharif1,17.0
+Fulgazi,2012,rabi_rain_mm,20.8
+Fulgazi,2013,rainy_season_onset_doy,124.0
+Fulgazi,2013,rainy_season_withdrawal_doy,281.0
+Fulgazi,2013,rainy_season_length_days,157.0
+Fulgazi,2013,extreme_rain_days,7.0
+Fulgazi,2013,annual_rain_mm,2287.77
+Fulgazi,2013,annual_et0_mm,1337.34
+Fulgazi,2013,hot_days_mar_may,36.0
+Fulgazi,2013,hot_days_boro_flowering,1.0
+Fulgazi,2013,longest_dry_spell_kharif1,16.0
+Fulgazi,2013,rabi_rain_mm,45.44
+Fulgazi,2014,rainy_season_onset_doy,145.0
+Fulgazi,2014,rainy_season_withdrawal_doy,269.0
+Fulgazi,2014,rainy_season_length_days,124.0
+Fulgazi,2014,extreme_rain_days,10.0
+Fulgazi,2014,annual_rain_mm,2350.18
+Fulgazi,2014,annual_et0_mm,1376.6
+Fulgazi,2014,hot_days_mar_may,42.0
+Fulgazi,2014,hot_days_boro_flowering,0.0
+Fulgazi,2014,longest_dry_spell_kharif1,23.0
+Fulgazi,2014,rabi_rain_mm,13.95
+Fulgazi,2015,rainy_season_onset_doy,161.0
+Fulgazi,2015,rainy_season_withdrawal_doy,287.0
+Fulgazi,2015,rainy_season_length_days,126.0
+Fulgazi,2015,extreme_rain_days,13.0
+Fulgazi,2015,annual_rain_mm,2919.58
+Fulgazi,2015,annual_et0_mm,1256.65
+Fulgazi,2015,hot_days_mar_may,8.0
+Fulgazi,2015,hot_days_boro_flowering,3.0
+Fulgazi,2015,longest_dry_spell_kharif1,19.0
+Fulgazi,2015,rabi_rain_mm,15.75
+Fulgazi,2016,rainy_season_onset_doy,134.0
+Fulgazi,2016,rainy_season_withdrawal_doy,312.0
+Fulgazi,2016,rainy_season_length_days,178.0
+Fulgazi,2016,extreme_rain_days,21.0
+Fulgazi,2016,annual_rain_mm,4007.14
+Fulgazi,2016,annual_et0_mm,1273.95
+Fulgazi,2016,hot_days_mar_may,7.0
+Fulgazi,2016,hot_days_boro_flowering,1.0
+Fulgazi,2016,longest_dry_spell_kharif1,14.0
+Fulgazi,2016,rabi_rain_mm,54.38
+Fulgazi,2017,rainy_season_onset_doy,64.0
+Fulgazi,2017,rainy_season_withdrawal_doy,295.0
+Fulgazi,2017,rainy_season_length_days,231.0
+Fulgazi,2017,extreme_rain_days,43.0
+Fulgazi,2017,annual_rain_mm,6675.65
+Fulgazi,2017,annual_et0_mm,1178.77
+Fulgazi,2017,hot_days_mar_may,0.0
+Fulgazi,2017,hot_days_boro_flowering,0.0
+Fulgazi,2017,longest_dry_spell_kharif1,8.0
+Fulgazi,2017,rabi_rain_mm,311.75
+Fulgazi,2018,rainy_season_onset_doy,96.0
+Fulgazi,2018,rainy_season_withdrawal_doy,287.0
+Fulgazi,2018,rainy_season_length_days,191.0
+Fulgazi,2018,extreme_rain_days,17.0
+Fulgazi,2018,annual_rain_mm,4009.79
+Fulgazi,2018,annual_et0_mm,1194.08
+Fulgazi,2018,hot_days_mar_may,0.0
+Fulgazi,2018,hot_days_boro_flowering,0.0
+Fulgazi,2018,longest_dry_spell_kharif1,26.0
+Fulgazi,2018,rabi_rain_mm,171.25
+Fulgazi,2019,rainy_season_onset_doy,123.0
+Fulgazi,2019,rainy_season_withdrawal_doy,316.0
+Fulgazi,2019,rainy_season_length_days,193.0
+Fulgazi,2019,extreme_rain_days,26.0
+Fulgazi,2019,annual_rain_mm,4379.58
+Fulgazi,2019,annual_et0_mm,1272.09
+Fulgazi,2019,hot_days_mar_may,13.0
+Fulgazi,2019,hot_days_boro_flowering,0.0
+Fulgazi,2019,longest_dry_spell_kharif1,11.0
+Fulgazi,2019,rabi_rain_mm,156.06
+Fulgazi,2020,rainy_season_onset_doy,107.0
+Fulgazi,2020,rainy_season_withdrawal_doy,309.0
+Fulgazi,2020,rainy_season_length_days,202.0
+Fulgazi,2020,extreme_rain_days,9.0
+Fulgazi,2020,annual_rain_mm,3718.2
+Fulgazi,2020,annual_et0_mm,1195.3
+Fulgazi,2020,hot_days_mar_may,0.0
+Fulgazi,2020,hot_days_boro_flowering,0.0
+Fulgazi,2020,longest_dry_spell_kharif1,26.0
+Fulgazi,2020,rabi_rain_mm,337.86
+Fulgazi,2021,rainy_season_onset_doy,144.0
+Fulgazi,2021,rainy_season_withdrawal_doy,294.0
+Fulgazi,2021,rainy_season_length_days,150.0
+Fulgazi,2021,extreme_rain_days,7.0
+Fulgazi,2021,annual_rain_mm,2934.38
+Fulgazi,2021,annual_et0_mm,1280.58
+Fulgazi,2021,hot_days_mar_may,42.0
+Fulgazi,2021,hot_days_boro_flowering,0.0
+Fulgazi,2021,longest_dry_spell_kharif1,19.0
+Fulgazi,2021,rabi_rain_mm,118.84
+Fulgazi,2022,rainy_season_onset_doy,129.0
+Fulgazi,2022,rainy_season_withdrawal_doy,298.0
+Fulgazi,2022,rainy_season_length_days,169.0
+Fulgazi,2022,extreme_rain_days,6.0
+Fulgazi,2022,annual_rain_mm,2562.22
+Fulgazi,2022,annual_et0_mm,1269.05
+Fulgazi,2022,hot_days_mar_may,10.0
+Fulgazi,2022,hot_days_boro_flowering,0.0
+Fulgazi,2022,longest_dry_spell_kharif1,26.0
+Fulgazi,2022,rabi_rain_mm,200.95
+Fulgazi,2023,rainy_season_onset_doy,136.0
+Fulgazi,2023,rainy_season_withdrawal_doy,282.0
+Fulgazi,2023,rainy_season_length_days,146.0
+Fulgazi,2023,extreme_rain_days,8.0
+Fulgazi,2023,annual_rain_mm,2924.12
+Fulgazi,2023,annual_et0_mm,1271.47
+Fulgazi,2023,hot_days_mar_may,10.0
+Fulgazi,2023,hot_days_boro_flowering,1.0
+Fulgazi,2023,longest_dry_spell_kharif1,17.0
+Fulgazi,2023,rabi_rain_mm,24.27
+Fulgazi,2024,rainy_season_onset_doy,123.0
+Fulgazi,2024,rainy_season_withdrawal_doy,298.0
+Fulgazi,2024,rainy_season_length_days,175.0
+Fulgazi,2024,extreme_rain_days,18.0
+Fulgazi,2024,annual_rain_mm,4021.23
+Fulgazi,2024,annual_et0_mm,1201.55
+Fulgazi,2024,hot_days_mar_may,16.0
+Fulgazi,2024,hot_days_boro_flowering,0.0
+Fulgazi,2024,longest_dry_spell_kharif1,15.0
+Fulgazi,2024,rabi_rain_mm,229.65
+Fulgazi,2025,rainy_season_onset_doy,105.0
+Fulgazi,2025,rainy_season_withdrawal_doy,285.0
+Fulgazi,2025,rainy_season_length_days,180.0
+Fulgazi,2025,extreme_rain_days,10.0
+Fulgazi,2025,annual_rain_mm,3641.27
+Fulgazi,2025,annual_et0_mm,1241.86
+Fulgazi,2025,hot_days_mar_may,14.0
+Fulgazi,2025,hot_days_boro_flowering,1.0
+Fulgazi,2025,longest_dry_spell_kharif1,17.0
+Fulgazi,2025,rabi_rain_mm,25.78
+Fulgazi,2026,hot_days_mar_may,6.0
+Fulgazi,2026,hot_days_boro_flowering,0.0
+Fulgazi,2026,longest_dry_spell_kharif1,8.0
+Fulgazi,2026,rabi_rain_mm,50.49
+Sonagazi,1984,extreme_rain_days,2.0
+Sonagazi,1984,annual_rain_mm,1458.91
+Sonagazi,1984,annual_et0_mm,1480.65
+Sonagazi,1984,hot_days_mar_may,51.0
+Sonagazi,1984,hot_days_boro_flowering,5.0
+Sonagazi,1984,longest_dry_spell_kharif1,38.0
+Sonagazi,1985,extreme_rain_days,0.0
+Sonagazi,1985,annual_rain_mm,1382.74
+Sonagazi,1985,annual_et0_mm,1509.44
+Sonagazi,1985,hot_days_mar_may,32.0
+Sonagazi,1985,hot_days_boro_flowering,3.0
+Sonagazi,1985,longest_dry_spell_kharif1,22.0
+Sonagazi,1985,rabi_rain_mm,10.94
+Sonagazi,1986,extreme_rain_days,1.0
+Sonagazi,1986,annual_rain_mm,1377.95
+Sonagazi,1986,annual_et0_mm,1547.22
+Sonagazi,1986,hot_days_mar_may,53.0
+Sonagazi,1986,hot_days_boro_flowering,7.0
+Sonagazi,1986,longest_dry_spell_kharif1,13.0
+Sonagazi,1986,rabi_rain_mm,48.19
+Sonagazi,1987,extreme_rain_days,2.0
+Sonagazi,1987,annual_rain_mm,1390.38
+Sonagazi,1987,annual_et0_mm,1467.94
+Sonagazi,1987,hot_days_mar_may,36.0
+Sonagazi,1987,hot_days_boro_flowering,0.0
+Sonagazi,1987,longest_dry_spell_kharif1,23.0
+Sonagazi,1987,rabi_rain_mm,89.55
+Sonagazi,1988,extreme_rain_days,3.0
+Sonagazi,1988,annual_rain_mm,1584.44
+Sonagazi,1988,annual_et0_mm,1432.45
+Sonagazi,1988,hot_days_mar_may,42.0
+Sonagazi,1988,hot_days_boro_flowering,2.0
+Sonagazi,1988,longest_dry_spell_kharif1,26.0
+Sonagazi,1988,rabi_rain_mm,41.32
+Sonagazi,1989,extreme_rain_days,0.0
+Sonagazi,1989,annual_rain_mm,979.02
+Sonagazi,1989,annual_et0_mm,1601.38
+Sonagazi,1989,hot_days_mar_may,47.0
+Sonagazi,1989,hot_days_boro_flowering,2.0
+Sonagazi,1989,longest_dry_spell_kharif1,23.0
+Sonagazi,1989,rabi_rain_mm,76.06
+Sonagazi,1990,extreme_rain_days,2.0
+Sonagazi,1990,annual_rain_mm,1138.31
+Sonagazi,1990,annual_et0_mm,1488.46
+Sonagazi,1990,hot_days_mar_may,33.0
+Sonagazi,1990,hot_days_boro_flowering,2.0
+Sonagazi,1990,longest_dry_spell_kharif1,18.0
+Sonagazi,1990,rabi_rain_mm,21.85
+Sonagazi,1991,extreme_rain_days,0.0
+Sonagazi,1991,annual_rain_mm,1277.89
+Sonagazi,1991,annual_et0_mm,1476.7
+Sonagazi,1991,hot_days_mar_may,57.0
+Sonagazi,1991,hot_days_boro_flowering,7.0
+Sonagazi,1991,longest_dry_spell_kharif1,22.0
+Sonagazi,1991,rabi_rain_mm,18.68
+Sonagazi,1992,extreme_rain_days,0.0
+Sonagazi,1992,annual_rain_mm,864.9
+Sonagazi,1992,annual_et0_mm,1532.08
+Sonagazi,1992,hot_days_mar_may,57.0
+Sonagazi,1992,hot_days_boro_flowering,3.0
+Sonagazi,1992,longest_dry_spell_kharif1,38.0
+Sonagazi,1992,rabi_rain_mm,97.43
+Sonagazi,1993,extreme_rain_days,2.0
+Sonagazi,1993,annual_rain_mm,1471.05
+Sonagazi,1993,annual_et0_mm,1415.11
+Sonagazi,1993,hot_days_mar_may,27.0
+Sonagazi,1993,hot_days_boro_flowering,4.0
+Sonagazi,1993,longest_dry_spell_kharif1,13.0
+Sonagazi,1993,rabi_rain_mm,55.38
+Sonagazi,1994,extreme_rain_days,0.0
+Sonagazi,1994,annual_rain_mm,1085.5
+Sonagazi,1994,annual_et0_mm,1541.52
+Sonagazi,1994,hot_days_mar_may,44.0
+Sonagazi,1994,hot_days_boro_flowering,6.0
+Sonagazi,1994,longest_dry_spell_kharif1,14.0
+Sonagazi,1994,rabi_rain_mm,33.63
+Sonagazi,1995,extreme_rain_days,1.0
+Sonagazi,1995,annual_rain_mm,1432.5
+Sonagazi,1995,annual_et0_mm,1493.51
+Sonagazi,1995,hot_days_mar_may,58.0
+Sonagazi,1995,hot_days_boro_flowering,5.0
+Sonagazi,1995,longest_dry_spell_kharif1,30.0
+Sonagazi,1995,rabi_rain_mm,45.9
+Sonagazi,1996,extreme_rain_days,0.0
+Sonagazi,1996,annual_rain_mm,1195.55
+Sonagazi,1996,annual_et0_mm,1432.51
+Sonagazi,1996,hot_days_mar_may,35.0
+Sonagazi,1996,hot_days_boro_flowering,2.0
+Sonagazi,1996,longest_dry_spell_kharif1,16.0
+Sonagazi,1996,rabi_rain_mm,116.65
+Sonagazi,1997,rainy_season_onset_doy,139.0
+Sonagazi,1997,rainy_season_withdrawal_doy,274.0
+Sonagazi,1997,rainy_season_length_days,135.0
+Sonagazi,1997,extreme_rain_days,4.0
+Sonagazi,1997,annual_rain_mm,1875.42
+Sonagazi,1997,annual_et0_mm,1367.17
+Sonagazi,1997,hot_days_mar_may,42.0
+Sonagazi,1997,hot_days_boro_flowering,6.0
+Sonagazi,1997,longest_dry_spell_kharif1,22.0
+Sonagazi,1997,rabi_rain_mm,16.18
+Sonagazi,1998,rainy_season_onset_doy,109.0
+Sonagazi,1998,rainy_season_withdrawal_doy,253.0
+Sonagazi,1998,rainy_season_length_days,144.0
+Sonagazi,1998,extreme_rain_days,9.0
+Sonagazi,1998,annual_rain_mm,2630.54
+Sonagazi,1998,annual_et0_mm,1294.69
+Sonagazi,1998,hot_days_mar_may,10.0
+Sonagazi,1998,hot_days_boro_flowering,0.0
+Sonagazi,1998,longest_dry_spell_kharif1,9.0
+Sonagazi,1998,rabi_rain_mm,103.76
+Sonagazi,1999,rainy_season_onset_doy,126.0
+Sonagazi,1999,rainy_season_withdrawal_doy,266.0
+Sonagazi,1999,rainy_season_length_days,140.0
+Sonagazi,1999,extreme_rain_days,6.0
+Sonagazi,1999,annual_rain_mm,1989.24
+Sonagazi,1999,annual_et0_mm,1392.5
+Sonagazi,1999,hot_days_mar_may,46.0
+Sonagazi,1999,hot_days_boro_flowering,1.0
+Sonagazi,1999,longest_dry_spell_kharif1,37.0
+Sonagazi,1999,rabi_rain_mm,114.88
+Sonagazi,2000,rainy_season_onset_doy,139.0
+Sonagazi,2000,rainy_season_withdrawal_doy,245.0
+Sonagazi,2000,rainy_season_length_days,106.0
+Sonagazi,2000,extreme_rain_days,2.0
+Sonagazi,2000,annual_rain_mm,1929.46
+Sonagazi,2000,annual_et0_mm,1316.6
+Sonagazi,2000,hot_days_mar_may,17.0
+Sonagazi,2000,hot_days_boro_flowering,0.0
+Sonagazi,2000,longest_dry_spell_kharif1,26.0
+Sonagazi,2000,rabi_rain_mm,62.04
+Sonagazi,2001,rainy_season_onset_doy,120.0
+Sonagazi,2001,rainy_season_withdrawal_doy,239.0
+Sonagazi,2001,rainy_season_length_days,119.0
+Sonagazi,2001,extreme_rain_days,8.0
+Sonagazi,2001,annual_rain_mm,2123.34
+Sonagazi,2001,annual_et0_mm,1346.42
+Sonagazi,2001,hot_days_mar_may,31.0
+Sonagazi,2001,hot_days_boro_flowering,2.0
+Sonagazi,2001,longest_dry_spell_kharif1,22.0
+Sonagazi,2001,rabi_rain_mm,61.28
+Sonagazi,2002,rainy_season_onset_doy,145.0
+Sonagazi,2002,rainy_season_withdrawal_doy,240.0
+Sonagazi,2002,rainy_season_length_days,95.0
+Sonagazi,2002,extreme_rain_days,2.0
+Sonagazi,2002,annual_rain_mm,1891.39
+Sonagazi,2002,annual_et0_mm,1319.62
+Sonagazi,2002,hot_days_mar_may,26.0
+Sonagazi,2002,hot_days_boro_flowering,1.0
+Sonagazi,2002,longest_dry_spell_kharif1,19.0
+Sonagazi,2002,rabi_rain_mm,81.08
+Sonagazi,2003,rainy_season_onset_doy,155.0
+Sonagazi,2003,rainy_season_withdrawal_doy,225.0
+Sonagazi,2003,rainy_season_length_days,70.0
+Sonagazi,2003,extreme_rain_days,6.0
+Sonagazi,2003,annual_rain_mm,1644.93
+Sonagazi,2003,annual_et0_mm,1356.82
+Sonagazi,2003,hot_days_mar_may,32.0
+Sonagazi,2003,hot_days_boro_flowering,0.0
+Sonagazi,2003,longest_dry_spell_kharif1,15.0
+Sonagazi,2003,rabi_rain_mm,113.91
+Sonagazi,2004,rainy_season_onset_doy,167.0
+Sonagazi,2004,rainy_season_withdrawal_doy,289.0
+Sonagazi,2004,rainy_season_length_days,122.0
+Sonagazi,2004,extreme_rain_days,5.0
+Sonagazi,2004,annual_rain_mm,1937.98
+Sonagazi,2004,annual_et0_mm,1343.87
+Sonagazi,2004,hot_days_mar_may,23.0
+Sonagazi,2004,hot_days_boro_flowering,2.0
+Sonagazi,2004,longest_dry_spell_kharif1,20.0
+Sonagazi,2004,rabi_rain_mm,41.34
+Sonagazi,2005,rainy_season_onset_doy,178.0
+Sonagazi,2005,rainy_season_withdrawal_doy,297.0
+Sonagazi,2005,rainy_season_length_days,119.0
+Sonagazi,2005,extreme_rain_days,3.0
+Sonagazi,2005,annual_rain_mm,1890.93
+Sonagazi,2005,annual_et0_mm,1331.01
+Sonagazi,2005,hot_days_mar_may,14.0
+Sonagazi,2005,hot_days_boro_flowering,0.0
+Sonagazi,2005,longest_dry_spell_kharif1,12.0
+Sonagazi,2005,rabi_rain_mm,9.59
+Sonagazi,2006,rainy_season_onset_doy,131.0
+Sonagazi,2006,rainy_season_withdrawal_doy,267.0
+Sonagazi,2006,rainy_season_length_days,136.0
+Sonagazi,2006,extreme_rain_days,5.0
+Sonagazi,2006,annual_rain_mm,1814.63
+Sonagazi,2006,annual_et0_mm,1367.73
+Sonagazi,2006,hot_days_mar_may,38.0
+Sonagazi,2006,hot_days_boro_flowering,0.0
+Sonagazi,2006,longest_dry_spell_kharif1,31.0
+Sonagazi,2006,rabi_rain_mm,11.84
+Sonagazi,2007,rainy_season_onset_doy,129.0
+Sonagazi,2007,rainy_season_withdrawal_doy,289.0
+Sonagazi,2007,rainy_season_length_days,160.0
+Sonagazi,2007,extreme_rain_days,16.0
+Sonagazi,2007,annual_rain_mm,3061.39
+Sonagazi,2007,annual_et0_mm,1285.54
+Sonagazi,2007,hot_days_mar_may,22.0
+Sonagazi,2007,hot_days_boro_flowering,0.0
+Sonagazi,2007,longest_dry_spell_kharif1,25.0
+Sonagazi,2007,rabi_rain_mm,77.92
+Sonagazi,2008,rainy_season_onset_doy,146.0
+Sonagazi,2008,rainy_season_withdrawal_doy,301.0
+Sonagazi,2008,rainy_season_length_days,155.0
+Sonagazi,2008,extreme_rain_days,4.0
+Sonagazi,2008,annual_rain_mm,1904.11
+Sonagazi,2008,annual_et0_mm,1320.58
+Sonagazi,2008,hot_days_mar_may,26.0
+Sonagazi,2008,hot_days_boro_flowering,0.0
+Sonagazi,2008,longest_dry_spell_kharif1,18.0
+Sonagazi,2008,rabi_rain_mm,124.62
+Sonagazi,2009,rainy_season_onset_doy,122.0
+Sonagazi,2009,rainy_season_withdrawal_doy,282.0
+Sonagazi,2009,rainy_season_length_days,160.0
+Sonagazi,2009,extreme_rain_days,11.0
+Sonagazi,2009,annual_rain_mm,2586.04
+Sonagazi,2009,annual_et0_mm,1336.61
+Sonagazi,2009,hot_days_mar_may,21.0
+Sonagazi,2009,hot_days_boro_flowering,0.0
+Sonagazi,2009,longest_dry_spell_kharif1,26.0
+Sonagazi,2009,rabi_rain_mm,61.85
+Sonagazi,2010,rainy_season_onset_doy,140.0
+Sonagazi,2010,rainy_season_withdrawal_doy,282.0
+Sonagazi,2010,rainy_season_length_days,142.0
+Sonagazi,2010,extreme_rain_days,3.0
+Sonagazi,2010,annual_rain_mm,2402.19
+Sonagazi,2010,annual_et0_mm,1357.35
+Sonagazi,2010,hot_days_mar_may,27.0
+Sonagazi,2010,hot_days_boro_flowering,2.0
+Sonagazi,2010,longest_dry_spell_kharif1,14.0
+Sonagazi,2010,rabi_rain_mm,59.44
+Sonagazi,2011,rainy_season_onset_doy,125.0
+Sonagazi,2011,rainy_season_withdrawal_doy,261.0
+Sonagazi,2011,rainy_season_length_days,136.0
+Sonagazi,2011,extreme_rain_days,9.0
+Sonagazi,2011,annual_rain_mm,2346.0
+Sonagazi,2011,annual_et0_mm,1296.42
+Sonagazi,2011,hot_days_mar_may,6.0
+Sonagazi,2011,hot_days_boro_flowering,0.0
+Sonagazi,2011,longest_dry_spell_kharif1,25.0
+Sonagazi,2011,rabi_rain_mm,104.98
+Sonagazi,2012,rainy_season_onset_doy,97.0
+Sonagazi,2012,rainy_season_withdrawal_doy,260.0
+Sonagazi,2012,rainy_season_length_days,163.0
+Sonagazi,2012,extreme_rain_days,2.0
+Sonagazi,2012,annual_rain_mm,2089.68
+Sonagazi,2012,annual_et0_mm,1331.0
+Sonagazi,2012,hot_days_mar_may,16.0
+Sonagazi,2012,hot_days_boro_flowering,1.0
+Sonagazi,2012,longest_dry_spell_kharif1,17.0
+Sonagazi,2012,rabi_rain_mm,20.8
+Sonagazi,2013,rainy_season_onset_doy,124.0
+Sonagazi,2013,rainy_season_withdrawal_doy,281.0
+Sonagazi,2013,rainy_season_length_days,157.0
+Sonagazi,2013,extreme_rain_days,7.0
+Sonagazi,2013,annual_rain_mm,2287.77
+Sonagazi,2013,annual_et0_mm,1363.86
+Sonagazi,2013,hot_days_mar_may,36.0
+Sonagazi,2013,hot_days_boro_flowering,1.0
+Sonagazi,2013,longest_dry_spell_kharif1,16.0
+Sonagazi,2013,rabi_rain_mm,45.44
+Sonagazi,2014,rainy_season_onset_doy,145.0
+Sonagazi,2014,rainy_season_withdrawal_doy,269.0
+Sonagazi,2014,rainy_season_length_days,124.0
+Sonagazi,2014,extreme_rain_days,10.0
+Sonagazi,2014,annual_rain_mm,2350.18
+Sonagazi,2014,annual_et0_mm,1418.25
+Sonagazi,2014,hot_days_mar_may,42.0
+Sonagazi,2014,hot_days_boro_flowering,0.0
+Sonagazi,2014,longest_dry_spell_kharif1,23.0
+Sonagazi,2014,rabi_rain_mm,13.95
+Sonagazi,2015,rainy_season_onset_doy,161.0
+Sonagazi,2015,rainy_season_withdrawal_doy,287.0
+Sonagazi,2015,rainy_season_length_days,126.0
+Sonagazi,2015,extreme_rain_days,13.0
+Sonagazi,2015,annual_rain_mm,2919.58
+Sonagazi,2015,annual_et0_mm,1294.29
+Sonagazi,2015,hot_days_mar_may,8.0
+Sonagazi,2015,hot_days_boro_flowering,3.0
+Sonagazi,2015,longest_dry_spell_kharif1,19.0
+Sonagazi,2015,rabi_rain_mm,15.75
+Sonagazi,2016,rainy_season_onset_doy,134.0
+Sonagazi,2016,rainy_season_withdrawal_doy,312.0
+Sonagazi,2016,rainy_season_length_days,178.0
+Sonagazi,2016,extreme_rain_days,21.0
+Sonagazi,2016,annual_rain_mm,4007.14
+Sonagazi,2016,annual_et0_mm,1310.41
+Sonagazi,2016,hot_days_mar_may,7.0
+Sonagazi,2016,hot_days_boro_flowering,1.0
+Sonagazi,2016,longest_dry_spell_kharif1,14.0
+Sonagazi,2016,rabi_rain_mm,54.38
+Sonagazi,2017,rainy_season_onset_doy,64.0
+Sonagazi,2017,rainy_season_withdrawal_doy,295.0
+Sonagazi,2017,rainy_season_length_days,231.0
+Sonagazi,2017,extreme_rain_days,43.0
+Sonagazi,2017,annual_rain_mm,6675.65
+Sonagazi,2017,annual_et0_mm,1224.36
+Sonagazi,2017,hot_days_mar_may,0.0
+Sonagazi,2017,hot_days_boro_flowering,0.0
+Sonagazi,2017,longest_dry_spell_kharif1,8.0
+Sonagazi,2017,rabi_rain_mm,311.75
+Sonagazi,2018,rainy_season_onset_doy,96.0
+Sonagazi,2018,rainy_season_withdrawal_doy,287.0
+Sonagazi,2018,rainy_season_length_days,191.0
+Sonagazi,2018,extreme_rain_days,17.0
+Sonagazi,2018,annual_rain_mm,4009.79
+Sonagazi,2018,annual_et0_mm,1236.09
+Sonagazi,2018,hot_days_mar_may,0.0
+Sonagazi,2018,hot_days_boro_flowering,0.0
+Sonagazi,2018,longest_dry_spell_kharif1,26.0
+Sonagazi,2018,rabi_rain_mm,171.25
+Sonagazi,2019,rainy_season_onset_doy,123.0
+Sonagazi,2019,rainy_season_withdrawal_doy,316.0
+Sonagazi,2019,rainy_season_length_days,193.0
+Sonagazi,2019,extreme_rain_days,26.0
+Sonagazi,2019,annual_rain_mm,4379.58
+Sonagazi,2019,annual_et0_mm,1315.71
+Sonagazi,2019,hot_days_mar_may,13.0
+Sonagazi,2019,hot_days_boro_flowering,0.0
+Sonagazi,2019,longest_dry_spell_kharif1,11.0
+Sonagazi,2019,rabi_rain_mm,156.06
+Sonagazi,2020,rainy_season_onset_doy,107.0
+Sonagazi,2020,rainy_season_withdrawal_doy,309.0
+Sonagazi,2020,rainy_season_length_days,202.0
+Sonagazi,2020,extreme_rain_days,9.0
+Sonagazi,2020,annual_rain_mm,3718.2
+Sonagazi,2020,annual_et0_mm,1237.44
+Sonagazi,2020,hot_days_mar_may,0.0
+Sonagazi,2020,hot_days_boro_flowering,0.0
+Sonagazi,2020,longest_dry_spell_kharif1,26.0
+Sonagazi,2020,rabi_rain_mm,337.86
+Sonagazi,2021,rainy_season_onset_doy,144.0
+Sonagazi,2021,rainy_season_withdrawal_doy,294.0
+Sonagazi,2021,rainy_season_length_days,150.0
+Sonagazi,2021,extreme_rain_days,7.0
+Sonagazi,2021,annual_rain_mm,2934.38
+Sonagazi,2021,annual_et0_mm,1309.0
+Sonagazi,2021,hot_days_mar_may,42.0
+Sonagazi,2021,hot_days_boro_flowering,0.0
+Sonagazi,2021,longest_dry_spell_kharif1,19.0
+Sonagazi,2021,rabi_rain_mm,118.84
+Sonagazi,2022,rainy_season_onset_doy,129.0
+Sonagazi,2022,rainy_season_withdrawal_doy,298.0
+Sonagazi,2022,rainy_season_length_days,169.0
+Sonagazi,2022,extreme_rain_days,6.0
+Sonagazi,2022,annual_rain_mm,2562.22
+Sonagazi,2022,annual_et0_mm,1330.66
+Sonagazi,2022,hot_days_mar_may,10.0
+Sonagazi,2022,hot_days_boro_flowering,0.0
+Sonagazi,2022,longest_dry_spell_kharif1,26.0
+Sonagazi,2022,rabi_rain_mm,200.95
+Sonagazi,2023,rainy_season_onset_doy,136.0
+Sonagazi,2023,rainy_season_withdrawal_doy,282.0
+Sonagazi,2023,rainy_season_length_days,146.0
+Sonagazi,2023,extreme_rain_days,8.0
+Sonagazi,2023,annual_rain_mm,2924.12
+Sonagazi,2023,annual_et0_mm,1303.36
+Sonagazi,2023,hot_days_mar_may,10.0
+Sonagazi,2023,hot_days_boro_flowering,1.0
+Sonagazi,2023,longest_dry_spell_kharif1,17.0
+Sonagazi,2023,rabi_rain_mm,24.27
+Sonagazi,2024,rainy_season_onset_doy,123.0
+Sonagazi,2024,rainy_season_withdrawal_doy,298.0
+Sonagazi,2024,rainy_season_length_days,175.0
+Sonagazi,2024,extreme_rain_days,18.0
+Sonagazi,2024,annual_rain_mm,4021.23
+Sonagazi,2024,annual_et0_mm,1253.43
+Sonagazi,2024,hot_days_mar_may,16.0
+Sonagazi,2024,hot_days_boro_flowering,0.0
+Sonagazi,2024,longest_dry_spell_kharif1,15.0
+Sonagazi,2024,rabi_rain_mm,229.65
+Sonagazi,2025,rainy_season_onset_doy,105.0
+Sonagazi,2025,rainy_season_withdrawal_doy,285.0
+Sonagazi,2025,rainy_season_length_days,180.0
+Sonagazi,2025,extreme_rain_days,10.0
+Sonagazi,2025,annual_rain_mm,3641.27
+Sonagazi,2025,annual_et0_mm,1277.28
+Sonagazi,2025,hot_days_mar_may,14.0
+Sonagazi,2025,hot_days_boro_flowering,1.0
+Sonagazi,2025,longest_dry_spell_kharif1,17.0
+Sonagazi,2025,rabi_rain_mm,25.78
+Sonagazi,2026,hot_days_mar_may,6.0
+Sonagazi,2026,hot_days_boro_flowering,0.0
+Sonagazi,2026,longest_dry_spell_kharif1,8.0
+Sonagazi,2026,rabi_rain_mm,50.49
