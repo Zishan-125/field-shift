@@ -984,11 +984,17 @@ def serialize_pattern(row: dict, names: dict, upazilas: dict) -> dict:
         },
         "notes": row["notes"],
         "production": {
-            "food_energy_gj_ha": row["food_energy_gj_ha"],
+            # Two separate figures, never blended: ranking uses human food.
+            "human_food_energy_gj_ha": row["human_food_energy_gj_ha"],
             "rice_equivalent_t_ha": row["rice_equivalent_t_ha"],
+            "gross_energy_gj_ha": row["gross_energy_gj_ha"],
+            "gross_rice_equivalent_t_ha": row["gross_rice_equivalent_t_ha"],
             "harvests_per_year": row["crop_count"],
+            "unknown_end_use_crops": json.loads(row["unknown_end_use_crops"] or "[]"),
             "yield_source": "BBS Yearbook of Agricultural Statistics 2025, Feni, 2024-25",
+            "end_use_source": "FAOSTAT Food Balance Sheets, Bangladesh, 2021-23 mean",
         },
+        "evidence_flags": json.loads(row["evidence_flags_json"] or "{}"),
         "water": {
             "water_need_mm": row["water_need_mm"],
             "irrigation_mm": row["irrigation_mm"],
@@ -1031,7 +1037,7 @@ def compare_with_current(current: dict, candidate: dict) -> dict:
             "change_pct": round((after - before) / before * 100, 1) if before else None,
         }
 
-    food = delta("production", "food_energy_gj_ha")
+    food = delta("production", "human_food_energy_gj_ha")
     water = delta("water", "irrigation_mm")
     harvests = candidate["facts"]["crop_count"] - current["facts"]["crop_count"]
     rice = candidate["facts"]["rice_crop_count"] - current["facts"]["rice_crop_count"]
@@ -1079,7 +1085,7 @@ def compare_with_current(current: dict, candidate: dict) -> dict:
         )
 
     return {
-        "food_energy_gj_ha": food,
+        "human_food_energy_gj_ha": food,
         "irrigation_mm": water,
         "harvests_change": harvests,
         "rice_seasons_change": rice,
@@ -1321,8 +1327,8 @@ def pattern_recommendations(
             "version": PATTERN_METHODOLOGY_VERSION,
             "score_type": "scenario_indicator_not_yield_prediction",
             "indicator_sources": {
-                "food_production_score": "sourced: BBS Feni yields 2024-25 x food energy (FCT Bangladesh 2013, USDA)",
-                "water_productivity_score": "sourced: food energy per m3 of crop water need (FAO-56 Kc x ET0, FAO effective rainfall)",
+                "food_production_score": "sourced: BBS Feni yields 2024-25 x food energy (FCT Bangladesh 2013, USDA) x share eaten by people (FAOSTAT FBS Bangladesh)",
+                "water_productivity_score": "sourced: human food energy per m3 of crop water need (FAO-56 Kc x ET0, FAO effective rainfall)",
                 "soil_health_score": "provisional: hand-set crop priors",
                 "climate_resilience_score": "provisional: hand-set crop priors",
                 "crop_diversity_score": "crop groups per season",

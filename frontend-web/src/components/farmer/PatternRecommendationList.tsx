@@ -270,6 +270,91 @@ function ScheduleDetails({
   );
 }
 
+function cropName(pattern: CroppingPattern, cropId: string | null, language: Language): string {
+  const crop = pattern.per_crop.find((item) => item.crop_id === cropId);
+  if (!crop) return cropId ?? "";
+  return language === "bn" ? crop.name_bn : crop.name_en;
+}
+
+/** What each crop is used for, so a farmer sees why maize is not counted like rice. */
+function EndUseChips({
+  pattern,
+  language,
+}: {
+  pattern: CroppingPattern;
+  language: Language;
+}) {
+  const t = strings(language);
+
+  return (
+    <div className="flex flex-wrap gap-2 text-[11px] font-bold">
+      {pattern.per_crop.map((crop) => {
+        const lowShare = crop.human_food_share !== null && crop.human_food_share < 0.5;
+        const share =
+          crop.human_food_share === null
+            ? t.endUseUnknown
+            : fill(t.eatenByPeople, { pct: Math.round(crop.human_food_share * 100) });
+
+        return (
+          <span
+            key={crop.crop_id}
+            className={`rounded-full px-2.5 py-1 ${lowShare || crop.human_food_share === null ? "bg-orange-50 text-orange-900" : "bg-slate-50 text-slate-700"}`}
+          >
+            {language === "bn" ? crop.name_bn : crop.name_en}:{" "}
+            {crop.end_use_class ? t.endUse[crop.end_use_class] : t.endUseUnknown} · {share}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Market-reality and yield-evidence warnings, shown on the card itself. */
+function EvidenceFlags({
+  pattern,
+  language,
+}: {
+  pattern: CroppingPattern;
+  language: Language;
+}) {
+  const t = strings(language);
+  const { market_reality: market, yield_evidence: yields } = pattern.evidence_flags;
+
+  if (market.length === 0 && yields.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-1 rounded-2xl border border-orange-200 bg-orange-50 p-3 text-xs leading-5 text-orange-950">
+      {market.length > 0 && (
+        <>
+          <p className="font-black">🏪 {t.marketFlag}</p>
+          {market.map((flag) => (
+            <p key={`${flag.code}-${flag.crop_id}`}>
+              ·{" "}
+              {flag.code === "not_in_regional_survey"
+                ? t.notInSurvey
+                : fill(t.marketFlagCrop, {
+                    crop: cropName(pattern, flag.crop_id, language),
+                    area: Math.round(flag.feni_area_ha ?? 0),
+                  })}
+            </p>
+          ))}
+        </>
+      )}
+      {yields.map((flag) => (
+        <p key={`yield-${flag.crop_id}`}>
+          📏{" "}
+          {fill(t.yieldFlag, {
+            crop: cropName(pattern, flag.crop_id, language),
+            area: Math.round(flag.feni_area_ha ?? 0),
+          })}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function CurrentPatternCard({
   pattern,
   language,
@@ -461,6 +546,18 @@ function RecommendationCard({
           </span>
 
           <FoodWaterComparison pattern={pattern} current={current} language={language} />
+
+          {pattern.production.gross_rice_equivalent_t_ha !== null && (
+            <p className="text-[11px] leading-5 text-slate-500">
+              {fill(t.totalOutput, {
+                value: oneDecimal(pattern.production.gross_rice_equivalent_t_ha),
+              })}
+            </p>
+          )}
+
+          <EndUseChips pattern={pattern} language={language} />
+
+          <EvidenceFlags pattern={pattern} language={language} />
         </div>
 
         <div className="mt-4">
@@ -601,6 +698,12 @@ function OtherPatterns({
               {pattern.feasibility.calendar_conflict && (
                 <p className="text-amber-700">{t.conflict}</p>
               )}
+              {notScored &&
+                pattern.production.unknown_end_use_crops.map((cropId) => (
+                  <p key={cropId} className="text-orange-800">
+                    {fill(t.notScoredEndUse, { crop: cropName(pattern, cropId, language) })}
+                  </p>
+                ))}
               <AdoptionLine pattern={pattern} language={language} />
             </li>
           );

@@ -80,7 +80,7 @@ def test_less_food_is_always_a_trade_off(client):
     data = recommend(client)
 
     for row in data["results"]:
-        food = row["comparison"]["food_energy_gj_ha"]
+        food = row["comparison"]["human_food_energy_gj_ha"]
 
         if food is not None and food["change"] < 0:
             assert row["comparison"]["change_kind"] == "trade_off", row["pattern_id"]
@@ -148,9 +148,9 @@ def test_fallow_season_adds_no_water_and_no_food(patterns):
 
     # Adding Boro adds both water and food: an empty season is not a "saving".
     assert double["water_need_mm"] > single["water_need_mm"]
-    assert double["food_energy_gj_ha"] > single["food_energy_gj_ha"]
+    assert double["human_food_energy_gj_ha"] > single["human_food_energy_gj_ha"]
 
 
 def test_more_harvests_of_the_same_crops_produce_more_food(patterns):
-    assert patterns["boro_aus_taman"]["food_energy_gj_ha"] > patterns["boro_fallow_taman"]["food_energy_gj_ha"]
-    assert patterns["boro_fallow_taman"]["food_energy_gj_ha"] > patterns["fallow_fallow_taman"]["food_energy_gj_ha"]
+    assert patterns["boro_aus_taman"]["human_food_energy_gj_ha"] > patterns["boro_fallow_taman"]["human_food_energy_gj_ha"]
+    assert patterns["boro_fallow_taman"]["human_food_energy_gj_ha"] > patterns["fallow_fallow_taman"]["human_food_energy_gj_ha"]

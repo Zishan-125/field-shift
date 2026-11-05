@@ -49,11 +49,29 @@ win. Patterns are scored only when every indicator is available.
 
 ### 3.1 Food production (sourced)
 
-Food energy per hectare per year = Σ over the crops grown of
-BBS Feni yield (t/ha, 2024-25) × edible-portion coefficient × food energy
-(MJ/kg, FCT Bangladesh 2013 or USDA). Shown to farmers as tonnes of rice with
-the same food energy. `food_production_score` = food energy ÷ the highest
-value among the scored patterns.
+Two figures per pattern, never blended:
+
+* **gross output** = Σ BBS Feni yield (t/ha, 2024-25) × edible-portion
+  coefficient × energy (MJ/kg, FCT Bangladesh 2013 or USDA) — all uses;
+* **human food** = Σ gross output × the share of that crop that reaches
+  people as food in Bangladesh (FAOSTAT food balance sheets, 2021–23):
+  rice 75 %, wheat 25 %, maize 2 % (94 % is feed), potato 83 %, lentil /
+  grass pea / felon 92 %, mustard 52 % and sesame 57 % (oil energy).
+
+`food_production_score` = human food ÷ the highest value among scored
+patterns. Gross output is shown as context only. A crop with an unknown end
+use (mungbean) gets no human-food value, so its patterns are not ranked
+rather than counted at 100 %.
+
+On screen every crop carries its end use (food grain, pulse, oilseed, mostly
+animal feed, condiment, tuber, vegetable) and the share eaten by people.
+
+### 3.1b Evidence flags (shown on the card, not scored)
+
+* **yield evidence** — a crop's BBS Feni yield comes from less than 100 ha;
+* **market reality** — a crop is grown on less than about 500 ha in Feni, or
+  the pattern is not in the regional survey: "little grown locally — seed,
+  market and advice may be hard to find".
 
 ### 3.2 Water productivity (sourced)
 
@@ -68,7 +86,7 @@ For each crop season, day by day:
 * effective rainfall from GPM IMERG monthly normals with the FAO formula;
 * irrigation need = Σ over months of max(0, need − effective rain).
 
-`water_productivity_score` = (food energy ÷ total crop water need, MJ/m³) ÷
+`water_productivity_score` = (human food energy ÷ total crop water need, MJ/m³) ÷
 the highest value among scored patterns. Total need is used rather than
 irrigation alone because a rainfed pattern (single T. Aman) has almost no
 irrigation and would get an unbounded score. **Irrigation water needed** is
@@ -116,6 +134,11 @@ committed database and fails if:
 * any pattern's score does not change when the food-production weight (or
   any other weight) changes;
 * a legume season does not beat a bare fallow on soil health.
+
+`test_end_use_guards.py` fails if a crop with less than 50 % human-food share
+tops the food ranking, if biomass alone wins, if an unknown end use is
+counted as food, or if a pattern scores 1.0 on two indicators without
+weak-evidence flags in the API response.
 
 `test_crop_water.py` checks Penman-Monteith against FAO-56 Example 18 and the
 FAO effective-rainfall formula.

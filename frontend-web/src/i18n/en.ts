@@ -137,6 +137,26 @@ const en = {
       tight_timing: "Tight timing between crops",
     },
     perCrop: "Per crop (yield, irrigation)",
+    endUse: {
+      food_grain: "Food grain",
+      pulse: "Pulse",
+      oilseed: "Oilseed",
+      feed: "Mostly animal feed",
+      condiment: "Condiment",
+      tuber: "Tuber",
+      vegetable: "Vegetable",
+    },
+    eatenByPeople: "{pct}% eaten by people",
+    endUseUnknown: "end use unknown",
+    totalOutput:
+      "Total harvest incl. animal feed and oil cake: {value} t rice-equivalent / ha / year",
+    marketFlag:
+      "Little grown locally — seed, market and advice may be hard to find",
+    marketFlagCrop: "{crop}: about {area} ha in Feni",
+    notInSurvey: "Not recorded in the regional crop survey",
+    yieldFlag: "Yield is from a very small area in Feni ({crop}: {area} ha) — treat it with care",
+    notScoredEndUse:
+      "Not ranked: how much of {crop} is eaten by people in Bangladesh is not known yet",
     foodNote:
       "Food = Feni average yield × food energy, shown as tonnes of rice with the same food energy.",
     source: "Source",

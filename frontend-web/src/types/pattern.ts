@@ -51,12 +51,31 @@ export const DEFAULT_PATTERN_PRIORITIES: PatternPriorities = {
   crop_diversity: 0.1,
 };
 
+export type EndUseClass =
+  | "food_grain"
+  | "pulse"
+  | "oilseed"
+  | "feed"
+  | "condiment"
+  | "tuber"
+  | "vegetable";
+
+export interface EvidenceFlag {
+  code: "small_area_yield" | "little_grown_in_feni" | "not_in_regional_survey";
+  crop_id: string | null;
+  feni_area_ha?: number;
+}
+
 export interface PerCropFoodWater {
   crop_id: string;
   name_en: string;
   name_bn: string;
+  end_use_class: EndUseClass | null;
+  human_food_share: number | null;
+  feni_area_ha: number | null;
   yield_t_ha?: number;
-  food_gj_ha?: number;
+  gross_gj_ha?: number;
+  human_food_gj_ha?: number;
   water_need_mm?: number;
   irrigation_mm?: number;
   effective_rain_mm?: number;
@@ -77,7 +96,7 @@ export type TradeOffCode =
   | "tight_timing";
 
 export interface Comparison {
-  food_energy_gj_ha: Delta | null;
+  human_food_energy_gj_ha: Delta | null;
   irrigation_mm: Delta | null;
   harvests_change: number;
   rice_seasons_change: number;
@@ -126,10 +145,18 @@ export interface CroppingPattern {
   };
   notes: string | null;
   production: {
-    food_energy_gj_ha: number | null;
+    human_food_energy_gj_ha: number | null;
     rice_equivalent_t_ha: number | null;
+    gross_energy_gj_ha: number | null;
+    gross_rice_equivalent_t_ha: number | null;
     harvests_per_year: number;
+    unknown_end_use_crops: string[];
     yield_source: string;
+    end_use_source: string;
+  };
+  evidence_flags: {
+    yield_evidence: EvidenceFlag[];
+    market_reality: EvidenceFlag[];
   };
   water: {
     water_need_mm: number | null;

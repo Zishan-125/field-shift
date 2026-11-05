@@ -72,6 +72,10 @@ INDICATOR_TYPE = "mixed: production and water sourced; soil and climate provisio
 RICE_CROPS = {"rice_aman", "rice_aus", "rice_boro"}
 RICE_ENERGY_MJ_PER_KG = 14.54  # FCT_BD_2013 01_0012, for rice-equivalent tonnes
 
+# Thresholds for the two evidence flags (judgement, documented in methodology.md).
+YIELD_EVIDENCE_MIN_HA = 100   # BBS Feni yield from less than this area is weak evidence
+MARKET_REALITY_MIN_HA = 500   # less than this in Feni: seed, market and advice may be scarce
+
 
 # ---------------------------------------------------------------------
 # INPUT
@@ -135,10 +139,17 @@ def load_context(conn: sqlite3.Connection) -> dict[str, float]:
 
 def load_food_per_ha() -> dict[str, dict]:
     """
-    Food energy produced per hectare per crop season:
-    BBS yield (t/ha) x edible portion x energy (MJ/kg) = GJ/ha.
+    Output per hectare per crop season, as two separate figures:
+
+    gross_gj_ha       BBS yield (t/ha) x edible portion x energy (MJ/kg):
+                      all uses (food, feed, oil cake, seed ...)
+    human_food_gj_ha  gross x the share that reaches people as food in
+                      Bangladesh (FAO food balance sheets)
+
+    Every crop also carries its end-use class and its BBS area in Feni.
     Crops whose BBS production basis does not match the energy value
-    (groundnut, chili) or that have no yield get no value.
+    (groundnut, chili) get no energy; crops with an unknown end use
+    (mungbean) get gross energy but no human-food energy.
     """
 
     yields = {row["crop_id"]: row for row in read_csv_rows(REFERENCE / "crop_yields.csv")}
@@ -146,27 +157,66 @@ def load_food_per_ha() -> dict[str, dict]:
 
     food = {}
 
-    for crop_id, y in yields.items():
-        e = energy.get(crop_id)
+    for crop_id in set(yields) | set(energy):
+        y = yields.get(crop_id, {})
+        e = energy.get(crop_id, {})
 
-        if not y.get("yield_t_ha_used") or not e or e.get("matches_bbs_production_basis") != "yes":
-            continue
-
-        yield_t_ha = float(y["yield_t_ha_used"])
-        gj_ha = (
-            yield_t_ha
-            * float(e["edible_portion_coefficient"])
-            * float(e["energy_mj_per_kg_edible"])
-        )
-
-        food[crop_id] = {
-            "yield_t_ha": yield_t_ha,
-            "yield_year": y["year_used"],
-            "energy_mj_per_kg": float(e["energy_mj_per_kg_edible"]),
-            "food_gj_ha": round(gj_ha, 3),
+        entry = {
+            "end_use_class": e.get("end_use_class") or None,
+            "human_food_share": float(e["human_food_share"]) if e.get("human_food_share") else None,
+            "feni_area_ha": float(y["area_ha_2024_25"]) if y.get("area_ha_2024_25") else None,
         }
 
+        if y.get("yield_t_ha_used"):
+            entry["yield_t_ha"] = float(y["yield_t_ha_used"])
+            entry["yield_year"] = y["year_used"]
+
+        if "yield_t_ha" in entry and e.get("matches_bbs_production_basis") == "yes":
+            gross = (
+                entry["yield_t_ha"]
+                * float(e["edible_portion_coefficient"])
+                * float(e["energy_mj_per_kg_edible"])
+            )
+            entry["gross_gj_ha"] = round(gross, 3)
+
+            if entry["human_food_share"] is not None:
+                entry["human_food_gj_ha"] = round(gross * entry["human_food_share"], 3)
+
+        food[crop_id] = entry
+
     return food
+
+
+def evidence_flags(pattern: dict, crop_ids: list[str], food: dict[str, dict]) -> dict:
+    """
+    Two separate warnings, both shown to the farmer:
+
+    yield_evidence   a yield comes from a very small area in Feni
+    market_reality   a crop is little grown in Feni, or the pattern is not in
+                     the regional survey: seed, market and advice may be
+                     hard to find
+    """
+
+    yield_flags = []
+    market_flags = []
+
+    for crop_id in crop_ids:
+        area = food.get(crop_id, {}).get("feni_area_ha")
+
+        if area is not None and area < YIELD_EVIDENCE_MIN_HA:
+            yield_flags.append(
+                {"code": "small_area_yield", "crop_id": crop_id, "feni_area_ha": area}
+            )
+
+        if area is not None and area < MARKET_REALITY_MIN_HA:
+            market_flags.append(
+                {"code": "little_grown_in_feni", "crop_id": crop_id, "feni_area_ha": area}
+            )
+
+    if not pattern.get("region_area_ha"):
+        market_flags.append({"code": "not_in_regional_survey", "crop_id": None})
+
+    return {"yield_evidence": yield_flags, "market_reality": market_flags}
 
 
 # ---------------------------------------------------------------------
@@ -220,20 +270,25 @@ def pattern_production_and_water(
 
     totals: dict = {}
 
-    if all("food_gj_ha" in c for c in crops):
-        food_gj = sum(c["food_gj_ha"] for c in crops)
-        totals["food_energy_gj_ha"] = round(food_gj, 3)
-        totals["rice_equivalent_t_ha"] = round(food_gj / RICE_ENERGY_MJ_PER_KG, 3)
+    if all("gross_gj_ha" in c for c in crops):
+        gross = sum(c["gross_gj_ha"] for c in crops)
+        totals["gross_energy_gj_ha"] = round(gross, 3)
+        totals["gross_rice_equivalent_t_ha"] = round(gross / RICE_ENERGY_MJ_PER_KG, 3)
+
+    if all("human_food_gj_ha" in c for c in crops):
+        human = sum(c["human_food_gj_ha"] for c in crops)
+        totals["human_food_energy_gj_ha"] = round(human, 3)
+        totals["rice_equivalent_t_ha"] = round(human / RICE_ENERGY_MJ_PER_KG, 3)
 
     if all("water_need_mm" in c for c in crops):
         totals["water_need_mm"] = round(sum(c["water_need_mm"] for c in crops), 1)
         totals["irrigation_mm"] = round(sum(c["irrigation_mm"] for c in crops), 1)
         totals["effective_rain_mm"] = round(sum(c["effective_rain_mm"] for c in crops), 1)
 
-    if "food_energy_gj_ha" in totals and totals.get("water_need_mm"):
-        # GJ/ha -> MJ ; mm -> m3/ha (x10)
+    if "human_food_energy_gj_ha" in totals and totals.get("water_need_mm"):
+        # Human food energy per m3: GJ/ha -> MJ ; mm -> m3/ha (x10)
         totals["water_productivity_mj_m3"] = round(
-            totals["food_energy_gj_ha"] * 1000 / (totals["water_need_mm"] * 10), 4
+            totals["human_food_energy_gj_ha"] * 1000 / (totals["water_need_mm"] * 10), 4
         )
 
     return totals, crops
@@ -397,21 +452,26 @@ def build_pattern_table(conn: sqlite3.Connection) -> list[dict]:
                 "turnaround_days_assumed": ASSUMED_TURNAROUND_DAYS,
                 "missing_profile_crops": json.dumps(missing_profiles),
                 "crop_water_food_json": json.dumps(crop_details),
+                "evidence_flags_json": json.dumps(evidence_flags(pattern, crop_ids, food)),
+                "unknown_end_use_crops": json.dumps(
+                    [crop for crop in crop_ids if food.get(crop, {}).get("human_food_share") is None]
+                ),
                 **totals,
                 **provisional,
             }
         )
 
     # Normalised production and water-productivity scores, over the patterns
-    # that have every indicator (the ones that can be ranked).
+    # that have every indicator (the ones that can be ranked). Both rest on
+    # HUMAN food energy; gross output is reported but never scored.
     scorable = [
         row for row in rows
-        if row.get("food_energy_gj_ha") is not None
+        if row.get("human_food_energy_gj_ha") is not None
         and row.get("water_productivity_mj_m3") is not None
         and row.get("soil_health_score") is not None
     ]
 
-    max_food = max(row["food_energy_gj_ha"] for row in scorable)
+    max_food = max(row["human_food_energy_gj_ha"] for row in scorable)
     max_wp = max(row["water_productivity_mj_m3"] for row in scorable)
 
     for row in rows:
@@ -420,7 +480,7 @@ def build_pattern_table(conn: sqlite3.Connection) -> list[dict]:
         row["indicator_type"] = INDICATOR_TYPE if complete else None
 
         if complete:
-            row["food_production_score"] = round(row["food_energy_gj_ha"] / max_food, 6)
+            row["food_production_score"] = round(row["human_food_energy_gj_ha"] / max_food, 6)
             row["water_productivity_score"] = round(row["water_productivity_mj_m3"] / max_wp, 6)
 
     text_columns = list(patterns[0].keys())
@@ -451,7 +511,11 @@ def build_pattern_table(conn: sqlite3.Connection) -> list[dict]:
             "turnaround_days_assumed": "INTEGER",
             "missing_profile_crops": "TEXT",
             "crop_water_food_json": "TEXT",
-            "food_energy_gj_ha": "REAL",
+            "evidence_flags_json": "TEXT",
+            "unknown_end_use_crops": "TEXT",
+            "human_food_energy_gj_ha": "REAL",
+            "gross_energy_gj_ha": "REAL",
+            "gross_rice_equivalent_t_ha": "REAL",
             "rice_equivalent_t_ha": "REAL",
             "water_need_mm": "REAL",
             "irrigation_mm": "REAL",
