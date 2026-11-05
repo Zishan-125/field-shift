@@ -24,7 +24,8 @@ Goal: help a farmer decide whether to keep, adjust, or shift their crop rotation
 - 8 crops (Aman/Aus/Boro rice, maize, wheat, lentil, mungbean, mustard), parameters hand-set.
 - 272 rotation scenarios (56 two-crop + 216 three-crop permutations) — deprecated.
 - 31 real annual cropping patterns (Shahidullah et al. 2017, Chittagong region incl. Feni) with a sourced crop calendar (DAE BAMIS, BRRI, BARI) and a feasibility check: `data-pipeline/reference/`, `data-pipeline/rotation/feasibility.py`, built into the DB by `backend/offline/build_pattern_tables.py`, served by `POST /api/offline/fields/{id}/pattern-recommendations`. Open data gaps: `docs/data-gaps.md`.
-- Scoring `season_patterns_v2`: food production (BBS Yearbook 2025 Feni yields × FCT Bangladesh food energy) and water productivity (FAO-56 Kc × Penman-Monteith ET0 from NASA POWER, FAO effective rainfall, GPM rain) are sourced; soil and climate scores still use the hand-set crop priors. Guard tests in `data-pipeline/tests/test_recommendation_guards.py` stop the ranking from rewarding less food.
+- Scoring `season_patterns_v2`: food production (BBS Yearbook 2025 Feni yields × FCT Bangladesh food energy) and water productivity (FAO-56 Kc × Penman-Monteith ET0 from NASA POWER, FAO effective rainfall, GPM rain) are sourced; soil and climate scores still use the hand-set crop priors. Guard tests in `data-pipeline/tests/test_recommendation_guards.py` stop the ranking from rewarding less food. Food is counted as human food only (FAOSTAT food balance sheets: maize 2 %, rice 75 %, …); gross output is context.
+- Climate shift: NASA POWER daily 1984–2026 for the six upazilas (cached in `data-pipeline/data/raw/power/`), indicators + Mann-Kendall/Sen + Pettitt in `data-pipeline/climate/`, `GET /api/offline/climate-shift`. POWER disagrees with the BMD Feni gauge; see `docs/methodology/climate-shift.md` before claiming any trend.
 
 ## Known problems (fix in this priority order)
 

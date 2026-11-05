@@ -39,6 +39,17 @@ the value **and** the source (document, table/page) when you fill one in.
 | Evidence-flag thresholds | Yield flag below 100 ha and market flag below 500 ha of the crop in Feni (BBS 2024-25) are judgement calls | Shown on the card; do not change the score |
 | Water productivity | Defined as food per m³ of **total** crop water need, not per m³ of irrigation only: a rainfed single T. Aman would otherwise get an infinite score | Irrigation water is shown separately |
 
+## Climate shift (`docs/methodology/climate-shift.md`)
+
+| Item | Gap | Effect |
+|---|---|---|
+| Long station record | Only 2016–2025 BMD Feni values were found (BBS Yearbook 2025); no published 30-year normals or daily series | Trends rest on NASA POWER alone; none of the three "trends" agrees with the station |
+| NASA POWER rainfall | Break around 1997–2007; 0.95–1.68 × the BMD gauge in 2016–24 | Rain-based trends shown as uncertain. A gauge-blended or satellite product (GPM IMERG from 2000, via Earth Engine) would be a better rain record |
+| NASA POWER Tmax | 2.2 °C cooler than the BMD station on average (2023–24) | Absolute hot-day counts are too low; bias correction needs a longer station series |
+| Upazila detail | All six upazilas share one MERRA-2 cell | No upazila-level climate differences can be shown from POWER |
+| Serial correlation | Original Mann-Kendall, no pre-whitening | p-values may be optimistic |
+| Advice rules | `CLIMATE_RULES` (hazard months, exposed crops) are rules, not data | Documented in climate-shift.md §6 |
+
 ## Assumptions in the code
 
 | Value | Where | Used for |
