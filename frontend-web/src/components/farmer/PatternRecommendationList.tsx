@@ -26,11 +26,102 @@ interface PatternRecommendationListProps {
 const SEASONS: Season[] = ["rabi", "kharif1", "kharif2"];
 
 const INDICATOR_KEYS: (keyof PatternIndicators)[] = [
-  "water_conservation_score",
+  "food_production_score",
+  "water_productivity_score",
   "soil_health_score",
   "climate_resilience_score",
   "crop_diversity_score",
 ];
+
+function oneDecimal(value: number | null | undefined): string {
+  return value === null || value === undefined ? "—" : value.toFixed(1);
+}
+
+function signedPercent(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "";
+  const rounded = Math.round(value);
+  return rounded > 0 ? `+${rounded}%` : `${rounded}%`;
+}
+
+/** Both sides of a change: food produced and irrigation water, now vs. plan. */
+function FoodWaterComparison({
+  pattern,
+  current,
+  language,
+}: {
+  pattern: CroppingPattern;
+  current: CroppingPattern;
+  language: Language;
+}) {
+  const t = strings(language);
+
+  const foodNow = current.production.rice_equivalent_t_ha;
+  const foodPlan = pattern.production.rice_equivalent_t_ha;
+  const waterNow = current.water.irrigation_mm;
+  const waterPlan = pattern.water.irrigation_mm;
+
+  const foodPct =
+    foodNow && foodPlan !== null ? ((foodPlan - foodNow) / foodNow) * 100 : null;
+  const waterChange =
+    waterNow !== null && waterPlan !== null ? waterPlan - waterNow : null;
+
+  const tile = (
+    icon: string,
+    label: string,
+    now: string,
+    plan: string,
+    unit: string,
+    change: string,
+    good: boolean | null,
+  ) => (
+    <div className="rounded-2xl border border-slate-200 bg-white p-3">
+      <p className="text-[11px] font-black text-slate-500">
+        {icon} {label}
+      </p>
+      <div className="mt-1 flex items-baseline justify-between gap-2">
+        <p className="text-xs text-slate-500">
+          {t.now}: <span className="font-black text-slate-700">{now}</span>
+        </p>
+        <p className="text-xs text-slate-500">
+          {t.withPlan}: <span className="text-base font-black text-slate-900">{plan}</span>
+        </p>
+      </div>
+      <div className="mt-1 flex items-center justify-between gap-2">
+        <p className="text-[10px] text-slate-400">{unit}</p>
+        {change && (
+          <span
+            className={`rounded-full px-2 py-0.5 text-[11px] font-black ${good === null ? "bg-slate-100 text-slate-600" : good ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+          >
+            {change}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="grid gap-2 sm:grid-cols-2">
+      {tile(
+        "🍚",
+        t.foodProduced,
+        oneDecimal(foodNow),
+        oneDecimal(foodPlan),
+        t.riceEquivalent,
+        signedPercent(foodPct),
+        foodPct === null || Math.round(foodPct) === 0 ? null : foodPct > 0,
+      )}
+      {tile(
+        "💧",
+        t.waterNeeded,
+        waterNow === null ? "—" : String(Math.round(waterNow)),
+        waterPlan === null ? "—" : String(Math.round(waterPlan)),
+        t.irrigationUnit,
+        waterChange === null ? "" : `${waterChange > 0 ? "+" : ""}${Math.round(waterChange)} mm`,
+        waterChange === null || Math.round(waterChange) === 0 ? null : waterChange < 0,
+      )}
+    </div>
+  );
+}
 
 function strings(language: Language) {
   return language === "bn" ? bn.patterns : en.patterns;
@@ -223,9 +314,53 @@ function CurrentPatternCard({
         <SeasonStrip schedule={pattern.schedule} language={language} />
       </div>
 
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="rounded-2xl bg-slate-50 p-3">
+          <p className="text-[11px] font-black text-slate-500">🍚 {t.foodProduced}</p>
+          <p className="text-lg font-black text-slate-900">
+            {oneDecimal(pattern.production.rice_equivalent_t_ha)}
+          </p>
+          <p className="text-[10px] text-slate-400">{t.riceEquivalent}</p>
+        </div>
+        <div className="rounded-2xl bg-slate-50 p-3">
+          <p className="text-[11px] font-black text-slate-500">💧 {t.waterNeeded}</p>
+          <p className="text-lg font-black text-slate-900">
+            {pattern.water.irrigation_mm === null ? "—" : Math.round(pattern.water.irrigation_mm)}
+          </p>
+          <p className="text-[10px] text-slate-400">{t.irrigationUnit}</p>
+        </div>
+      </div>
+
       <div className="mt-3">
         <AdoptionLine pattern={pattern} language={language} />
       </div>
+    </div>
+  );
+}
+
+function PerCropTable({
+  pattern,
+  language,
+}: {
+  pattern: CroppingPattern;
+  language: Language;
+}) {
+  const t = strings(language);
+
+  return (
+    <div className="text-xs leading-5 text-slate-600">
+      <p className="font-black text-slate-700">{t.perCrop}</p>
+      <ul className="mt-1 space-y-0.5">
+        {pattern.per_crop.map((crop) => (
+          <li key={crop.crop_id}>
+            {language === "bn" ? crop.name_bn : crop.name_en}:{" "}
+            {crop.yield_t_ha !== undefined ? `${crop.yield_t_ha} t/ha` : "—"}
+            {", "}
+            {crop.irrigation_mm !== undefined ? `${Math.round(crop.irrigation_mm)} mm` : "—"}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-1 text-slate-500">{t.foodNote}</p>
     </div>
   );
 }
@@ -244,7 +379,8 @@ function RecommendationCard({
   const t = strings(language);
   const [open, setOpen] = useState(false);
 
-  const cropDelta = pattern.facts.crop_count - current.facts.crop_count;
+  const comparison = pattern.comparison;
+  const isTradeOff = comparison.change_kind === "trade_off";
   const changes = pattern.season_changes.filter(
     (item) => item.change !== "same",
   );
@@ -316,6 +452,17 @@ function RecommendationCard({
           </ul>
         </div>
 
+        {/* Both sides of the change */}
+        <div className="mt-4 space-y-2">
+          <span
+            className={`inline-block rounded-full px-3 py-1 text-[11px] font-black ${isTradeOff ? "bg-amber-100 text-amber-900" : "bg-green-100 text-green-900"}`}
+          >
+            {isTradeOff ? `⚖️ ${t.tradeOff}` : `✓ ${t.improvement}`}
+          </span>
+
+          <FoodWaterComparison pattern={pattern} current={current} language={language} />
+        </div>
+
         <div className="mt-4">
           <SeasonStrip schedule={pattern.schedule} language={language} />
         </div>
@@ -339,11 +486,12 @@ function RecommendationCard({
           </span>
         </div>
 
-        {(cropDelta !== 0 || pattern.feasibility.status === "tight") && (
+        {(isTradeOff || comparison.harvests_change > 0) && (
           <div className="mt-3 space-y-1 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">
-            {cropDelta < 0 && <p>⚠️ {t.fewerHarvests}</p>}
-            {cropDelta > 0 && <p>ℹ️ {t.moreHarvests}</p>}
-            {pattern.feasibility.status === "tight" && <p>⏱️ {t.tight}</p>}
+            {comparison.trade_offs.map((item) => (
+              <p key={item.code}>⚠️ {t.tradeOffs[item.code]}</p>
+            ))}
+            {comparison.harvests_change > 0 && <p>ℹ️ {t.moreHarvests}</p>}
           </div>
         )}
 
@@ -389,6 +537,8 @@ function RecommendationCard({
                 </p>
               </div>
             )}
+
+            <PerCropTable pattern={pattern} language={language} />
 
             <ScheduleDetails pattern={pattern} language={language} />
           </div>

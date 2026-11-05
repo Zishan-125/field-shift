@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 
-import type { FarmerPriorities } from "../../types/farmer";
-import { DEFAULT_PRIORITIES } from "../../types/farmer";
+import type { PatternPriorities } from "../../types/pattern";
+import { DEFAULT_PATTERN_PRIORITIES } from "../../types/pattern";
 
 interface FarmerGoalSelectorProps {
-  priorities: FarmerPriorities;
-  onChange: (priorities: FarmerPriorities) => void;
+  priorities: PatternPriorities;
+  onChange: (priorities: PatternPriorities) => void;
   onApply?: () =>
     | Promise<boolean | void>
     | boolean
@@ -14,7 +14,7 @@ interface FarmerGoalSelectorProps {
   language?: "bn" | "en";
 }
 
-type GoalKey = keyof FarmerPriorities;
+type GoalKey = keyof PatternPriorities;
 
 interface Goal {
   key: GoalKey;
@@ -27,14 +27,24 @@ interface Goal {
 
 const GOALS: Goal[] = [
   {
-    key: "water_conservation",
-    icon: "💧",
-    titleBn: "পানি সাশ্রয়",
-    titleEn: "Save water",
+    key: "food_production",
+    icon: "🍚",
+    titleBn: "বেশি খাদ্য উৎপাদন",
+    titleEn: "Grow more food",
     descriptionBn:
-      "কম সেচের পানি ব্যবহার করতে চাই",
+      "জমি থেকে বছরে বেশি খাদ্য পেতে চাই",
     descriptionEn:
-      "Use less irrigation water",
+      "More food from your land each year",
+  },
+  {
+    key: "water_productivity",
+    icon: "💧",
+    titleBn: "পানির সদ্ব্যবহার",
+    titleEn: "More food per drop",
+    descriptionBn:
+      "যতটুকু পানি লাগে, তা থেকে বেশি ফসল চাই",
+    descriptionEn:
+      "Get more food from the water your crops need",
   },
   {
     key: "soil_health",
@@ -49,10 +59,10 @@ const GOALS: Goal[] = [
   {
     key: "climate_resilience",
     icon: "☀️",
-    titleBn: "জলবায়ু মোকাবিলা",
+    titleBn: "জলবায়ু মোকাবিলা",
     titleEn: "Handle climate",
     descriptionBn:
-      "পরিবর্তনশীল আবহাওয়ার জন্য প্রস্তুত থাকতে চাই",
+      "পরিবর্তনশীল আবহাওয়ার জন্য প্রস্তুত থাকতে চাই",
     descriptionEn:
       "Prepare for changing weather",
   },
@@ -68,15 +78,17 @@ const GOALS: Goal[] = [
   },
 ];
 
+const KEYS = GOALS.map((goal) => goal.key);
+
+const STEP = 0.1;
+
 function normalize(
-  priorities: FarmerPriorities,
-): FarmerPriorities {
-  const values = Object.values(priorities).map(
-    (value) =>
-      Number.isFinite(Number(value))
-        ? Math.max(0, Number(value))
-        : 0,
-  );
+  priorities: PatternPriorities,
+): PatternPriorities {
+  const values = KEYS.map((key) => {
+    const value = Number(priorities[key]);
+    return Number.isFinite(value) ? Math.max(0, value) : 0;
+  });
 
   const total = values.reduce(
     (sum, value) => sum + value,
@@ -85,61 +97,69 @@ function normalize(
 
   if (total <= 0) {
     return {
-      ...DEFAULT_PRIORITIES,
+      ...DEFAULT_PATTERN_PRIORITIES,
     };
   }
 
-  const keys: GoalKey[] = [
-    "water_conservation",
-    "soil_health",
-    "climate_resilience",
-    "crop_diversity",
-  ];
+  const next = { ...DEFAULT_PATTERN_PRIORITIES };
 
-  return {
-    water_conservation:
-      values[keys.indexOf("water_conservation")] /
-      total,
+  KEYS.forEach((key, index) => {
+    next[key] = values[index] / total;
+  });
 
-    soil_health:
-      values[keys.indexOf("soil_health")] /
-      total,
-
-    climate_resilience:
-      values[keys.indexOf("climate_resilience")] /
-      total,
-
-    crop_diversity:
-      values[keys.indexOf("crop_diversity")] /
-      total,
-  };
+  return next;
 }
 
+/** Make one goal the main goal (40 %) and share the rest as in the default. */
 function buildPriorities(
   selected: GoalKey,
-): FarmerPriorities {
-  const remainingKeys = (
-    Object.keys(DEFAULT_PRIORITIES) as GoalKey[]
-  ).filter((key) => key !== selected);
+): PatternPriorities {
+  const remainingKeys = KEYS.filter(
+    (key) => key !== selected,
+  );
 
   const remainingBase = remainingKeys.reduce(
     (sum, key) =>
-      sum + DEFAULT_PRIORITIES[key],
+      sum + DEFAULT_PATTERN_PRIORITIES[key],
     0,
   );
 
-  const next: FarmerPriorities = {
-    ...DEFAULT_PRIORITIES,
+  const next: PatternPriorities = {
+    ...DEFAULT_PATTERN_PRIORITIES,
   };
 
   for (const key of remainingKeys) {
     next[key] =
-      (DEFAULT_PRIORITIES[key] /
+      (DEFAULT_PATTERN_PRIORITIES[key] /
         remainingBase) *
       0.6;
   }
 
   next[selected] = 0.4;
+
+  return normalize(next);
+}
+
+/** Raise or lower one goal by a step; the others keep their proportions. */
+function adjust(
+  priorities: PatternPriorities,
+  key: GoalKey,
+  direction: 1 | -1,
+): PatternPriorities {
+  const current = normalize(priorities);
+  const target = Math.min(1, Math.max(0, current[key] + direction * STEP));
+  const othersTotal = 1 - current[key];
+
+  const next = { ...current, [key]: target };
+
+  for (const other of KEYS) {
+    if (other === key) continue;
+
+    next[other] =
+      othersTotal > 0
+        ? (current[other] / othersTotal) * (1 - target)
+        : (1 - target) / (KEYS.length - 1);
+  }
 
   return normalize(next);
 }
@@ -154,20 +174,13 @@ export default function FarmerGoalSelector({
   const [dirty, setDirty] = useState(false);
 
   const selectedGoal = useMemo(() => {
-    let selected: GoalKey =
-      "water_conservation";
-
+    let selected: GoalKey = "food_production";
     let highest = -Infinity;
 
     for (const goal of GOALS) {
-      const value = Number(
-        priorities[goal.key],
-      );
+      const value = Number(priorities[goal.key]);
 
-      if (
-        Number.isFinite(value) &&
-        value > highest
-      ) {
+      if (Number.isFinite(value) && value > highest) {
         highest = value;
         selected = goal.key;
       }
@@ -177,15 +190,18 @@ export default function FarmerGoalSelector({
   }, [priorities]);
 
   function selectGoal(key: GoalKey) {
-    const next = buildPriorities(key);
+    onChange(buildPriorities(key));
+    setDirty(true);
+  }
 
-    onChange(next);
+  function step(key: GoalKey, direction: 1 | -1) {
+    onChange(adjust(priorities, key, direction));
     setDirty(true);
   }
 
   function resetGoals() {
     onChange({
-      ...DEFAULT_PRIORITIES,
+      ...DEFAULT_PATTERN_PRIORITIES,
     });
 
     setDirty(true);
@@ -215,14 +231,14 @@ export default function FarmerGoalSelector({
 
           <h2 className="mt-2 text-xl font-black text-slate-900 sm:text-2xl">
             {language === "bn"
-              ? "কোন বিষয়টি আপনার কাছে বেশি গুরুত্বপূর্ণ?"
+              ? "কোন বিষয়টি আপনার কাছে বেশি গুরুত্বপূর্ণ?"
               : "What matters most to you?"}
           </h2>
 
           <p className="mt-2 text-sm leading-6 text-slate-500">
             {language === "bn"
-              ? "একটি প্রধান লক্ষ্য নির্বাচন করুন। FIELD SHIFT সেই অনুযায়ী rotation-এর score পরিবর্তন করবে।"
-              : "Choose your main goal. FIELD SHIFT will adjust the rotation scores accordingly."}
+              ? "একটি প্রধান লক্ষ্য বেছে নিন, অথবা – / + দিয়ে যেকোনো লক্ষ্য কমান বা বাড়ান।"
+              : "Pick a main goal, or use – / + to lower or raise any goal."}
           </p>
         </div>
 
@@ -240,91 +256,79 @@ export default function FarmerGoalSelector({
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         {GOALS.map((goal) => {
-          const active =
-            selectedGoal === goal.key;
-
-          const weight =
-            Number(priorities[goal.key]) || 0;
+          const active = selectedGoal === goal.key;
+          const weight = Number(priorities[goal.key]) || 0;
+          const title = language === "bn" ? goal.titleBn : goal.titleEn;
 
           return (
-            <button
+            <div
               key={goal.key}
-              type="button"
-              onClick={() =>
-                selectGoal(goal.key)
-              }
-              disabled={loading}
               className={[
-                "rounded-2xl border p-4 text-left transition",
+                "rounded-2xl border p-4 transition",
                 active
                   ? "border-green-500 bg-green-50 ring-2 ring-green-100"
-                  : "border-slate-200 bg-white hover:border-green-300 hover:bg-green-50/40",
-                loading
-                  ? "cursor-not-allowed opacity-60"
-                  : "",
+                  : "border-slate-200 bg-white",
+                loading ? "opacity-60" : "",
               ].join(" ")}
             >
-              <div className="flex items-start gap-3">
+              <button
+                type="button"
+                onClick={() => selectGoal(goal.key)}
+                disabled={loading}
+                className="flex w-full items-start gap-3 text-left disabled:cursor-not-allowed"
+              >
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-xl">
                   {goal.icon}
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-black text-slate-900">
-                        {language === "bn"
-                          ? goal.titleBn
-                          : goal.titleEn}
-                      </p>
+                  <p className="text-sm font-black text-slate-900">
+                    {title}
+                  </p>
 
-                      <p className="mt-1 text-xs leading-5 text-slate-500">
-                        {language === "bn"
-                          ? goal.descriptionBn
-                          : goal.descriptionEn}
-                      </p>
-                    </div>
-
-                    <span
-                      className={[
-                        "shrink-0 rounded-full px-2 py-1 text-[10px] font-black",
-                        active
-                          ? "bg-green-600 text-white"
-                          : "bg-slate-100 text-slate-500",
-                      ].join(" ")}
-                    >
-                      {Math.round(
-                        weight * 100,
-                      )}
-                      %
-                    </span>
-                  </div>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
+                    {language === "bn"
+                      ? goal.descriptionBn
+                      : goal.descriptionEn}
+                  </p>
                 </div>
+              </button>
+
+              <div className="mt-3 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => step(goal.key, -1)}
+                  disabled={loading || weight <= 0}
+                  aria-label={`${title} −`}
+                  className="h-8 w-8 rounded-lg border border-slate-200 bg-white text-sm font-black text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                >
+                  −
+                </button>
+
+                <span
+                  className={[
+                    "min-w-12 rounded-full px-2 py-1 text-center text-[11px] font-black",
+                    active
+                      ? "bg-green-600 text-white"
+                      : "bg-slate-100 text-slate-600",
+                  ].join(" ")}
+                >
+                  {Math.round(weight * 100)}%
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => step(goal.key, 1)}
+                  disabled={loading || weight >= 1}
+                  aria-label={`${title} +`}
+                  className="h-8 w-8 rounded-lg border border-slate-200 bg-white text-sm font-black text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                >
+                  +
+                </button>
               </div>
-            </button>
+            </div>
           );
         })}
-      </div>
-
-      <div className="mt-5 rounded-2xl bg-slate-50 p-4">
-        <div className="flex flex-wrap gap-2">
-          {GOALS.map((goal) => (
-            <span
-              key={goal.key}
-              className="rounded-full bg-white px-3 py-1.5 text-[10px] font-black text-slate-500 shadow-sm"
-            >
-              {language === "bn"
-                ? goal.titleBn
-                : goal.titleEn}{" "}
-              {Math.round(
-                (Number(
-                  priorities[goal.key],
-                ) || 0) * 100,
-              )}
-              %
-            </span>
-          ))}
-        </div>
       </div>
 
       <button

@@ -24,18 +24,12 @@ import type {
 } from "../types/soil";
 
 import {
-  DEFAULT_PRIORITIES,
-} from "../types/farmer";
-
-import type {
-  FarmerPriorities,
-} from "../types/farmer";
-
-import {
   DEFAULT_CURRENT_PATTERN_ID,
+  DEFAULT_PATTERN_PRIORITIES,
 } from "../types/pattern";
 
 import type {
+  PatternPriorities,
   PatternRecommendationResponse,
   RecommendedPattern,
 } from "../types/pattern";
@@ -432,8 +426,8 @@ export default function Dashboard() {
     );
 
   const [priorities, setPriorities] =
-    useState<FarmerPriorities>({
-      ...DEFAULT_PRIORITIES,
+    useState<PatternPriorities>({
+      ...DEFAULT_PATTERN_PRIORITIES,
     });
 
   const [crops, setCrops] =
@@ -498,7 +492,7 @@ export default function Dashboard() {
 
           getPatternRecommendations(
             FIELD_ID,
-            DEFAULT_PRIORITIES,
+            DEFAULT_PATTERN_PRIORITIES,
             DEFAULT_CURRENT_PATTERN_ID,
           ),
 

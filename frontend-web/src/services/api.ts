@@ -5,7 +5,10 @@ import type { EnvironmentResponse } from "../types/environment";
 import type { SoilResponse } from "../types/soil";
 import type { FarmerPriorities } from "../types/farmer";
 import type { RecommendationResponse } from "../types/recommendation";
-import type { PatternRecommendationResponse } from "../types/pattern";
+import type {
+  PatternPriorities,
+  PatternRecommendationResponse,
+} from "../types/pattern";
 import type {
   CropResponse,
 } from "../types/crop";
@@ -94,7 +97,7 @@ export async function getEvaluatedRotations(
 
 export async function getPatternRecommendations(
   fieldId: string,
-  priorities: FarmerPriorities,
+  priorities: PatternPriorities,
   currentPatternId: string,
 ): Promise<PatternRecommendationResponse> {
   const response =

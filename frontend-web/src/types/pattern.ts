@@ -27,10 +27,62 @@ export interface ScheduledCrop extends PatternCrop {
 }
 
 export interface PatternIndicators {
-  water_conservation_score: number;
+  food_production_score: number;
+  water_productivity_score: number;
   soil_health_score: number;
   climate_resilience_score: number;
   crop_diversity_score: number;
+}
+
+export interface PatternPriorities {
+  food_production: number;
+  water_productivity: number;
+  soil_health: number;
+  climate_resilience: number;
+  crop_diversity: number;
+}
+
+/** UI default (not data); mirrors DEFAULT_PATTERN_PRIORITIES in server.py. */
+export const DEFAULT_PATTERN_PRIORITIES: PatternPriorities = {
+  food_production: 0.3,
+  water_productivity: 0.25,
+  soil_health: 0.2,
+  climate_resilience: 0.15,
+  crop_diversity: 0.1,
+};
+
+export interface PerCropFoodWater {
+  crop_id: string;
+  name_en: string;
+  name_bn: string;
+  yield_t_ha?: number;
+  food_gj_ha?: number;
+  water_need_mm?: number;
+  irrigation_mm?: number;
+  effective_rain_mm?: number;
+}
+
+export interface Delta {
+  current: number;
+  candidate: number;
+  change: number;
+  change_pct: number | null;
+}
+
+export type TradeOffCode =
+  | "fewer_harvests"
+  | "less_food"
+  | "more_irrigation"
+  | "fewer_rice_seasons"
+  | "tight_timing";
+
+export interface Comparison {
+  food_energy_gj_ha: Delta | null;
+  irrigation_mm: Delta | null;
+  harvests_change: number;
+  rice_seasons_change: number;
+  trade_offs: { code: TradeOffCode; detail: string }[];
+  change_kind: "improvement" | "trade_off";
 }
 
 export interface UpazilaShare {
@@ -73,6 +125,21 @@ export interface CroppingPattern {
     reference_year: string;
   };
   notes: string | null;
+  production: {
+    food_energy_gj_ha: number | null;
+    rice_equivalent_t_ha: number | null;
+    harvests_per_year: number;
+    yield_source: string;
+  };
+  water: {
+    water_need_mm: number | null;
+    irrigation_mm: number | null;
+    irrigation_m3_ha: number | null;
+    effective_rain_mm: number | null;
+    water_productivity_mj_m3: number | null;
+    method: string;
+  };
+  per_crop: PerCropFoodWater[];
   indicators: PatternIndicators | null;
   indicator_type: string | null;
   missing_profile_crops: string[];
@@ -101,6 +168,7 @@ export interface RecommendedPattern extends ScoredPattern {
   score_change?: number | null;
   indicator_changes?: PatternIndicators | null;
   season_changes: SeasonChange[];
+  comparison: Comparison;
 }
 
 export interface PatternRecommendationResponse {
@@ -122,7 +190,8 @@ export interface PatternRecommendationResponse {
   methodology: {
     version: string;
     score_type: string;
-    indicator_type: string;
+    indicator_sources: Record<string, string>;
+    default_priorities: PatternPriorities;
     synthetic_yield_target: boolean;
     notes: string[];
   };
