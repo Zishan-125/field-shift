@@ -19,10 +19,13 @@ uvicorn server:app --host 127.0.0.1 --port 8001
 1. `build_offline_database.py` — environment, soil, crop profiles and the old
    rotation scenarios. Needs `data-pipeline/output/`, which is **not** in the
    repository.
-2. `build_pattern_tables.py` — crop calendar, cropping patterns and their
-   feasibility check. Needs only files in the repository:
+2. `build_pattern_tables.py` — crop calendar, cropping patterns, their
+   feasibility check, food production (BBS yields) and crop water needs
+   (FAO-56). Needs only files in the repository; rebuild the monthly climate
+   normals first if the weather inputs change:
 
    ```bash
+   python data-pipeline/water/build_monthly_climate.py   # ET0 + rainfall normals
    python backend/offline/build_pattern_tables.py
    ```
 

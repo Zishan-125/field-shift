@@ -8,6 +8,10 @@ the repository:
     data-pipeline/reference/crop_calendar.csv
     data-pipeline/reference/cropping_patterns.csv
     data-pipeline/reference/feni_upazila_patterns.csv
+    data-pipeline/reference/crop_yields.csv            (BBS Yearbook 2025, Feni)
+    data-pipeline/reference/food_energy.csv            (FCT Bangladesh 2013, USDA)
+    data-pipeline/reference/fao56_crop_coefficients.csv
+    data-pipeline/derived/feni_monthly_climate.csv     (FAO-56 ET0, GPM rain)
     field_shift.db tables crop_profiles, rotation_scenarios,
     evaluated_rotation_scenarios (read only)
 
@@ -16,10 +20,13 @@ Tables written (dropped and recreated):
     cropping_patterns
     feni_upazila_patterns
 
-Indicator scores are PROVISIONAL. They reuse the hand-set crop parameters
-in crop_profiles (profile_status = scenario_prior, not validated) and the
-three historical context constants of the existing scoring. Patterns that
-contain a crop without a crop profile get no score.
+Indicators (method: data-pipeline/scoring/methodology.md):
+    food_production_score     sourced: BBS yields x food energy
+    water_productivity_score  sourced: food energy per m3 of crop water need
+                              (FAO-56 Kc x ET0, FAO paddy terms)
+    soil_health_score         PROVISIONAL: hand-set crop priors + rules
+    climate_resilience_score  PROVISIONAL: hand-set crop priors
+    crop_diversity_score      crop groups per season
 
 Run:
     python backend/offline/build_pattern_tables.py
@@ -38,6 +45,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "backend" / "offline" / "field_shift.db"
 REFERENCE = ROOT / "data-pipeline" / "reference"
+CLIMATE = ROOT / "data-pipeline" / "derived" / "feni_monthly_climate.csv"
 
 sys.path.insert(0, str(ROOT / "data-pipeline"))
 
@@ -49,14 +57,20 @@ from rotation.feasibility import (  # noqa: E402
     load_patterns,
     pattern_crops,
 )
+from water.crop_water import (  # noqa: E402
+    load_kc_curves,
+    load_monthly_climate,
+    season_water,
+)
 
 
-PATTERN_METHODOLOGY = "season_patterns_v1"
+PATTERN_METHODOLOGY = "season_patterns_v2"
 CURRENT_PATTERN_ID = "boro_fallow_taman"
 SLOTS_PER_YEAR = len(POSITIONS)
-INDICATOR_TYPE = "provisional_indicator_from_unvalidated_crop_priors"
+INDICATOR_TYPE = "mixed: production and water sourced; soil and climate provisional"
 
 RICE_CROPS = {"rice_aman", "rice_aus", "rice_boro"}
+RICE_ENERGY_MJ_PER_KG = 14.54  # FCT_BD_2013 01_0012, for rice-equivalent tonnes
 
 
 # ---------------------------------------------------------------------
@@ -119,50 +133,135 @@ def load_context(conn: sqlite3.Connection) -> dict[str, float]:
     }
 
 
+def load_food_per_ha() -> dict[str, dict]:
+    """
+    Food energy produced per hectare per crop season:
+    BBS yield (t/ha) x edible portion x energy (MJ/kg) = GJ/ha.
+    Crops whose BBS production basis does not match the energy value
+    (groundnut, chili) or that have no yield get no value.
+    """
+
+    yields = {row["crop_id"]: row for row in read_csv_rows(REFERENCE / "crop_yields.csv")}
+    energy = {row["crop_id"]: row for row in read_csv_rows(REFERENCE / "food_energy.csv")}
+
+    food = {}
+
+    for crop_id, y in yields.items():
+        e = energy.get(crop_id)
+
+        if not y.get("yield_t_ha_used") or not e or e.get("matches_bbs_production_basis") != "yes":
+            continue
+
+        yield_t_ha = float(y["yield_t_ha_used"])
+        gj_ha = (
+            yield_t_ha
+            * float(e["edible_portion_coefficient"])
+            * float(e["energy_mj_per_kg_edible"])
+        )
+
+        food[crop_id] = {
+            "yield_t_ha": yield_t_ha,
+            "yield_year": y["year_used"],
+            "energy_mj_per_kg": float(e["energy_mj_per_kg_edible"]),
+            "food_gj_ha": round(gj_ha, 3),
+        }
+
+    return food
+
+
 # ---------------------------------------------------------------------
-# PROVISIONAL INDICATORS
+# INDICATORS
 # ---------------------------------------------------------------------
 
 def clip(value: float) -> float:
     return max(0.0, min(1.0, value))
 
 
-def pattern_indicators(
+def pattern_production_and_water(
+    crop_ids: list[str],
+    schedule: list[dict],
+    food: dict[str, dict],
+    curves: dict,
+    et0: dict[int, float],
+    rain: dict[int, float],
+) -> tuple[dict, list[dict]]:
+    """
+    Food output and water requirement of one pattern for one year.
+    A fallow season adds neither water nor food.
+    """
+
+    crops = []
+    by_crop = {item["crop_id"]: item for item in schedule}
+
+    for crop_id in crop_ids:
+        entry = {"crop_id": crop_id, **food.get(crop_id, {})}
+        scheduled = by_crop.get(crop_id)
+
+        if scheduled and crop_id in curves:
+            water = season_water(
+                crop_id,
+                scheduled["start_doy"],
+                scheduled["field_days"],
+                curves[crop_id],
+                et0,
+                rain,
+            )
+            entry.update(
+                {
+                    "crop_et_mm": water.crop_et_mm,
+                    "paddy_extra_mm": water.paddy_extra_mm,
+                    "water_need_mm": round(water.water_need_mm, 1),
+                    "effective_rain_mm": water.effective_rain_mm,
+                    "irrigation_mm": water.irrigation_mm,
+                }
+            )
+
+        crops.append(entry)
+
+    totals: dict = {}
+
+    if all("food_gj_ha" in c for c in crops):
+        food_gj = sum(c["food_gj_ha"] for c in crops)
+        totals["food_energy_gj_ha"] = round(food_gj, 3)
+        totals["rice_equivalent_t_ha"] = round(food_gj / RICE_ENERGY_MJ_PER_KG, 3)
+
+    if all("water_need_mm" in c for c in crops):
+        totals["water_need_mm"] = round(sum(c["water_need_mm"] for c in crops), 1)
+        totals["irrigation_mm"] = round(sum(c["irrigation_mm"] for c in crops), 1)
+        totals["effective_rain_mm"] = round(sum(c["effective_rain_mm"] for c in crops), 1)
+
+    if "food_energy_gj_ha" in totals and totals.get("water_need_mm"):
+        # GJ/ha -> MJ ; mm -> m3/ha (x10)
+        totals["water_productivity_mj_m3"] = round(
+            totals["food_energy_gj_ha"] * 1000 / (totals["water_need_mm"] * 10), 4
+        )
+
+    return totals, crops
+
+
+def provisional_indicators(
     crop_ids: list[str],
     profiles: dict[str, dict],
     context: dict[str, float],
 ) -> dict[str, float]:
     """
-    Same component formulas as data-pipeline/build_farmer_priority_scenarios.py,
-    adapted to annual patterns (three seasons):
+    Soil, climate and diversity — still built on hand-set crop priors.
 
-    - Water and fertility demand are SUMMED over the crops and divided by the
-      three seasons, so adding a crop never makes a pattern look thriftier.
-    - Legume share and crop diversity are counted per season (out of three).
-    - Climate tolerances are averaged over the crops grown.
+    Soil: a fallow season adds no nutrient load (rest). A legume season adds
+    no nutrient load either, because legumes fix most of their own nitrogen
+    (Herridge, Peoples & Boddey 2008), and it adds the legume credit — so a
+    legume always scores above a bare fallow of the same season.
     """
 
     crops = [profiles[crop_id] for crop_id in crop_ids]
     count = len(crops)
 
-    water_load = sum(float(c["water_demand_index"]) for c in crops) / SLOTS_PER_YEAR
-    crop_water_efficiency = clip(1.0 - water_load)
-    water_scarcity = 1.0 - context["water_context"]
-
-    water = (
-        0.70 * crop_water_efficiency
-        + 0.30
-        * (
-            crop_water_efficiency * water_scarcity
-            + (1.0 - water_scarcity) * 0.5
-        )
-    )
-
     legume = sum(int(c["legume"]) for c in crops) / SLOTS_PER_YEAR
     diversity = len({c["rotation_group"] for c in crops}) / SLOTS_PER_YEAR
 
     fertility_load = (
-        sum(float(c["soil_fertility_dependency"]) for c in crops) / SLOTS_PER_YEAR
+        sum(float(c["soil_fertility_dependency"]) for c in crops if not int(c["legume"]))
+        / SLOTS_PER_YEAR
     )
 
     soil = (
@@ -184,7 +283,6 @@ def pattern_indicators(
     )
 
     return {
-        "water_conservation_score": round(clip(water), 6),
         "soil_health_score": round(clip(soil), 6),
         "climate_resilience_score": round(clip(climate), 6),
         "crop_diversity_score": round(clip(diversity), 6),
@@ -254,6 +352,9 @@ def build_pattern_table(conn: sqlite3.Connection) -> list[dict]:
     patterns = load_patterns(REFERENCE / "cropping_patterns.csv")
     profiles = load_crop_parameters(conn)
     context = load_context(conn)
+    food = load_food_per_ha()
+    curves = load_kc_curves(REFERENCE / "fao56_crop_coefficients.csv")
+    et0, rain = load_monthly_climate(CLIMATE)
 
     rows = []
 
@@ -261,12 +362,17 @@ def build_pattern_table(conn: sqlite3.Connection) -> list[dict]:
         slots = pattern_crops(pattern)
         crop_ids = [crop for crop in slots.values() if crop != "fallow"]
         result = check_pattern(slots, calendar)
+        schedule = [item.as_dict() for item in result.schedule]
 
         observed = bool(pattern.get("region_area_ha") or pattern.get("national_area_ha"))
         missing_profiles = [crop for crop in crop_ids if crop not in profiles]
 
-        indicators = (
-            pattern_indicators(crop_ids, profiles, context)
+        totals, crop_details = pattern_production_and_water(
+            crop_ids, schedule, food, curves, et0, rain
+        )
+
+        provisional = (
+            provisional_indicators(crop_ids, profiles, context)
             if crop_ids and not missing_profiles
             else {}
         )
@@ -285,16 +391,37 @@ def build_pattern_table(conn: sqlite3.Connection) -> list[dict]:
                 # Grown by farmers (per the source) but rejected by the calendar
                 # check: the calendar data is incomplete, not the farmers wrong.
                 "calendar_conflict": int(observed and result.status == "infeasible"),
-                "schedule_json": json.dumps([item.as_dict() for item in result.schedule]),
+                "schedule_json": json.dumps(schedule),
                 "min_gap_days": result.min_gap_days,
                 "total_field_days": result.total_field_days,
                 "turnaround_days_assumed": ASSUMED_TURNAROUND_DAYS,
-                "indicators_available": int(bool(indicators)),
                 "missing_profile_crops": json.dumps(missing_profiles),
-                "indicator_type": INDICATOR_TYPE if indicators else None,
-                **indicators,
+                "crop_water_food_json": json.dumps(crop_details),
+                **totals,
+                **provisional,
             }
         )
+
+    # Normalised production and water-productivity scores, over the patterns
+    # that have every indicator (the ones that can be ranked).
+    scorable = [
+        row for row in rows
+        if row.get("food_energy_gj_ha") is not None
+        and row.get("water_productivity_mj_m3") is not None
+        and row.get("soil_health_score") is not None
+    ]
+
+    max_food = max(row["food_energy_gj_ha"] for row in scorable)
+    max_wp = max(row["water_productivity_mj_m3"] for row in scorable)
+
+    for row in rows:
+        complete = row in scorable
+        row["indicators_available"] = int(complete)
+        row["indicator_type"] = INDICATOR_TYPE if complete else None
+
+        if complete:
+            row["food_production_score"] = round(row["food_energy_gj_ha"] / max_food, 6)
+            row["water_productivity_score"] = round(row["water_productivity_mj_m3"] / max_wp, 6)
 
     text_columns = list(patterns[0].keys())
     real_columns = {"region_area_ha", "region_pct_nca", "national_area_ha", "national_pct_nca"}
@@ -322,10 +449,18 @@ def build_pattern_table(conn: sqlite3.Connection) -> list[dict]:
             "min_gap_days": "INTEGER",
             "total_field_days": "INTEGER",
             "turnaround_days_assumed": "INTEGER",
-            "indicators_available": "INTEGER",
             "missing_profile_crops": "TEXT",
+            "crop_water_food_json": "TEXT",
+            "food_energy_gj_ha": "REAL",
+            "rice_equivalent_t_ha": "REAL",
+            "water_need_mm": "REAL",
+            "irrigation_mm": "REAL",
+            "effective_rain_mm": "REAL",
+            "water_productivity_mj_m3": "REAL",
+            "indicators_available": "INTEGER",
             "indicator_type": "TEXT",
-            "water_conservation_score": "REAL",
+            "food_production_score": "REAL",
+            "water_productivity_score": "REAL",
             "soil_health_score": "REAL",
             "climate_resilience_score": "REAL",
             "crop_diversity_score": "REAL",
@@ -344,6 +479,7 @@ def update_metadata(conn: sqlite3.Connection) -> None:
         "current_pattern_default": CURRENT_PATTERN_ID,
         "turnaround_days_assumed": str(ASSUMED_TURNAROUND_DAYS),
         "pattern_indicator_type": INDICATOR_TYPE,
+        "yield_source": "BBS Yearbook of Agricultural Statistics 2025, Feni district, 2024-25",
     }
 
     conn.executemany(
@@ -370,7 +506,7 @@ def main() -> None:
     print(f"[OK] {DB_PATH}")
     print(f"[OK] {len(rows)} cropping patterns")
 
-    statuses: dict[str, int] = {}
+    statuses: dict = {}
     for row in rows:
         statuses[row["feasibility_status"]] = statuses.get(row["feasibility_status"], 0) + 1
 
@@ -378,7 +514,7 @@ def main() -> None:
         print(f"     {status:<11} {count}")
 
     print(f"[OK] {sum(r['calendar_conflict'] for r in rows)} calendar conflicts")
-    print(f"[OK] {sum(r['indicators_available'] for r in rows)} patterns with provisional indicators")
+    print(f"[OK] {sum(r['indicators_available'] for r in rows)} patterns with all indicators")
 
 
 if __name__ == "__main__":

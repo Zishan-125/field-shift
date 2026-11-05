@@ -799,7 +799,7 @@ def recommendations(
 # SEASON-AWARE CROPPING PATTERNS
 # ---------------------------------------------------------------------
 
-PATTERN_METHODOLOGY_VERSION = "season_patterns_v1"
+PATTERN_METHODOLOGY_VERSION = "season_patterns_v2"
 
 DEFAULT_CURRENT_PATTERN_ID = "boro_fallow_taman"
 
@@ -808,28 +808,70 @@ SEASONS = ("rabi", "kharif1", "kharif2")
 RECOMMENDABLE_STATUSES = ("feasible", "tight")
 
 INDICATOR_KEYS = (
-    "water_conservation_score",
+    "food_production_score",
+    "water_productivity_score",
     "soil_health_score",
     "climate_resilience_score",
     "crop_diversity_score",
 )
 
 PRIORITY_TO_INDICATOR = {
-    "water_conservation": "water_conservation_score",
+    "food_production": "food_production_score",
+    "water_productivity": "water_productivity_score",
     "soil_health": "soil_health_score",
     "climate_resilience": "climate_resilience_score",
     "crop_diversity": "crop_diversity_score",
 }
 
+# Default farmer profile (a UI default, not data). Food production has its
+# own visible weight so that growing less food can never look like a win.
+DEFAULT_PATTERN_PRIORITIES = {
+    "food_production": 0.30,
+    "water_productivity": 0.25,
+    "soil_health": 0.20,
+    "climate_resilience": 0.15,
+    "crop_diversity": 0.10,
+}
 
-class PatternRecommendationRequest(FarmerPriorityRequest):
+
+class PatternRecommendationRequest(BaseModel):
     """
-    Farmer priorities plus the pattern the farmer grows today.
+    Farmer priorities (any non-negative mix; normalised to sum 1)
+    plus the pattern the farmer grows today.
     """
+
+    food_production: float = Field(
+        default=DEFAULT_PATTERN_PRIORITIES["food_production"], ge=0.0, le=1.0
+    )
+    water_productivity: float = Field(
+        default=DEFAULT_PATTERN_PRIORITIES["water_productivity"], ge=0.0, le=1.0
+    )
+    soil_health: float = Field(
+        default=DEFAULT_PATTERN_PRIORITIES["soil_health"], ge=0.0, le=1.0
+    )
+    climate_resilience: float = Field(
+        default=DEFAULT_PATTERN_PRIORITIES["climate_resilience"], ge=0.0, le=1.0
+    )
+    crop_diversity: float = Field(
+        default=DEFAULT_PATTERN_PRIORITIES["crop_diversity"], ge=0.0, le=1.0
+    )
 
     current_pattern_id: str = Field(
         default=DEFAULT_CURRENT_PATTERN_ID,
     )
+
+
+def normalize_pattern_priorities(request: PatternRecommendationRequest) -> dict:
+    raw = {key: getattr(request, key) for key in PRIORITY_TO_INDICATOR}
+    total = sum(raw.values())
+
+    if total <= 0:
+        raise HTTPException(
+            status_code=400,
+            detail="At least one farmer priority must be greater than zero.",
+        )
+
+    return {key: value / total for key, value in raw.items()}
 
 
 def crop_names() -> dict:
@@ -941,9 +983,110 @@ def serialize_pattern(row: dict, names: dict, upazilas: dict) -> dict:
             "reference_year": "2014-15",
         },
         "notes": row["notes"],
+        "production": {
+            "food_energy_gj_ha": row["food_energy_gj_ha"],
+            "rice_equivalent_t_ha": row["rice_equivalent_t_ha"],
+            "harvests_per_year": row["crop_count"],
+            "yield_source": "BBS Yearbook of Agricultural Statistics 2025, Feni, 2024-25",
+        },
+        "water": {
+            "water_need_mm": row["water_need_mm"],
+            "irrigation_mm": row["irrigation_mm"],
+            "irrigation_m3_ha": (
+                round(row["irrigation_mm"] * 10)
+                if row["irrigation_mm"] is not None
+                else None
+            ),
+            "effective_rain_mm": row["effective_rain_mm"],
+            "water_productivity_mj_m3": row["water_productivity_mj_m3"],
+            "method": "FAO-56 Kc x Penman-Monteith ET0; FAO effective rainfall and paddy terms",
+        },
+        "per_crop": [
+            {**item, **crop_label(item["crop_id"], names)}
+            for item in json.loads(row["crop_water_food_json"] or "[]")
+        ],
         "indicators": indicators,
         "indicator_type": row["indicator_type"],
         "missing_profile_crops": json.loads(row["missing_profile_crops"] or "[]"),
+    }
+
+
+def compare_with_current(current: dict, candidate: dict) -> dict:
+    """
+    Both sides of a change: food produced and water needed, against the
+    current pattern, and the trade-offs a farmer must accept.
+    """
+
+    def delta(section: str, key: str):
+        before = current[section][key]
+        after = candidate[section][key]
+
+        if before is None or after is None:
+            return None
+
+        return {
+            "current": before,
+            "candidate": after,
+            "change": round(after - before, 3),
+            "change_pct": round((after - before) / before * 100, 1) if before else None,
+        }
+
+    food = delta("production", "food_energy_gj_ha")
+    water = delta("water", "irrigation_mm")
+    harvests = candidate["facts"]["crop_count"] - current["facts"]["crop_count"]
+    rice = candidate["facts"]["rice_crop_count"] - current["facts"]["rice_crop_count"]
+
+    trade_offs = []
+
+    if harvests < 0:
+        trade_offs.append(
+            {
+                "code": "fewer_harvests",
+                "detail": f"{-harvests} fewer crop season(s) per year than now.",
+            }
+        )
+
+    if food is not None and food["change"] < 0:
+        trade_offs.append(
+            {
+                "code": "less_food",
+                "detail": f"{-food['change_pct']}% less food energy per hectare per year.",
+            }
+        )
+
+    if water is not None and water["change"] > 0:
+        trade_offs.append(
+            {
+                "code": "more_irrigation",
+                "detail": f"{round(water['change'])} mm more irrigation water per year.",
+            }
+        )
+
+    if rice < 0:
+        trade_offs.append(
+            {
+                "code": "fewer_rice_seasons",
+                "detail": f"{-rice} fewer rice season(s) per year than now.",
+            }
+        )
+
+    if candidate["feasibility"]["status"] == "tight":
+        trade_offs.append(
+            {
+                "code": "tight_timing",
+                "detail": "The next crop must go in almost straight after harvest.",
+            }
+        )
+
+    return {
+        "food_energy_gj_ha": food,
+        "irrigation_mm": water,
+        "harvests_change": harvests,
+        "rice_seasons_change": rice,
+        "trade_offs": trade_offs,
+        # Never present a pattern with fewer harvests or less food as a plain
+        # improvement, whatever its score.
+        "change_kind": "trade_off" if trade_offs else "improvement",
     }
 
 
@@ -1065,7 +1208,7 @@ def pattern_recommendations(
     """
 
     field = require_field(field_id)
-    weights = normalize_priorities(request)
+    weights = normalize_pattern_priorities(request)
 
     names = crop_names()
     upazilas = load_upazilas()
@@ -1121,6 +1264,7 @@ def pattern_recommendations(
             "score": pattern_score,
             "priority_contributions": contributions,
             "season_changes": season_changes(current, pattern),
+            "comparison": compare_with_current(current, pattern),
         }
 
         if pattern_score is None:
@@ -1176,15 +1320,24 @@ def pattern_recommendations(
         "methodology": {
             "version": PATTERN_METHODOLOGY_VERSION,
             "score_type": "scenario_indicator_not_yield_prediction",
-            "indicator_type": "provisional_indicator_from_unvalidated_crop_priors",
+            "indicator_sources": {
+                "food_production_score": "sourced: BBS Feni yields 2024-25 x food energy (FCT Bangladesh 2013, USDA)",
+                "water_productivity_score": "sourced: food energy per m3 of crop water need (FAO-56 Kc x ET0, FAO effective rainfall)",
+                "soil_health_score": "provisional: hand-set crop priors",
+                "climate_resilience_score": "provisional: hand-set crop priors",
+                "crop_diversity_score": "crop groups per season",
+            },
+            "default_priorities": DEFAULT_PATTERN_PRIORITIES,
             "synthetic_yield_target": False,
             "notes": [
                 "Patterns are real annual cropping patterns recorded in the "
                 "Chittagong agricultural region (Shahidullah et al. 2017).",
                 "Feasibility uses sourced DAE/BRRI/BARI crop calendars; the "
                 "turnaround time between crops is an assumption.",
-                "Indicator scores use hand-set crop parameters that are not "
-                "validated, and do not include yield, cost or income.",
+                "Yields are district averages for Feni (BBS), not a forecast "
+                "for this field. Cost and income are not included yet.",
+                "Soil and climate scores still use hand-set crop parameters "
+                "that are not validated.",
             ],
         },
         "runtime": {
