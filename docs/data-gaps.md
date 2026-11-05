@@ -32,6 +32,11 @@ the value **and** the source (document, table/page) when you fill one in.
 | Paddy percolation | FAO_IWN "average" 6 mm/day used; Feni topsoil is clay loam (SoilGrids, about 38 % clay) | Rice water need could be 4–8 mm/day × field days; a measured Feni value would be better |
 | Puddling water (SAT) | Charged to the first month in the field (FAO_IWN says the month before planting) | Slightly overstates T. Aman irrigation in July |
 | Rainfall | GPM IMERG (about 2,450 mm/year here) is lower than NASA POWER (about 3,440 mm/year) | Irrigation needs may be overstated; check against the BMD Feni station (BBS Yearbook Table 6.1.x) |
+| Mungbean end use | FAO may count mung (Vigna radiata) under 'Beans' (48 % food in Bangladesh) or 'Pulses, Other' (92 %); not settled for Bangladesh | Mungbean–Aus–T. Aman and Mungbean–Fallow–T. Aman are not ranked. Needs a Bangladesh mungbean utilisation figure (BBS/HIES, BARI pulses centre) |
+| Groundnut end use | Needs groundnut oil energy and the BBS production basis | Groundnut patterns are calendar conflicts anyway |
+| Wheat and rice end use | FAO books 51 % of Bangladesh wheat supply as feed (+21 % other uses) and 18.7 % of rice as feed | Wheat counts at 25 % food, rice at 75 %; check against BBS/HIES consumption |
+| Vegetables end use | Group of crops | Unscored |
+| Evidence-flag thresholds | Yield flag below 100 ha and market flag below 500 ha of the crop in Feni (BBS 2024-25) are judgement calls | Shown on the card; do not change the score |
 | Water productivity | Defined as food per m³ of **total** crop water need, not per m³ of irrigation only: a rainfed single T. Aman would otherwise get an infinite score | Irrigation water is shown separately |
 
 ## Assumptions in the code

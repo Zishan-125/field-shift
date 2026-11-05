@@ -50,10 +50,15 @@ Used in `data-pipeline/reference/food_energy.csv`.
 |---|---|---|
 | `FCT_BD_2013` | Shaheen, N., Rahim, A.T.M.A., Mohiduzzaman, M., Banu, C.P., Bari, M.L., Tukun, A.B., Mannan, M.A., Bhattacharjee, L. & Stadlmayr, B. (2013). *Food Composition Table for Bangladesh*. Institute of Nutrition and Food Science, University of Dhaka (with FAO). [PDF on fao.org](https://www.fao.org/fileadmin/templates/food_composition/documents/FCT_10_2_14_final_version.pdf) | Energy (kJ, kcal per 100 g edible portion) and edible-portion coefficient for raw rice (BR-28 parboiled milled), wheat, maize, potato, lentil, green gram, grass pea, mustard seed, sesame, groundnut, green chili. Food codes and PDF pages are in the CSV |
 | `USDA_FDC_SR` | U.S. Department of Agriculture, Agricultural Research Service. *FoodData Central*, SR Legacy. Cowpeas, common, mature seeds, raw — fdcId 173758 (NDB 16062). <https://fdc.nal.usda.gov/> | Energy for felon (cowpea), which is not in FCT_BD_2013 |
+| `FAOSTAT_FBS_BD` | FAO. *FAOSTAT Food Balance Sheets* (2010–), Bangladesh, bulk file `FoodBalanceSheets_E_Asia.zip` from <https://bulks-faostat.fao.org/production/FoodBalanceSheets_E_Asia.zip> (downloaded 2026-11-05; the FAOSTAT API was down) | End use: Food, Feed, Processing and Domestic supply for 2021–2023 (mean). Human-food share = Food / Domestic supply; for mustard and sesame, the energy that reaches people as oil (seed crushed × oil extraction × oil energy / seed energy). Mustard and sesame oil energy: FCT_BD_2013 13_0008 and 13_0011, PDF p.147 |
 
-Food output = yield × edible-portion coefficient × energy. It is shown to
-farmers as "tonnes of rice with the same food energy" (energy ÷ 14.54 MJ/kg,
-FCT_BD_2013 rice 01_0012).
+Two output figures are kept apart, never blended:
+
+* **gross output** = yield × edible-portion coefficient × energy (all uses);
+* **human food** = gross output × human-food share. Rankings use this one.
+
+Both are shown to farmers as "tonnes of rice with the same food energy"
+(energy ÷ 14.54 MJ/kg, FCT_BD_2013 rice 01_0012).
 
 ## Crop water requirement
 
