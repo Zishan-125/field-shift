@@ -9,6 +9,7 @@ import type {
   PatternPriorities,
   PatternRecommendationResponse,
 } from "../types/pattern";
+import type { ClimateShiftResponse } from "../types/climate";
 import type {
   CropResponse,
 } from "../types/crop";
@@ -91,6 +92,18 @@ export async function getEvaluatedRotations(
   const response = await api.get(
     `/api/offline/fields/${fieldId}/rotations/evaluated`,
   );
+
+  return response.data;
+}
+
+export async function getClimateShift(
+  upazila?: string,
+): Promise<ClimateShiftResponse> {
+  const response =
+    await api.get<ClimateShiftResponse>(
+      "/api/offline/climate-shift",
+      { params: upazila ? { upazila } : {} },
+    );
 
   return response.data;
 }

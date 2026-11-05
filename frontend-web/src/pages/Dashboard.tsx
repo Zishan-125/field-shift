@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useEffect,
   useMemo,
   useState,
@@ -47,6 +49,11 @@ import WeatherSummary from "../components/farmer/WeatherSummary";
 import EnvironmentSummary from "../components/farmer/EnvironmentSummary";
 import FarmerGoalSelector from "../components/farmer/FarmerGoalSelector";
 import PatternRecommendationList from "../components/farmer/PatternRecommendationList";
+
+// Charts (recharts) load in their own chunk so the rest of the page is not delayed.
+const ClimateShiftSection = lazy(
+  () => import("../components/farmer/ClimateShiftSection"),
+);
 import CropSelector from "../components/farmer/CropSelector";
 import LanguageSwitcher from "../components/farmer/LanguageSwitcher";
 
@@ -887,6 +894,20 @@ export default function Dashboard() {
               language
             }
           />
+        </section>
+
+        {/* =====================================================
+            3b. CLIMATE SHIFT (NASA POWER since 1984)
+        ====================================================== */}
+
+        <section className="fs-section">
+          <Suspense
+            fallback={
+              <div className="h-40 animate-pulse rounded-[2rem] bg-slate-100" />
+            }
+          >
+            <ClimateShiftSection language={language} />
+          </Suspense>
         </section>
 
         {/* =====================================================
