@@ -7,7 +7,15 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from climate.climate_shift import longest_run, pettitt, rainy_season, trend
+from climate.climate_shift import (
+    TEMP_FIRST_YEAR,
+    longest_run,
+    noleap_doy,
+    percentile_thresholds,
+    pettitt,
+    rainy_season,
+    trend,
+)
 from climate.fetch_power_history import cache_path, load_centroids, read_power_csv
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -90,6 +98,45 @@ def test_no_rainy_season_is_missing_not_day_365():
     assert np.isnan(onset) and np.isnan(withdrawal)
 
 
+def test_noleap_doy_shares_feb_29_with_feb_28():
+    index = pd.DatetimeIndex(["2024-02-28", "2024-02-29", "2024-03-01", "2023-03-01", "2024-12-31"])
+
+    assert list(noleap_doy(index)) == [59, 60, 60, 60, 365]
+
+
+def test_percentile_counts_ignore_a_constant_offset():
+    rng = np.random.default_rng(6)
+    days = pd.date_range("1998-01-01", "2010-12-31")
+    tmax = pd.Series(30 + rng.normal(0, 2, len(days)), index=days)
+
+    plain = percentile_thresholds(tmax)
+    shifted = percentile_thresholds(tmax + 2.2)
+
+    assert np.allclose(shifted - plain, 2.2)
+
+
+# ---------------------------------------------------------------------
+# Derived results
+# ---------------------------------------------------------------------
+
+DERIVED = ROOT / "data-pipeline" / "derived"
+
+
+def test_bias_correction_shrinks_the_station_gap_out_of_sample():
+    report = pd.read_csv(DERIVED / "climate_tmax_bias_correction.csv")
+    held_out = report[report["kind"].str.startswith("leave_one_year_out")]
+
+    assert len(held_out) >= 2
+    assert (held_out["bias_after_c"].abs() < held_out["bias_before_c"].abs()).all()
+
+
+def test_temperature_trends_start_after_the_break():
+    trends = pd.read_csv(DERIVED / "climate_shift_trends.csv")
+    temperature = trends[trends["source_basis"].isin(["tmax_bc", "tmax_raw", "et0"])]
+
+    assert (temperature["first_year"] >= TEMP_FIRST_YEAR).all()
+
+
 # ---------------------------------------------------------------------
 # Cached NASA POWER files
 # ---------------------------------------------------------------------
@@ -133,9 +180,14 @@ def test_trend_status_needs_significance(climate):
 def test_advice_only_uses_real_trends(climate):
     _, data = climate
     status = {i["indicator"]: i["status"] for i in data["indicators"]}
+    role = {i["indicator"]: i["role"] for i in data["indicators"]}
+    hazards = [item["hazard"] for item in data["advice"]]
+
+    assert len(hazards) == len(set(hazards))
 
     for item in data["advice"]:
         assert status[item["indicator"]] == "trend"
+        assert role[item["indicator"]] == "primary"
 
         for pattern in item["better_patterns"]:
             if any(t["code"] == "fewer_harvests" for t in pattern["trade_offs"]):

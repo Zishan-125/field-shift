@@ -29,6 +29,7 @@ TABLES = {
     "climate_indicator_years": "climate_shift_years.csv",
     "climate_trends": "climate_shift_trends.csv",
     "climate_crosscheck": "climate_crosscheck.csv",
+    "climate_tmax_bias_correction": "climate_tmax_bias_correction.csv",
 }
 
 

@@ -1364,10 +1364,12 @@ DEFAULT_UPAZILA = "Feni Sadar"  # contains the test plot
 # exposed when it is in the field in those months ("flowering" = only when its
 # flowering window from crop_calendar.csv falls in those months).
 CLIMATE_RULES = {
-    "hot_days_mar_may": {"adverse": "increasing", "hazard": "heat_mar_may", "months": [3, 4, 5], "exposure": "flowering"},
-    "hot_days_boro_flowering": {"adverse": "increasing", "hazard": "heat_boro_flowering", "months": [3], "exposure": "flowering"},
+    "tx90p_mar_may": {"adverse": "increasing", "hazard": "heat_mar_may", "months": [3, 4, 5], "exposure": "flowering"},
+    "tx90p_boro_flowering": {"adverse": "increasing", "hazard": "heat_boro_flowering", "months": [3], "exposure": "flowering"},
+    "tmax_mean_mar_may_bc": {"adverse": "increasing", "hazard": "heat_mar_may", "months": [3, 4, 5], "exposure": "flowering"},
     "extreme_rain_days": {"adverse": "increasing", "hazard": "heavy_rain", "months": [6, 7, 8, 9], "exposure": "in_field"},
     "annual_rain_mm": {"adverse": "increasing", "hazard": "wetter_monsoon", "months": [6, 7, 8, 9], "exposure": "in_field"},
+    "kharif_rain_mm": {"adverse": "increasing", "hazard": "wetter_monsoon", "months": [6, 7, 8, 9], "exposure": "in_field"},
     "longest_dry_spell_kharif1": {"adverse": "increasing", "hazard": "kharif1_dry_spell", "months": [3, 4, 5, 6], "exposure": "in_field"},
     "rabi_rain_mm": {"adverse": "decreasing", "hazard": "drier_rabi", "months": [11, 12, 1, 2], "exposure": "irrigation"},
     "annual_et0_mm": {"adverse": "increasing", "hazard": "higher_water_demand", "months": [], "exposure": "irrigation"},
@@ -1441,7 +1443,12 @@ def climate_advice(trends: list, recommendations: dict) -> list:
     for trend in trends:
         rule = CLIMATE_RULES.get(trend["indicator"])
 
-        if rule is None or trend["status"] != "trend":
+        if rule is None or trend["status"] != "trend" or trend.get("role") != "primary":
+            continue
+
+        # Several indicators can point to the same hazard (annual and Kharif
+        # rain); give the advice once.
+        if any(item["hazard"] == rule["hazard"] for item in advice):
             continue
 
         adverse = trend["direction"] == rule["adverse"]
@@ -1519,6 +1526,7 @@ def climate_shift(upazila: str = Query(default=DEFAULT_UPAZILA)):
 
     checks = fetch_all("SELECT * FROM climate_crosscheck")
     recommendations = pattern_recommendations(FIELD_ID, PatternRecommendationRequest())
+    rain_source = next((t["source"] for t in trends if t["source_basis"] == "rain"), "power")
 
     return {
         "upazila": upazila,
@@ -1526,19 +1534,50 @@ def climate_shift(upazila: str = Query(default=DEFAULT_UPAZILA)):
         "indicators": trends,
         "gauge_check": {
             "station": "BMD Feni (BBS Yearbook of Agricultural Statistics 2025, Tables 6.1.x and 6.2.x)",
-            "annual_rain": [c for c in checks if c["variable"] == "rain_annual"],
-            "monthly_rain": [c for c in checks if c["variable"] == "rain_month"],
+            # Rain rows of the source used for the indicators; both sources below for the chart.
+            "annual_rain": [
+                c for c in checks
+                if c["variable"] == "rain_annual" and c["check"] == f"{rain_source}_vs_bmd_feni_station"
+            ],
+            "annual_rain_by_source": {
+                source: [
+                    c for c in checks
+                    if c["variable"] == "rain_annual" and c["check"] == f"{source}_vs_bmd_feni_station"
+                ]
+                for source in ("power", "gpm")
+            },
+            "monthly_rain": [
+                c for c in checks
+                if c["variable"] == "rain_month" and c["check"] == f"{rain_source}_vs_bmd_feni_station"
+            ],
             "monthly_tmax": [c for c in checks if c["variable"] == "tmax_month_mean"],
+            "monthly_tmax_bc": [c for c in checks if c["variable"] == "tmax_month_mean_bc"],
+            "tmax_bias_correction": (
+                fetch_all("SELECT * FROM climate_tmax_bias_correction")
+                if table_exists("climate_tmax_bias_correction")
+                else []
+            ),
         },
         "repo_file_check": [c for c in checks if c["check"] == "power_vs_repo_power_file"],
         "advice": climate_advice(trends, recommendations),
+        "rain_source": rain_source,
         "notes": {
-            "source": "NASA POWER daily, community AG: MERRA-2 reanalysis (weather) and CERES (solar). "
-                      "Reanalysis model output, not a rain-gauge or station record.",
-            "grid": "All six Feni upazilas fall in the same MERRA-2 grid cell (0.5 x 0.625 degrees), "
-                    "so their temperature and rainfall series are identical; only solar radiation differs.",
+            "source": (
+                "Rainfall: NASA GPM IMERG V07 daily, averaged over each upazila polygon. "
+                if rain_source == "gpm"
+                else "Rainfall: NASA POWER (GPM IMERG not yet fetched); POWER rain has a break around 1997 "
+                     "and disagrees with the BMD Feni gauge. "
+            ) + "Temperature and ET0: NASA POWER (MERRA-2 reanalysis, CERES solar), from 1998, Tmax "
+                "bias-corrected against the BMD Feni station. Reanalysis and satellite data, not station records.",
+            "grid": (
+                "GPM rainfall (about 10 km) differs between upazilas. "
+                if rain_source == "gpm"
+                else "NASA POWER rainfall is one grid cell for all of Feni. "
+            ) + "NASA POWER temperature is one 0.5 x 0.625 degree cell for all six upazilas: "
+                "the temperature charts are the same for every upazila.",
             "significance": "A trend is reported only when Mann-Kendall p < 0.05 and it is not explained by a "
-                            "single break in the record (Pettitt test).",
+                            "single break in the record (Pettitt test). Heat uses percentile thresholds "
+                            "(days above the 1998-2010 90th percentile).",
         },
         "runtime": "offline",
         "internet_required": False,
