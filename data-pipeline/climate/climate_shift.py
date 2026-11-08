@@ -3,8 +3,11 @@ FIELD SHIFT — climate change in Feni from NASA data
 
 Two sources, used for what each can do:
 
-* Rainfall — NASA GPM IMERG daily, area-averaged per upazila polygon, 2001-
-  (cache from fetch_gpm_imerg.py). If that cache is missing, NASA POWER
+* Rainfall — NASA GPM IMERG V07 daily, area-averaged per upazila polygon,
+  1998- (cache from fetch_gpm_imerg.py). IMERG uses TRMM-era satellite
+  inputs before mid-2014 and GPM-era inputs after; indicators that count
+  days above or below an intensity threshold carry a caveat with the mean of
+  each era (see sensor_era_caveat()). If that cache is missing, NASA POWER
   rainfall is used and every rain indicator is flagged: POWER rain has a
   break around 1997 and disagrees with the BMD Feni gauge.
 * Temperature and ET0 — NASA POWER (MERRA-2 / CERES), one grid cell for all
@@ -577,6 +580,33 @@ def gauge_agreement(checks: pd.DataFrame, bias_report: pd.DataFrame, rain_source
 
 
 # ---------------------------------------------------------------------
+# IMERG SENSOR ERAS
+# ---------------------------------------------------------------------
+
+GPM_ERA_START = 2014  # GPM Core Observatory launched 27 Feb 2014; IMERG V07 inputs change in 2014
+INTENSITY_INDICATORS = ("extreme_rain_days", "longest_dry_spell_kharif1")
+
+
+def sensor_era_caveat(series: pd.Series) -> str | None:
+    """
+    Daily-intensity counts from IMERG can shift when the satellite inputs
+    change, even if totals do not. Pettitt may not catch a gradual shift, so
+    the era means are always written next to the trend.
+    """
+
+    before = series[series.index < GPM_ERA_START]
+    after = series[series.index >= GPM_ERA_START]
+    if before.empty or after.empty:
+        return None
+    return (
+        f"imerg_sensor_eras: mean {before.mean():.1f} in {before.index.min()}-{before.index.max()} "
+        f"(TRMM-era inputs) vs {after.mean():.1f} in {after.index.min()}-{after.index.max()} (GPM era). "
+        "A change in daily intensities across 2014 can come from the satellite inputs; "
+        "no daily gauge data to check it."
+    )
+
+
+# ---------------------------------------------------------------------
 # MAIN
 # ---------------------------------------------------------------------
 
@@ -626,6 +656,10 @@ def main() -> None:
                 "upazila": upazila, "indicator": indicator, "label": label, "unit": unit,
                 "source": source, "source_basis": basis, "role": role,
                 **trend(group.set_index("year")["value"]),
+                "caveat": (
+                    sensor_era_caveat(group.set_index("year")["value"])
+                    if source == "gpm" and indicator in INTENSITY_INDICATORS else None
+                ),
             })
 
         print(f"[OK] {upazila}")

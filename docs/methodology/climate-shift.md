@@ -7,11 +7,15 @@ discontinuity, validated it against the BMD Feni station, and switched data:
 GPM IMERG for rainfall, and NASA POWER temperature only from 1998,
 bias-corrected against the station and counted with percentile thresholds.
 
-**Status (8 Nov 2026):** the temperature rework is done. The GPM IMERG fetch
-(`data-pipeline/climate/fetch_gpm_imerg.py`) is written but has not run yet:
-it needs an Earth Engine-enabled Google Cloud project. Until it runs, the
-rain indicators still come from NASA POWER and the app shows them with the
-gauge caveat.
+**Status (8 Nov 2026):** done. Rainfall indicators now come from GPM IMERG
+V07, 1998–2025, per upazila (fetched through Earth Engine project
+`field-shift-bd`, cached in the repo). **The GPM rain series are
+break-free:** the Pettitt test finds no change point (p ≥ 0.05) in any of the
+8 rainfall indicators in any of the 6 upazilas (48 of 48). GPM tracks the BMD
+Feni gauge far better than POWER (annual r = 0.95 vs 0.77) but reads about
+13 % low. One indicator trends, days with ≥ 50 mm rain, and only downward;
+it falls at the 2014 change of satellite inputs and is flagged rather than
+turned into advice (§6).
 
 ## 1. Why the first attempt was not trustworthy
 
@@ -35,7 +39,7 @@ We did not publish those trends.
 
 | Use | Source | Detail |
 |---|---|---|
-| Rainfall indicators | **NASA GPM IMERG V07** (Earth Engine `NASA/GPM_L3/IMERG_V07`, half-hourly, 0.1°) | Daily totals (mm/hr × 0.5 h per image, UTC days), area-averaged over each upazila polygon at 1 km so each 0.1° cell counts by the area it covers. 2001 onward (IMERG starts June 2000). Cached in `data-pipeline/data/raw/gpm/`. **Not yet fetched** — POWER rain is used until then |
+| Rainfall indicators | **NASA GPM IMERG V07** (Earth Engine `NASA/GPM_L3/IMERG_V07`, half-hourly, 0.1°) | Daily totals (mm/hr × 0.5 h per image, UTC days), area-averaged over each upazila polygon at 1 km so each 0.1° cell counts by the area it covers. 1998 onward (V07 in Earth Engine starts 1998-01-01). Half-hours per day recorded (`imerg_v07_halfhours_per_day.csv`): 3 incomplete days in 10,538, all in 2026; days with 36–47 half-hours are scaled to 24 h as in the NASA daily product (GPM_3IMERGDF), fewer are left missing. Cached in `data-pipeline/data/raw/gpm/` |
 | Temperature, ET0 | NASA POWER daily, community AG (MERRA-2; solar from CERES) | 1998 onward only. One grid cell for all of Feni. Cached in `data-pipeline/data/raw/power/` |
 | Station check | BMD Feni station, BBS *Yearbook of Agricultural Statistics 2025*, Tables 6.1.1–6.1.3, 6.2.4–6.2.5 | Annual rain 2016–2024, monthly rain and monthly mean Tmax 2023–24 (`data-pipeline/reference/bmd_feni_station.csv`) |
 | Upazila polygons | geoBoundaries BGD ADM3 (BBS / OCHA ROAP, CC BY 3.0 IGO), simplified 0.0005° | `data-pipeline/reference/feni_upazilas.geojson` |
@@ -112,7 +116,7 @@ is not corrected; the percentile count does not depend on it.
   same way), `step_change_not_trend`, `no_significant_trend`. **Nothing is
   called a trend unless p < 0.05.** No serial-correlation correction.
 
-## 6. Results — Feni Sadar (rain still from POWER)
+## 6. Results — Feni Sadar
 
 | Indicator | Source | Years | Sen slope / decade | MK p | Pettitt break (p) | Status |
 |---|---|---|---|---|---|---|
@@ -122,31 +126,59 @@ is not corrected; the percentile count does not depend on it.
 | Days ≥ 35 °C March–May (corrected, comparison) | POWER | 1998–2026 | −9.76 days | 0.024 | 2017 (0.038) | step change, not trend |
 | Days ≥ 35 °C March–May (uncorrected, comparison) | POWER | 1998–2026 | −7.36 days | 0.020 | 2015 (0.013) | step change, not trend |
 | Annual ET0 | POWER | 1998–2025 | −24.2 mm | 0.019 | 2015 (0.006) | step change, not trend |
-| Annual rain | POWER (to be replaced by GPM) | 1984–2025 | +586 mm | <0.001 | 2007 (<0.001) | "trend" — not trusted, see §1 |
-| Kharif rain | POWER (to be replaced) | 1984–2025 | +584 mm | <0.001 | 2007 (<0.001) | "trend" — not trusted |
-| Days with rain ≥ 50 mm | POWER (to be replaced) | 1984–2025 | +2.9 days | <0.001 | 2006 (<0.001) | step change, not trend |
-| Longest dry spell, Kharif-1 | POWER (to be replaced) | 1984–2025 | −1.4 days | 0.174 | 2010 (0.795) | no significant trend |
-| Rabi rain | POWER (to be replaced) | 1985–2025 | +15.3 mm | 0.058 | 2017 (0.082) | no significant trend |
-| Rainy-season onset | POWER (to be replaced) | 1997–2025 | −6.7 days | 0.138 | 2017 (0.194) | no significant trend |
-| Rainy-season withdrawal / length | POWER (to be replaced) | 1997–2025 | +15.6 / +25 days | 0.002 / <0.001 | 2015 / 2016 | step change, not trend |
+| Annual rain | GPM | 1998–2025 | −143 mm | 0.138 | 2008 (0.436) | no significant trend |
+| Kharif rain | GPM | 1998–2025 | −152 mm | 0.066 | 2005 (0.490) | no significant trend |
+| Days with rain ≥ 50 mm | GPM | 1998–2025 | −2.5 days | 0.007 | 2018 (0.115) | trend (down), **sensor-era caveat**, not used for advice |
+| Longest dry spell, Kharif-1 | GPM | 1998–2025 | +3.7 days | 0.065 | 2012 (0.339) | no significant trend (sensor-era caveat) |
+| Rabi rain | GPM | 1999–2025 | −4.1 mm | 0.868 | 2017 (0.744) | no significant trend |
+| Rainy-season onset | GPM | 1998–2025 | +5.3 days | 0.406 | 2003 (0.339) | no significant trend |
+| Rainy-season withdrawal | GPM | 1998–2025 | −0.8 days | 0.874 | 2022 (1.000) | no significant trend |
+| Rainy-season length | GPM | 1998–2025 | −6.8 days | 0.286 | 2003 (0.634) | no significant trend |
+| Annual rain (comparison only) | POWER | 1984–2025 | +586 mm | <0.001 | 2007 (<0.001) | the 1997 jump, see §1; not used |
 
 **With the corrected temperature record, no heat indicator shows a
 significant trend since 1998.** The one with p < 0.05 (mean March–May Tmax)
 jumps once around 2015 rather than changing steadily.
 
-**Annual rain vs BMD Feni gauge (mm):** GPM column to be added when fetched.
+**Is GPM break-free? Yes, by the test.** Pettitt p ≥ 0.05 for every rain
+indicator in every upazila (48/48). Computed, not assumed; stored as
+`pettitt_break_free`.
 
-| Year | BMD gauge | NASA POWER | POWER / gauge |
-|---|---|---|---|
-| 2016 | 3091 | 4007 | 1.30 |
-| 2017 | 4476 | 6676 | 1.49 |
-| 2018 | 2662 | 4010 | 1.51 |
-| 2019 | 2603 | 4380 | 1.68 |
-| 2020 | 3193 | 3718 | 1.16 |
-| 2021 | 2449 | 2934 | 1.20 |
-| 2022 | 2480 | 2562 | 1.03 |
-| 2023 | 2295 | 2924 | 1.27 |
-| 2024 | 4221 | 4021 | 0.95 |
+**But daily intensities shift across 2014.** IMERG V07 uses TRMM-era
+satellite inputs before 2014 and GPM-era inputs after (GPM Core Observatory
+launched 27 Feb 2014). Annual totals do not move (Feni Sadar mean 2,654 mm in
+1998–2013 vs 2,616 mm in 2014–2025), yet days ≥ 50 mm fall from 12.7 to 9.7 a
+year and the longest Kharif-1 dry spell rises from 17.4 to 24.2 days. Unchanged
+totals with fewer heavy days and longer dry runs is what a change in how rain
+intensity is estimated looks like, but without daily gauge data we cannot tell
+it from a real change. These two indicators carry `caveat = imerg_sensor_eras`
+(with the era means), the app shows a warning under them, and **the advice
+skips them**. The heavy-rain decline is "significant" in 4 of 6 upazilas
+(Feni Sadar, Fulgazi, Parshuram, Sonagazi).
+
+**Annual rain vs BMD Feni gauge (mm), 2016–2024.** The BBS Yearbook 2025 has
+no 2025 gauge value, so the requested 2016–2025 check covers 2016–2024.
+
+| Year | BMD gauge | GPM IMERG (Feni Sadar) | GPM / gauge | NASA POWER | POWER / gauge |
+|---|---|---|---|---|---|
+| 2016 | 3091 | 2602 | 0.84 | 4007 | 1.30 |
+| 2017 | 4476 | 3701 | 0.83 | 6676 | 1.49 |
+| 2018 | 2662 | 2427 | 0.91 | 4010 | 1.51 |
+| 2019 | 2603 | 2371 | 0.91 | 4380 | 1.68 |
+| 2020 | 3193 | 2704 | 0.85 | 3718 | 1.16 |
+| 2021 | 2449 | 2512 | 1.03 | 2934 | 1.20 |
+| 2022 | 2480 | 2025 | 0.82 | 2562 | 1.03 |
+| 2023 | 2295 | 2118 | 0.92 | 2924 | 1.27 |
+| 2024 | 4221 | 3171 | 0.75 | 4021 | 0.95 |
+| **Mean** | | | **0.87** | | **1.29** |
+
+Correlation of annual totals with the gauge: GPM 0.95, POWER 0.77. Monthly
+(22 months, 2023–24): GPM r = 0.97, mean bias −55 mm/month; POWER r = 0.96,
++18 mm/month. GPM is consistently low (the area mean of a 0.1° cell against a
+point gauge), so GPM totals understate Feni rain by about 13 %; year-to-year
+changes follow the gauge. The ±15 % "agrees" test still fails in 2016, 2017,
+2022 and 2024, so the app keeps the gauge caveat. The "Annual rainfall" chart
+draws GPM, POWER (dashed) and the gauge on one axis.
 
 **Repo POWER file check:** identical to the new download for T2M_MAX, T2M_MIN,
 PRECTOTCORR, RH2M and WS2M (2015-01-30 to 2024-12-31); solar differs because
@@ -168,15 +200,17 @@ per hazard:
 
 The API lists the threatened crops of the current pattern and up to two
 recommended patterns with less exposure, plain improvements first;
-trade-offs keep their labels. With the current data the only advice comes
-from the POWER rain "trend" (wetter monsoon → T. Aman), shown with the gauge
-caveat; it will be recomputed from GPM.
+trade-offs keep their labels. Indicators with the `imerg_sensor_eras`
+caveat are skipped. **With GPM rain and corrected temperature there is no
+climate advice at present:** no indicator has a trustworthy adverse trend.
+The earlier "wetter monsoon" advice came from the POWER rain break and is
+gone.
 
 ## 8. Reproduce
 
 ```bash
 python data-pipeline/climate/fetch_power_history.py              # cached
-python data-pipeline/climate/fetch_gpm_imerg.py --project <id>   # needs Earth Engine
+python data-pipeline/climate/fetch_gpm_imerg.py --project field-shift-bd   # cached; needs Earth Engine
 python data-pipeline/climate/climate_shift.py
 python backend/offline/build_climate_tables.py
 cd data-pipeline && python -m pytest tests/test_climate_shift.py

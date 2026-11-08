@@ -11,10 +11,16 @@ counts in proportion to the area it covers inside the polygon. At native
 scale only pixel centres would count, and the smallest upazilas (about
 110 km2, i.e. one IMERG cell) could come back empty.
 
-Days are UTC days (IMERG time stamps are UTC).
+Days are UTC days (IMERG time stamps are UTC). The cache holds the plain
+sum of the half-hours present. HALFHOURS_FILE records how many of the
+48 half-hours exist for each day (3 incomplete days 1998 to Nov 2026, all in
+2026). read_gpm_csv() turns incomplete days into the NASA daily-product
+convention (mean rate x 24 h, as in GPM_3IMERGDF) when at least
+MIN_HALFHOURS are present and into missing values otherwise.
 
 Output, committed so the analysis reruns without Earth Engine:
     data-pipeline/data/raw/gpm/gpm_imerg_daily_<upazila>.csv   date, precip_mm
+    data-pipeline/data/raw/gpm/imerg_v07_halfhours_per_day.csv  date, n_halfhours
 
 Run (needs an Earth Engine-enabled Google Cloud project):
     python data-pipeline/climate/fetch_gpm_imerg.py --project <cloud-project-id>
@@ -40,7 +46,9 @@ COLLECTION = "NASA/GPM_L3/IMERG_V07"
 BAND = "precipitation"
 HALF_HOUR = 0.5
 REDUCE_SCALE_M = 1000
-FIRST_YEAR = 2000  # IMERG starts June 2000
+FIRST_YEAR = 1998  # IMERG V07 in Earth Engine starts 1998-01-01 (TRMM era reprocessed)
+HALFHOURS_FILE = CACHE_DIR / "imerg_v07_halfhours_per_day.csv"
+MIN_HALFHOURS = 36  # 75 % of the day
 
 
 def cache_path(upazila: str) -> Path:
@@ -48,8 +56,30 @@ def cache_path(upazila: str) -> Path:
 
 
 def read_gpm_csv(path: Path) -> pd.Series:
-    frame = pd.read_csv(path, parse_dates=["date"]).set_index("date").sort_index()
-    return frame["precip_mm"]
+    """Daily rain; incomplete days scaled to 48 half-hours or set missing (see module doc)."""
+
+    rain = pd.read_csv(path, parse_dates=["date"]).set_index("date").sort_index()["precip_mm"]
+    if not HALFHOURS_FILE.exists():
+        return rain
+
+    n = pd.read_csv(HALFHOURS_FILE, parse_dates=["date"]).set_index("date")["n_halfhours"]
+    n = n.reindex(rain.index).fillna(48)
+    rain = rain.where(n >= 48, rain * 48 / n.clip(lower=1))
+    return rain[n >= MIN_HALFHOURS]
+
+
+def count_halfhours(ee, start_year: int) -> pd.Series:
+    """Number of IMERG half-hour images per UTC day (region independent)."""
+
+    collection = ee.ImageCollection(COLLECTION)
+    stamps: list[int] = []
+    for year in range(start_year, date.today().year + 1):
+        for q_start, q_end in (("01-01", "04-01"), ("04-01", "07-01"), ("07-01", "10-01"), ("10-01", None)):
+            end = f"{year}-{q_end}" if q_end else f"{year + 1}-01-01"
+            stamps += collection.filterDate(f"{year}-{q_start}", end).aggregate_array("system:time_start").getInfo()
+    days = pd.to_datetime(pd.Series(stamps), unit="ms").dt.normalize().value_counts().sort_index()
+    full = pd.date_range(f"{start_year}-01-01", days.index.max())
+    return days.reindex(full, fill_value=0).rename("n_halfhours").rename_axis("date")
 
 
 def upazila_features(ee):
@@ -94,6 +124,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--project", default=os.environ.get("EE_PROJECT"))
     parser.add_argument("--start-year", type=int, default=FIRST_YEAR)
+    parser.add_argument("--end-year", type=int, default=date.today().year)
     args = parser.parse_args()
 
     if not args.project:
@@ -108,7 +139,10 @@ def main() -> None:
     rows: list[dict] = []
     today = date.today()
 
-    for year in range(args.start_year, today.year + 1):
+    count_halfhours(ee, FIRST_YEAR).to_csv(HALFHOURS_FILE)
+    print(f"[OK] half-hour counts -> {HALFHOURS_FILE}")
+
+    for year in range(args.start_year, args.end_year + 1):
         # Quarters keep each request well inside Earth Engine's limits.
         for q_start, q_end in (("01-01", "04-01"), ("04-01", "07-01"), ("07-01", "10-01"), ("10-01", None)):
             start = f"{year}-{q_start}"
@@ -133,10 +167,14 @@ def main() -> None:
     frame["date"] = pd.to_datetime(frame["date"])
 
     for upazila, group in frame.groupby("upazila"):
-        group = group.sort_values("date")[["date", "precip_mm"]]
-        # IMERG has no data before 2000-06-01; empty days come back as null.
-        group = group.dropna(subset=["precip_mm"])
-        group.to_csv(cache_path(upazila), index=False, float_format="%.3f")
+        group = group.sort_values("date")[["date", "precip_mm"]].dropna(subset=["precip_mm"])
+        # Fetched years replace the cached ones; other cached years are kept.
+        path = cache_path(upazila)
+        if path.exists():
+            old = pd.read_csv(path, parse_dates=["date"])
+            old = old[~old["date"].dt.year.isin(group["date"].dt.year.unique())]
+            group = pd.concat([old, group]).sort_values("date")
+        group.to_csv(path, index=False, float_format="%.3f")
         print(f"[OK] {upazila}: {len(group)} days, {group['date'].min():%Y-%m-%d} to {group['date'].max():%Y-%m-%d}")
 
 

@@ -51,6 +51,7 @@ export interface ClimateIndicator {
   role: "primary" | "comparison";
   gauge_agreement: string;
   gauge_agrees: boolean | null;
+  caveat: string | null;
   series: { year: number; value: number }[];
 }
 

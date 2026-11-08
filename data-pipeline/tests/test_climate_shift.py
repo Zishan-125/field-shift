@@ -185,9 +185,12 @@ def test_advice_only_uses_real_trends(climate):
 
     assert len(hazards) == len(set(hazards))
 
+    caveat = {i["indicator"]: i.get("caveat") for i in data["indicators"]}
+
     for item in data["advice"]:
         assert status[item["indicator"]] == "trend"
         assert role[item["indicator"]] == "primary"
+        assert not (caveat[item["indicator"]] or "").startswith("imerg_sensor_eras")
 
         for pattern in item["better_patterns"]:
             if any(t["code"] == "fewer_harvests" for t in pattern["trade_offs"]):
@@ -205,3 +208,40 @@ def test_unknown_upazila_is_404(climate):
     client, _ = climate
 
     assert client.get("/api/offline/climate-shift", params={"upazila": "Nowhere"}).status_code == 404
+
+
+# ---------------------------------------------------------------------
+# GPM IMERG
+# ---------------------------------------------------------------------
+
+def test_gpm_cache_is_committed_and_starts_1998():
+    from climate.fetch_gpm_imerg import cache_path as gpm_path, read_gpm_csv
+
+    for centroid in load_centroids():
+        rain = read_gpm_csv(gpm_path(centroid["upazila"]))
+        assert rain.index.min() == pd.Timestamp("1998-01-01")
+        assert rain.notna().all()
+
+
+def test_incomplete_gpm_days_are_scaled_or_dropped(tmp_path, monkeypatch):
+    import climate.fetch_gpm_imerg as gpm
+
+    counts = tmp_path / "counts.csv"
+    pd.DataFrame({"date": ["2026-01-01", "2026-01-02", "2026-01-03"], "n_halfhours": [48, 36, 8]}).to_csv(counts, index=False)
+    rain = tmp_path / "rain.csv"
+    pd.DataFrame({"date": ["2026-01-01", "2026-01-02", "2026-01-03"], "precip_mm": [10.0, 9.0, 2.0]}).to_csv(rain, index=False)
+    monkeypatch.setattr(gpm, "HALFHOURS_FILE", counts)
+
+    series = gpm.read_gpm_csv(rain)
+
+    assert series.loc["2026-01-01"] == 10.0
+    assert series.loc["2026-01-02"] == pytest.approx(12.0)     # 9 mm in 36 half-hours -> rate x 24 h
+    assert pd.Timestamp("2026-01-03") not in series.index       # 8 of 48: missing, not 2 mm
+
+
+def test_gpm_intensity_indicators_carry_the_sensor_era_caveat(climate):
+    _, data = climate
+
+    for indicator in data["indicators"]:
+        if indicator["source"] == "gpm" and indicator["indicator"] in ("extreme_rain_days", "longest_dry_spell_kharif1"):
+            assert indicator["caveat"].startswith("imerg_sensor_eras")

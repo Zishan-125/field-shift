@@ -1417,7 +1417,10 @@ def climate_advice(trends: list, recommendations: dict) -> list:
     """
     Turn each indicator with a real trend into advice: which crop of the
     current pattern it threatens and which recommended pattern lowers that
-    exposure. Only status == "trend" is used.
+    exposure. Only status == "trend" is used, and not indicators flagged as
+    possibly a satellite-input artefact (caveat "imerg_sensor_eras"): a
+    "fewer heavy-rain days" message that may come from the 2014 change in
+    IMERG inputs is not advice a farmer should act on.
     """
 
     current = recommendations["current"]
@@ -1444,6 +1447,9 @@ def climate_advice(trends: list, recommendations: dict) -> list:
         rule = CLIMATE_RULES.get(trend["indicator"])
 
         if rule is None or trend["status"] != "trend" or trend.get("role") != "primary":
+            continue
+
+        if (trend.get("caveat") or "").startswith("imerg_sensor_eras"):
             continue
 
         # Several indicators can point to the same hazard (annual and Kharif

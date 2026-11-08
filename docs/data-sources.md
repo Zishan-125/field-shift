@@ -91,6 +91,24 @@ Ingested by `data-pipeline/` and stored in `monthly_environmental_features` and
 | NASA POWER daily weather | <https://power.larc.nasa.gov/api/temporal/daily/point>, community `AG` (`fetch_nasa_power.py`) |
 | ISRIC SoilGrids 2.0 | Earth Engine `projects/soilgrids-isric/*_mean` (pH, SOC, clay, sand, silt, bulk density, CEC, nitrogen) |
 
+## Satellite records for climate shift, demo fields and the crop classifier
+
+Fetched through Earth Engine (Cloud project `field-shift-bd`, noncommercial).
+Cached outputs are committed so nothing needs Earth Engine to rerun.
+
+| Dataset | Earth Engine ID | Used for | Citation |
+|---|---|---|---|
+| GPM IMERG V07, half-hourly, 0.1° | `NASA/GPM_L3/IMERG_V07` | Daily rain 1998–2026 per upazila (`climate/fetch_gpm_imerg.py`), per demo field and per classifier point | Huffman, G.J. et al. (2023). GPM IMERG Final Precipitation L3 Half Hourly 0.1° × 0.1° V07. NASA GES DISC. doi:[10.5067/GPM/IMERG/3B-HH/07](https://doi.org/10.5067/GPM/IMERG/3B-HH/07) |
+| HLS Landsat 30 m v2.0 | `NASA/HLS/HLSL30/v002` | NDVI, EVI, LSWI with Fmask (`fields/`, `classifier/`) | Masek, J. et al. (2021). HLS Operational Landsat Surface Reflectance and TOA Brightness Daily Global 30m v2.0. NASA LP DAAC. doi:[10.5067/HLS/HLSL30.002](https://doi.org/10.5067/HLS/HLSL30.002) |
+| HLS Sentinel-2 30 m v2.0 | `NASA/HLS/HLSS30/v002` | as above | Masek, J. et al. (2021). HLS Sentinel-2 MSI Surface Reflectance Daily Global 30m v2.0. NASA LP DAAC. doi:[10.5067/HLS/HLSS30.002](https://doi.org/10.5067/HLS/HLSS30.002) |
+| MODIS MOD13Q1 v6.1 | `MODIS/061/MOD13Q1` | 16-day NDVI/EVI at the demo fields | Didan, K. (2021). doi:[10.5067/MODIS/MOD13Q1.061](https://doi.org/10.5067/MODIS/MOD13Q1.061) |
+| MODIS MOD11A2 v6.1 | `MODIS/061/MOD11A2` | 8-day daytime land-surface temperature at the demo fields | Wan, Z., Hook, S. & Hulley, G. (2021). doi:[10.5067/MODIS/MOD11A2.061](https://doi.org/10.5067/MODIS/MOD11A2.061) |
+| SMAP L4 v8 | `NASA/SMAP/SPL4SMGP/008` | Root-zone soil moisture | Reichle, R. et al. SMAP L4 Global 3-hourly 9 km EASE-Grid Surface and Root Zone Soil Moisture Geophysical Data, Version 8. NSIDC DAAC (SPL4SMGP) |
+| Sentinel-1 GRD (IW, VV/VH) | `COPERNICUS/S1_GRD` | Radar backscatter; flood detection for the Fulgazi field | Copernicus Sentinel data, ESA |
+| ESA WorldCover v200 (2021) | `ESA/WorldCover/v200` | Cropland mask (class 40) for demo fields and classifier points | Zanaga, D. et al. (2022). doi:[10.5281/zenodo.7254221](https://doi.org/10.5281/zenodo.7254221) |
+| JRC Global Surface Water 1.4 | `JRC/GSW1_4/GlobalSurfaceWater` | River channel (occurrence ≥ 50 %) near the Fulgazi field | Pekel, J.-F. et al. (2016). *Nature* 540: 418–422. doi:[10.1038/nature20584](https://doi.org/10.1038/nature20584) |
+| FAO GAUL 2025 level 2 | `FAO/GAUL/2025/level2` | Feni, Noakhali, Comilla district outlines for sampling points | FAO Global Administrative Unit Layers |
+
 ## Crop parameters (NOT sourced)
 
 `crop_profiles` (water demand, drought/heat/waterlogging tolerance, fertility

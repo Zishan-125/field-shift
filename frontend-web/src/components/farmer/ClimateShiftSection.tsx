@@ -378,6 +378,10 @@ export default function ClimateShiftSection({ language = "bn" }: ClimateShiftSec
                 <p className="mt-1 text-xs leading-5 text-amber-800">{t.caveatGauge}</p>
               )}
 
+              {indicator.caveat?.startsWith("imerg_sensor_eras") && (
+                <p className="mt-1 text-xs leading-5 text-amber-800">{t.caveatSensorEra}</p>
+              )}
+
               <div className="mt-3">
                 <IndicatorChart
                   indicator={indicator}

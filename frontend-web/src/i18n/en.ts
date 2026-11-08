@@ -228,6 +228,8 @@ const en = {
       "{label}: no clear change since {year} — not statistically significant.",
     caveatGauge:
       "Careful: this NASA record does not match the BMD Feni weather station, so treat it as uncertain.",
+    caveatSensorEra:
+      "Careful: the satellites behind this rain record changed in 2014. A change in heavy-rain or dry days around then may come from the satellites, not the weather.",
     notSignificantBadge: "Not significant",
     trendBadge: "Trend (NASA)",
     stepBadge: "Data break, not a trend",
