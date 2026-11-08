@@ -1,0 +1,263 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "field_id": "feni_chhagalnaiya_01",
+    "upazila": "Chhagalnaiya",
+    "rule": "cropland block nearest the upazila centroid",
+    "center_lat": 23.017137,
+    "center_lon": 91.506994,
+    "size_m": 90,
+    "worldcover_cropland_share": 1,
+    "distance_to_river_channel_m": 1607,
+    "s1_vv_aug2024_db": -19.21,
+    "source": "ESA WorldCover v200; JRC GSW 1.4; Copernicus Sentinel-1 GRD. Demo field chosen by rule, not a surveyed plot."
+   },
+   "geometry": {
+    "geodesic": false,
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       91.50655768330718,
+       23.016731819254773
+      ],
+      [
+       91.50743185879311,
+       23.016731819254773
+      ],
+      [
+       91.50743185879311,
+       23.017541561572237
+      ],
+      [
+       91.50655768330718,
+       23.017541561572237
+      ],
+      [
+       91.50655768330718,
+       23.016731819254773
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "field_id": "feni_daganbhuiyan_01",
+    "upazila": "Daganbhuiyan",
+    "rule": "cropland block nearest the upazila centroid",
+    "center_lat": 22.970018,
+    "center_lon": 91.296558,
+    "size_m": 90,
+    "worldcover_cropland_share": 1,
+    "distance_to_river_channel_m": 1489,
+    "s1_vv_aug2024_db": -15.4,
+    "source": "ESA WorldCover v200; JRC GSW 1.4; Copernicus Sentinel-1 GRD. Demo field chosen by rule, not a surveyed plot."
+   },
+   "geometry": {
+    "geodesic": false,
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       91.29612174926784,
+       22.969612953029202
+      ],
+      [
+       91.29699561974557,
+       22.969612953029202
+      ],
+      [
+       91.29699561974557,
+       22.970422695346663
+      ],
+      [
+       91.29612174926784,
+       22.970422695346663
+      ],
+      [
+       91.29612174926784,
+       22.969612953029202
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "field_id": "feni_feni_sadar_01",
+    "upazila": "Feni Sadar",
+    "rule": "cropland block nearest the upazila centroid",
+    "center_lat": 22.995224,
+    "center_lon": 91.41468,
+    "size_m": 90,
+    "worldcover_cropland_share": 1,
+    "distance_to_river_channel_m": 2235,
+    "s1_vv_aug2024_db": -18.6,
+    "source": "ESA WorldCover v200; JRC GSW 1.4; Copernicus Sentinel-1 GRD. Demo field chosen by rule, not a surveyed plot."
+   },
+   "geometry": {
+    "geodesic": false,
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       91.4142436363701,
+       22.99481936172936
+      ],
+      [
+       91.41511766991306,
+       22.99481936172936
+      ],
+      [
+       91.41511766991306,
+       22.995629104046817
+      ],
+      [
+       91.4142436363701,
+       22.995629104046817
+      ],
+      [
+       91.4142436363701,
+       22.99481936172936
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "field_id": "feni_fulgazi_01",
+    "upazila": "Fulgazi",
+    "rule": "flood-prone: Sentinel-1 VV < -18 dB (mean 2024-08-21 to 2024-09-01), within 2000 m of a JRC river channel (Muhuri), nearest to the channel",
+    "center_lat": 23.172776,
+    "center_lon": 91.433906,
+    "size_m": 90,
+    "worldcover_cropland_share": 1,
+    "distance_to_river_channel_m": 29,
+    "s1_vv_aug2024_db": -18.28,
+    "source": "ESA WorldCover v200; JRC GSW 1.4; Copernicus Sentinel-1 GRD. Demo field chosen by rule, not a surveyed plot."
+   },
+   "geometry": {
+    "geodesic": false,
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       91.43346929020136,
+       23.172370987691494
+      ],
+      [
+       91.43434447889045,
+       23.172370987691494
+      ],
+      [
+       91.43434447889045,
+       23.17318073000896
+      ],
+      [
+       91.43346929020136,
+       23.17318073000896
+      ],
+      [
+       91.43346929020136,
+       23.172370987691494
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "field_id": "feni_parshuram_01",
+    "upazila": "Parshuram",
+    "rule": "cropland block nearest the upazila centroid",
+    "center_lat": 23.19935,
+    "center_lon": 91.436554,
+    "size_m": 90,
+    "worldcover_cropland_share": 1,
+    "distance_to_river_channel_m": 1865,
+    "s1_vv_aug2024_db": -13.55,
+    "source": "ESA WorldCover v200; JRC GSW 1.4; Copernicus Sentinel-1 GRD. Demo field chosen by rule, not a surveyed plot."
+   },
+   "geometry": {
+    "geodesic": false,
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       91.43611695963635,
+       23.19894568934543
+      ],
+      [
+       91.43699232220617,
+       23.19894568934543
+      ],
+      [
+       91.43699232220617,
+       23.199755431662894
+      ],
+      [
+       91.43611695963635,
+       23.199755431662894
+      ],
+      [
+       91.43611695963635,
+       23.19894568934543
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "field_id": "feni_sonagazi_01",
+    "upazila": "Sonagazi",
+    "rule": "coastal: cropland block nearest the southernmost point of the upazila",
+    "center_lat": 22.776326,
+    "center_lon": 91.426896,
+    "size_m": 90,
+    "worldcover_cropland_share": 0.992,
+    "distance_to_river_channel_m": 438,
+    "s1_vv_aug2024_db": -20.19,
+    "source": "ESA WorldCover v200; JRC GSW 1.4; Copernicus Sentinel-1 GRD. Demo field chosen by rule, not a surveyed plot."
+   },
+   "geometry": {
+    "geodesic": false,
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       91.4264601335264,
+       22.775920986743344
+      ],
+      [
+       91.4273327586292,
+       22.775920986743344
+      ],
+      [
+       91.4273327586292,
+       22.7767307290608
+      ],
+      [
+       91.4264601335264,
+       22.7767307290608
+      ],
+      [
+       91.4264601335264,
+       22.775920986743344
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}
