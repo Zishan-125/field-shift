@@ -51,6 +51,22 @@ def crops_of(row):
     return [row[k] for k in ("rabi_crop", "kharif1_crop", "kharif2_crop") if row[k] != "fallow"]
 
 
+@pytest.mark.parametrize(
+    "path",
+    sorted((ROOT / "data-pipeline" / "reference").glob("*.csv")),
+    ids=lambda path: path.name,
+)
+def test_reference_csv_rows_match_header(path):
+    """An unquoted comma in a note silently shifts columns; catch it."""
+
+    with open(path, newline="", encoding="utf-8") as handle:
+        rows = list(csv.reader(handle))
+
+    width = len(rows[0])
+    bad = [index + 1 for index, row in enumerate(rows) if row and len(row) != width]
+    assert not bad, f"{path.name}: lines {bad} do not have {width} fields"
+
+
 def test_every_end_use_share_is_sourced_or_empty():
     path = ROOT / "data-pipeline" / "reference" / "food_energy.csv"
     with open(path, newline="", encoding="utf-8") as handle:
