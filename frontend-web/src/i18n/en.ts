@@ -184,10 +184,17 @@ const en = {
       "What NASA POWER shows for {upazila} since 1984, and how far it agrees with the BMD Feni weather station.",
     upazila: "Upazila",
     indicator: {
-      hot_days_mar_may: "Hot days (35 °C or more) in March–May",
-      hot_days_boro_flowering: "Hot days at Boro flowering (12–18 March)",
+      tx90p_mar_may: "Unusually hot days in March–May",
+      tx90p_boro_flowering: "Unusually hot days at Boro flowering (12–18 March)",
+      tmax_mean_mar_may_bc: "Average daytime heat in March–May",
+      hot_days_mar_may_bc: "Days of 35 °C or more in March–May (corrected)",
+      hot_days_mar_may_raw: "Days of 35 °C or more in March–May (NASA, uncorrected)",
+      hot_days_boro_flowering_bc: "Days of 35 °C or more at Boro flowering (corrected)",
+      hot_days_boro_flowering_raw: "Days of 35 °C or more at Boro flowering (NASA, uncorrected)",
       extreme_rain_days: "Very heavy rain days (50 mm or more)",
       annual_rain_mm: "Rain per year",
+      annual_rain_mm_power: "Rain per year (NASA POWER, for comparison)",
+      kharif_rain_mm: "Kharif rain (March–October)",
       rabi_rain_mm: "Rabi rain (November–February)",
       annual_et0_mm: "Crop water demand of the air (ET0) per year",
       longest_dry_spell_kharif1: "Longest dry spell in Kharif-1",
@@ -195,7 +202,22 @@ const en = {
       rainy_season_withdrawal_doy: "End of the rainy season",
       rainy_season_length_days: "Length of the rainy season",
     },
-    unit: { days: "days", mm: "mm", "day of year": "days" },
+    unit: { days: "days", mm: "mm", "day of year": "days", C: "°C" },
+    hotDayHint:
+      "\"Unusually hot\" = hotter than 9 in 10 days at that time of year in 1998–2010.",
+    gridGpm:
+      "Rain is measured per upazila (NASA GPM, about 10 km). Temperature comes from one NASA grid cell for all of Feni, so the heat charts are the same for every upazila.",
+    gridPower:
+      "Rain and temperature both come from one NASA grid cell for all of Feni, so every upazila shows the same charts.",
+    gpmSeries: "NASA GPM",
+    biasTitle: "Temperature correction against the BMD Feni station",
+    biasIntro:
+      "NASA POWER daytime temperature runs cooler than the station. Each month is shifted by the average gap; the check below corrects one year using only the other year.",
+    biasHeld: "Year checked",
+    biasBefore: "Gap before (°C)",
+    biasAfter: "Gap after (°C)",
+    biasMonth: "Month",
+    biasOffset: "Shift added (°C)",
     rose: "rose",
     fell: "fell",
     sentenceTrend:

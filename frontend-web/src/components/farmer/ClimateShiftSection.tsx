@@ -33,14 +33,17 @@ interface ClimateShiftSectionProps {
   language?: Language;
 }
 
-// Reference palette (dataviz skill), categorical slots 1 and 2; validated as a pair.
+// Reference palette (dataviz skill), categorical slots 1-3, validated together.
+// Slot 3 is below 3:1 contrast, so that line is also dashed and the values are
+// in the details table.
 const NASA_COLOR = "#2a78d6";
 const GAUGE_COLOR = "#eb6834";
+const POWER_COMPARE_COLOR = "#1baf7a";
 const GRID_COLOR = "#e7e5e4";
 const AXIS_TEXT = "#52514e";
 
 const CHART_INDICATORS: ClimateIndicatorId[] = [
-  "hot_days_mar_may",
+  "tx90p_mar_may",
   "annual_rain_mm",
   "extreme_rain_days",
   "rainy_season_onset_doy",
@@ -119,19 +122,23 @@ function StatusBadge({ indicator, language }: { indicator: ClimateIndicator; lan
 function IndicatorChart({
   indicator,
   gauge,
+  comparison,
   language,
 }: {
   indicator: ClimateIndicator;
   gauge: Map<number, number>;
+  comparison?: Map<number, number>;
   language: Language;
 }) {
   const t = strings(language);
   const unit = unitLabel(indicator, language);
+  const mainName = indicator.source === "gpm" ? t.gpmSeries : t.nasaSeries;
 
   const data = indicator.series.map((point) => ({
     year: point.year,
     nasa: point.value,
     gauge: gauge.get(point.year),
+    power: comparison?.get(point.year),
   }));
 
   const axis = {
@@ -152,12 +159,24 @@ function IndicatorChart({
           <Line
             type="monotone"
             dataKey="nasa"
-            name={t.nasaSeries}
+            name={mainName}
             stroke={NASA_COLOR}
             strokeWidth={2}
             isAnimationActive={false}
             dot={false}
           />
+          {comparison && comparison.size > 0 && (
+            <Line
+              type="monotone"
+              dataKey="power"
+              name={t.nasaSeries}
+              stroke={POWER_COMPARE_COLOR}
+              strokeWidth={2}
+              strokeDasharray="5 4"
+              isAnimationActive={false}
+              dot={false}
+            />
+          )}
           <Scatter dataKey="gauge" name={t.gaugeSeries} fill={GAUGE_COLOR} isAnimationActive={false} />
         </ComposedChart>
       </ResponsiveContainer>
@@ -305,6 +324,11 @@ export default function ClimateShiftSection({ language = "bn" }: ClimateShiftSec
 
   const byId = new Map(data.indicators.map((item) => [item.indicator, item]));
   const empty = new Map<number, number>();
+  const powerRain = new Map(
+    (byId.get("annual_rain_mm_power")?.series ?? []).map((point) => [point.year, point.value]),
+  );
+  const biasOffsets = data.gauge_check.tmax_bias_correction.filter((row) => row.kind === "offset");
+  const biasChecks = data.gauge_check.tmax_bias_correction.filter((row) => row.kind !== "offset");
 
   return (
     <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
@@ -314,6 +338,9 @@ export default function ClimateShiftSection({ language = "bn" }: ClimateShiftSec
           <h2 className="mt-2 text-xl font-black text-slate-900 sm:text-2xl">{t.title}</h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">
             {fill(t.subtitle, { upazila: data.upazila })}
+          </p>
+          <p className="mt-2 rounded-xl bg-blue-50 px-3 py-2 text-xs leading-5 text-blue-950">
+            🛰️ {data.rain_source === "gpm" ? t.gridGpm : t.gridPower}
           </p>
         </div>
 
@@ -355,9 +382,14 @@ export default function ClimateShiftSection({ language = "bn" }: ClimateShiftSec
                 <IndicatorChart
                   indicator={indicator}
                   gauge={id === "annual_rain_mm" ? gauge : empty}
+                  comparison={id === "annual_rain_mm" ? powerRain : undefined}
                   language={language}
                 />
               </div>
+
+              {id.startsWith("tx90p") && (
+                <p className="mt-1 text-[11px] leading-5 text-slate-500">{t.hotDayHint}</p>
+              )}
             </div>
           );
         })}
@@ -441,22 +473,73 @@ export default function ClimateShiftSection({ language = "bn" }: ClimateShiftSec
           <div>
             <p className="font-black text-slate-700">{t.gaugeTitle}</p>
             <table className="mt-1 text-left">
+              <thead className="text-slate-500">
+                <tr>
+                  <th className="pr-3" />
+                  <th className="pr-3">{t.gaugeSeries}</th>
+                  <th className="pr-3">{t.nasaSeries}</th>
+                  {data.gauge_check.annual_rain_by_source.gpm.length > 0 && <th>{t.gpmSeries}</th>}
+                </tr>
+              </thead>
               <tbody>
-                {data.gauge_check.annual_rain.map((row) => (
-                  <tr key={row.period}>
-                    <td className="pr-3">{row.period}</td>
-                    <td className="pr-3">
-                      {t.gaugeSeries}: {Math.round(row.other)}
-                    </td>
-                    <td>
-                      {t.nasaSeries}: {Math.round(row.power)}
-                    </td>
-                  </tr>
-                ))}
+                {data.gauge_check.annual_rain_by_source.power.map((row) => {
+                  const gpm = data.gauge_check.annual_rain_by_source.gpm.find((item) => item.period === row.period);
+                  return (
+                    <tr key={row.period}>
+                      <td className="pr-3">{row.period}</td>
+                      <td className="pr-3">{Math.round(row.other)}</td>
+                      <td className="pr-3">{Math.round(row.power)}</td>
+                      {gpm && <td>{Math.round(gpm.power)}</td>}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
             <p className="mt-1">{data.gauge_check.station}</p>
           </div>
+
+          {biasOffsets.length > 0 && (
+            <div>
+              <p className="font-black text-slate-700">{t.biasTitle}</p>
+              <p>{t.biasIntro}</p>
+
+              <table className="mt-1 text-left">
+                <thead className="text-slate-500">
+                  <tr>
+                    <th className="pr-3">{t.biasHeld}</th>
+                    <th className="pr-3">{t.biasBefore}</th>
+                    <th>{t.biasAfter}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {biasChecks.map((row) => (
+                    <tr key={row.kind}>
+                      <td className="pr-3">{row.kind.slice(-4)}</td>
+                      <td className="pr-3">{row.bias_before_c?.toFixed(2)}</td>
+                      <td>{row.bias_after_c?.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <table className="mt-2 text-left">
+                <thead className="text-slate-500">
+                  <tr>
+                    <th className="pr-3">{t.biasMonth}</th>
+                    <th>{t.biasOffset}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {biasOffsets.map((row) => (
+                    <tr key={row.month}>
+                      <td className="pr-3">{row.month}</td>
+                      <td>+{row.offset_c?.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </div>

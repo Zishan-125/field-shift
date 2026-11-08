@@ -4,12 +4,19 @@ export type ClimateIndicatorId =
   | "rainy_season_onset_doy"
   | "rainy_season_withdrawal_doy"
   | "rainy_season_length_days"
-  | "hot_days_mar_may"
-  | "hot_days_boro_flowering"
   | "extreme_rain_days"
   | "longest_dry_spell_kharif1"
   | "rabi_rain_mm"
+  | "kharif_rain_mm"
   | "annual_rain_mm"
+  | "annual_rain_mm_power"
+  | "tx90p_mar_may"
+  | "tx90p_boro_flowering"
+  | "tmax_mean_mar_may_bc"
+  | "hot_days_mar_may_bc"
+  | "hot_days_mar_may_raw"
+  | "hot_days_boro_flowering_bc"
+  | "hot_days_boro_flowering_raw"
   | "annual_et0_mm";
 
 export type TrendStatus =
@@ -38,7 +45,10 @@ export interface ClimateIndicator {
   post_break_change_per_decade: number | null;
   post_break_p_value: number | null;
   status: TrendStatus;
-  source_basis: "rain" | "tmax" | "et0";
+  pettitt_break_free: number;
+  source: "gpm" | "power";
+  source_basis: "rain" | "rain_power" | "tmax_bc" | "tmax_raw" | "et0";
+  role: "primary" | "comparison";
   gauge_agreement: string;
   gauge_agrees: boolean | null;
   series: { year: number; value: number }[];
@@ -49,6 +59,19 @@ export interface GaugeRow {
   period: string;
   power: number;
   other: number;
+}
+
+export interface BiasCorrectionRow {
+  kind: string;
+  month: number | null;
+  n_station_months: number;
+  station_mean: number | null;
+  power_mean: number | null;
+  offset_c: number | null;
+  bias_before_c: number | null;
+  bias_after_c: number | null;
+  mae_before_c: number | null;
+  mae_after_c: number | null;
 }
 
 export interface ClimateAdvicePattern {
@@ -79,9 +102,13 @@ export interface ClimateShiftResponse {
   gauge_check: {
     station: string;
     annual_rain: GaugeRow[];
+    annual_rain_by_source: { power: GaugeRow[]; gpm: GaugeRow[] };
     monthly_rain: GaugeRow[];
     monthly_tmax: GaugeRow[];
+    monthly_tmax_bc: GaugeRow[];
+    tmax_bias_correction: BiasCorrectionRow[];
   };
   advice: ClimateAdvice[];
+  rain_source: "gpm" | "power";
   notes: { source: string; grid: string; significance: string };
 }
