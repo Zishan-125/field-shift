@@ -127,3 +127,4 @@ data-pipeline/tmp/
 *.onnx
 *.pt
 *.pth
+data-pipeline/data/processed/parts/
