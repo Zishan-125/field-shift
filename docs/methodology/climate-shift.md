@@ -216,12 +216,86 @@ climate advice at present:** no indicator has a trustworthy adverse trend.
 The earlier "wetter monsoon" advice came from the POWER rain break and is
 gone.
 
-## 8. Reproduce
+## 8. What the climate does to your crops (frequencies, not slopes)
+
+No trend passes the tests, and that is not evidence of no change: 28 years
+of GPM (1998–2025) is a short record, and Mann-Kendall has little power over
+it. The app therefore leads with **how often** each crop was hit in the
+climate Feni already has, and keeps the trend tests behind a toggle. Code:
+`data-pipeline/climate/climate_extremes.py` (variability, return periods,
+recovery) and `crop_exposure()` in `backend/offline/server.py` (crop counts,
+on each pattern's own calendar).
+
+**Variability (Feni Sadar, June–September GPM rain, 1998–2025).** Mean
+1,865 mm, standard deviation 300 mm, coefficient of variation 16 %. Driest
+1,386 mm (2022), wettest 2,508 mm (2017); 2024: 2,440 mm.
+
+**Return periods.** Annual maxima of 7-day and 15-day rain totals, Weibull
+plotting position T = (n + 1) / rank, and a Gumbel (EV1) fit by maximum
+likelihood (`scipy.stats.gumbel_r`).
+
+| Feni Sadar | 2-year | 5-year | 10-year | 25-year | 2024 | 2024 rank | 2024 return period (empirical / Gumbel) |
+|---|---|---|---|---|---|---|---|
+| Wettest 7 days | 344 mm | 408 mm | 450 mm | 504 mm | **550 mm** | 1 of 28 | 29 / 56 years |
+| Wettest 15 days | 480 mm | 576 mm | 640 mm | 720 mm | 684 mm | 2 of 28 | 14.5 / 16.5 years |
+
+28 maxima cannot pin down a 50-year return level; the Gumbel figure for 2024
+is an order of magnitude, shown as "about once in N years".
+
+**Hazards counted on each crop's own field window** (the start day and
+duration in the pattern's schedule; flowering week = BAMIS flowering offset
+from field start, 7 days):
+
+| Hazard | Rule | Applies to | Why |
+|---|---|---|---|
+| Flood-size downpour | 7-day rain ≥ the 5-year return level of the annual-maximum 7-day total at that upazila (Feni Sadar 408 mm) | all crops | Rare enough to matter, frequent enough to count in 28 years |
+| Heat at flowering | ≥ 1 day with bias-corrected Tmax ≥ 35 °C in the flowering week | rice | Spikelet sterility at anthesis above about 35 °C (Jagadish et al. 2007) |
+| Very heavy rain day | ≥ 1 day with ≥ 50 mm | non-rice crops | Lodging and rot of mustard, pulses, potato near harvest |
+| Long dry spell | ≥ 20 consecutive days < 1 mm | Kharif-1 crops | Rainfed Aus and summer pulses |
+
+The thresholds are our choices (listed in `EXPOSURE_HAZARDS`, server.py).
+A year is "hit" if the crop's window contains the event; a window crossing
+New Year counts for the year it ends, so Rabi crops have 27 complete years.
+
+**Current pattern Boro – Fallow – T. Aman, Feni Sadar:**
+
+| Crop | Hazard | Years hit | Before 2014 / from 2014 |
+|---|---|---|---|
+| T. Aman | flood-size downpour | **4 of 28** (2004, 2017, 2019, 2024) | 1 / 3 |
+| T. Aman | heat at flowering | 11 of 28 | 2 / 9 |
+| Boro | heat at flowering | 16 of 27 | 11 / 5 |
+| Boro | flood-size downpour | 0 of 27 | — |
+
+Caveats shown in the app next to each count: rain counts can shift at the
+June 2014 seam between TRMM-era and GPM-era IMERG inputs (Huffman, G.J.
+(2019), *Caveats for IMERG in the TRMM Era*, NASA GPM,
+<https://gpm.nasa.gov/sites/default/files/document_files/IMERGV06_TRMMera-caveats-190503.pdf>;
+written for V06, and our V07 series shows the same shift in daily
+intensities, §6). Heat counts rest on a bias correction built from 22
+station months (two Septembers, two Marches).
+
+**From frequency to advice.** For each hazard that hit a current crop, the
+API lists up to two recommended patterns (plain improvements first) whose
+crops were hit in fewer years. A pattern's count is the number of years in
+which at least one of its crops was hit. Trade-offs keep their labels: the
+only pattern with less flood exposure than Boro – Fallow – T. Aman is
+Boro – Fallow – Fallow, which drops Aman.
+
+**The 2024 flood at the Fulgazi demo field** (its own series,
+`data-pipeline/data/processed/feni_fulgazi_01.csv`): NDVI 0.65 on 29 July →
+Sentinel-1 VH below −22 dB (open water) on most passes from 4 August to
+14 September (41 days; lowest −30.1 dB) → first clear HLS NDVI ≥ 0.5 on
+22 October, 79 days after the water came. One 90 m field, not a survey.
+
+## 9. Reproduce
 
 ```bash
 python data-pipeline/climate/fetch_power_history.py              # cached
 python data-pipeline/climate/fetch_gpm_imerg.py --project field-shift-bd   # cached; needs Earth Engine
 python data-pipeline/climate/climate_shift.py
+python data-pipeline/climate/climate_extremes.py
+python data-pipeline/climate/fetch_cmip6.py --project field-shift-bd    # cached
+python data-pipeline/climate/climate_projections.py
 python backend/offline/build_climate_tables.py
 cd data-pipeline && python -m pytest tests/test_climate_shift.py
 ```

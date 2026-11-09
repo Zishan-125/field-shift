@@ -1496,6 +1496,205 @@ def climate_advice(trends: list, recommendations: dict) -> list:
     return advice
 
 
+# ---------------------------------------------------------------------
+# CLIMATE EXPOSURE: how often each crop window was hit (1998-2025)
+# ---------------------------------------------------------------------
+
+# Hazards counted on each crop's own field window, day by day, from GPM rain
+# and bias-corrected Tmax (data-pipeline/climate/climate_extremes.py).
+# Thresholds are our choices, documented in docs/methodology/climate-shift.md.
+HEAT_C = 35.0            # rice spikelet sterility at anthesis (Jagadish et al. 2007)
+HEAVY_DAY_MM = 50.0      # one-day downpour that flattens or rots a Rabi crop near harvest
+DRY_SPELL_DAYS = 20      # run of days < 1 mm in a rainfed Kharif-1 crop
+DRY_DAY_MM = 1.0
+FLOWERING_DAYS = 7
+GPM_ERA_START = 2014     # IMERG inputs change in 2014 (Huffman 2019)
+
+EXPOSURE_HAZARDS = {
+    "flood_rain": "7-day rain at or above the 5-year return level",
+    "heat_flowering": f"a day >= {HEAT_C:g} C during the crop's flowering week",
+    "heavy_rain_day": f"a day with >= {HEAVY_DAY_MM:g} mm rain while the crop is in the field",
+    "dry_spell": f"{DRY_SPELL_DAYS} or more days in a row with < {DRY_DAY_MM:g} mm while the crop is in the field",
+}
+
+_DAILY_CACHE: dict = {}
+
+
+def climate_daily(upazila: str):
+    """Daily rain and Tmax arrays for one upazila, cached in memory."""
+
+    import numpy as np
+    import pandas as pd
+
+    if upazila not in _DAILY_CACHE:
+        rows = fetch_all("SELECT date, rain_mm, tmax_bc_c FROM climate_daily WHERE upazila = ? ORDER BY date", (upazila,))
+        frame = pd.DataFrame(rows)
+        frame["date"] = pd.to_datetime(frame["date"])
+        frame = frame.set_index("date")
+        frame["rain7"] = frame["rain_mm"].rolling(7, min_periods=7).sum()
+        threshold = fetch_one(
+            "SELECT value FROM climate_extremes_summary WHERE upazila = ? AND metric = 'flood_threshold_7day_mm'",
+            (upazila,),
+        )["value"]
+        _DAILY_CACHE[upazila] = {"frame": frame, "flood_7day_mm": float(threshold), "np": np, "pd": pd}
+
+    return _DAILY_CACHE[upazila]
+
+
+def flowering_offsets() -> dict:
+    """Days from field start to flowering, per crop (from the BAMIS calendar rows)."""
+
+    from datetime import date
+
+    offsets = {}
+    for row in fetch_all(
+        "SELECT crop_id, field_start_earliest, flowering_start FROM crop_calendar "
+        "WHERE flowering_start IS NOT NULL AND field_start_earliest IS NOT NULL"
+    ):
+        start = date(2001, *map(int, row["field_start_earliest"].split("-")))
+        flower = date(2001, *map(int, row["flowering_start"].split("-")))
+        offsets.setdefault(row["crop_id"], (flower - start).days % 365)
+    return offsets
+
+
+def hazards_for(item: dict, position: str) -> list:
+    hazards = ["flood_rain"]
+    if item["crop_id"].startswith("rice_"):
+        hazards.append("heat_flowering")
+    else:
+        hazards.append("heavy_rain_day")
+    if position == "kharif1":
+        hazards.append("dry_spell")
+    return hazards
+
+
+def crop_hits(item: dict, upazila: str, offsets: dict) -> dict:
+    """For one schedule item: {hazard: sorted list of years hit}, plus the years counted."""
+
+    data = climate_daily(upazila)
+    frame, pd = data["frame"], data["pd"]
+    first, last = frame.index.min(), frame.index.max()
+    hits = {h: [] for h in hazards_for(item, item.get("position", ""))}
+    counted = []
+
+    for year in range(first.year, last.year + 1):
+        start = pd.Timestamp(year, 1, 1) + pd.Timedelta(days=item["start_doy"] - 1)
+        end = start + pd.Timedelta(days=item["field_days"] - 1)
+        if start < first or end > last:
+            continue
+        season_year = end.year
+        counted.append(season_year)
+        window = frame.loc[start:end]
+
+        if "flood_rain" in hits and window["rain7"].max() >= data["flood_7day_mm"]:
+            hits["flood_rain"].append(season_year)
+        if "heavy_rain_day" in hits and window["rain_mm"].max() >= HEAVY_DAY_MM:
+            hits["heavy_rain_day"].append(season_year)
+        if "dry_spell" in hits:
+            run = best = 0
+            for value in (window["rain_mm"] < DRY_DAY_MM).to_numpy():
+                run = run + 1 if value else 0
+                best = max(best, run)
+            if best >= DRY_SPELL_DAYS:
+                hits["dry_spell"].append(season_year)
+        if "heat_flowering" in hits and item["crop_id"] in offsets:
+            flower = start + pd.Timedelta(days=offsets[item["crop_id"]])
+            week = frame.loc[flower:flower + pd.Timedelta(days=FLOWERING_DAYS - 1), "tmax_bc_c"]
+            if week.max() >= HEAT_C:
+                hits["heat_flowering"].append(season_year)
+
+    if item["crop_id"] not in offsets:
+        hits.pop("heat_flowering", None)
+    return {"hits": hits, "years": counted}
+
+
+def pattern_exposure(pattern: dict, upazila: str, offsets: dict) -> dict:
+    """Per hazard: the years in which at least one crop of the pattern was hit."""
+
+    union: dict = {}
+    for item in pattern["schedule"]:
+        if item.get("is_fallow"):
+            continue
+        for hazard, years in crop_hits(item, upazila, offsets)["hits"].items():
+            union.setdefault(hazard, set()).update(years)
+    return union
+
+
+def crop_exposure(recommendations: dict, upazila: str) -> list:
+    """
+    For each crop of the current pattern: how many of the last years each
+    hazard hit it, and the recommended patterns (improvements first) whose
+    crops were hit by that hazard in fewer years.
+    """
+
+    offsets = flowering_offsets()
+    current = recommendations["current"]
+    ranked = sorted(
+        recommendations["results"],
+        key=lambda p: (p["comparison"]["change_kind"] != "improvement", p["rank"]),
+    )
+    current_union = pattern_exposure(current, upazila, offsets)
+    other_unions = {p["pattern_id"]: pattern_exposure(p, upazila, offsets) for p in ranked}
+    out = []
+
+    for item in current["schedule"]:
+        if item.get("is_fallow"):
+            continue
+        result = crop_hits(item, upazila, offsets)
+        n_years = len(result["years"])
+        for hazard, years in result["hits"].items():
+            entry = {
+                "crop_id": item["crop_id"], "name_en": item["name_en"], "name_bn": item["name_bn"],
+                "position": item.get("position"), "hazard": hazard, "definition": EXPOSURE_HAZARDS[hazard],
+                "years_hit": years, "n_hit": len(years), "n_years": n_years,
+                "first_year": min(result["years"]), "last_year": max(result["years"]),
+                "n_hit_before_2014": sum(1 for y in years if y < GPM_ERA_START),
+                "n_hit_from_2014": sum(1 for y in years if y >= GPM_ERA_START),
+                "intensity_caveat": hazard in ("heavy_rain_day", "dry_spell", "flood_rain"),
+                "better_patterns": [],
+            }
+            if years:
+                base = len(current_union.get(hazard, set()))
+                entry["pattern_years_hit"] = base
+                entry["better_patterns"] = [
+                    {
+                        "pattern_id": p["pattern_id"], "name": p["name"], "seasons": p["seasons"],
+                        "rank": p["rank"], "change_kind": p["comparison"]["change_kind"],
+                        "trade_offs": p["comparison"]["trade_offs"],
+                        "years_hit": len(other_unions[p["pattern_id"]].get(hazard, set())),
+                    }
+                    for p in ranked
+                    if len(other_unions[p["pattern_id"]].get(hazard, set())) < base
+                ][:2]
+            out.append(entry)
+
+    return out
+
+
+def climate_extremes_block(upazila: str) -> dict | None:
+    if not table_exists("climate_extremes_summary"):
+        return None
+
+    summary = {
+        r["metric"]: r["value"]
+        for r in fetch_all("SELECT metric, value FROM climate_extremes_summary WHERE upazila = ?", (upazila,))
+    }
+    years = fetch_all(
+        "SELECT year, monsoon_rain_mm, rx7_mm, rx7_end_date, rx15_mm FROM climate_extremes_years "
+        "WHERE upazila = ? ORDER BY year",
+        (upazila,),
+    )
+    curve = {
+        str(days): fetch_all(
+            "SELECT year, end_date, value_mm, rank, return_period_y, gumbel_return_period_y FROM climate_return_curve "
+            "WHERE upazila = ? AND window_days = ? ORDER BY rank",
+            (upazila, days),
+        )
+        for days in (7, 15)
+    }
+    return {"summary": summary, "years": years, "return_curve": curve}
+
+
 @app.get("/api/offline/climate-shift")
 def climate_shift(upazila: str = Query(default=DEFAULT_UPAZILA)):
     """
@@ -1566,6 +1765,13 @@ def climate_shift(upazila: str = Query(default=DEFAULT_UPAZILA)):
         },
         "repo_file_check": [c for c in checks if c["check"] == "power_vs_repo_power_file"],
         "advice": climate_advice(trends, recommendations),
+        "crop_exposure": crop_exposure(recommendations, upazila) if table_exists("climate_daily") else [],
+        "extremes": climate_extremes_block(upazila),
+        "recovery": fetch_one("SELECT * FROM climate_recovery") if table_exists("climate_recovery") else None,
+        "projections": (
+            fetch_all("SELECT * FROM climate_projections ORDER BY indicator, scenario, model")
+            if table_exists("climate_projections") else []
+        ),
         "rain_source": rain_source,
         "notes": {
             "source": (
@@ -1581,6 +1787,12 @@ def climate_shift(upazila: str = Query(default=DEFAULT_UPAZILA)):
                 else "NASA POWER rainfall is one grid cell for all of Feni. "
             ) + "NASA POWER temperature is one 0.5 x 0.625 degree cell for all six upazilas: "
                 "the temperature charts are the same for every upazila.",
+            "short_record": "28 years of GPM rain (1998-2025) is a short record. Mann-Kendall has little power "
+                            "over it, so 'no significant trend' is not evidence of no change. The frequencies "
+                            "below describe the climate you farm in now; they are not forecasts.",
+            "imerg_eras": "IMERG combines TRMM-era (to May 2014) and GPM-era satellite inputs; a seam in "
+                          "rain-rate histograms at June 2014 is documented by NASA (Huffman 2019, Caveats for "
+                          "IMERG in the TRMM Era). Counts of heavy-rain days and dry spells can shift there.",
             "significance": "A trend is reported only when Mann-Kendall p < 0.05 and it is not explained by a "
                             "single break in the record (Pettitt test). Heat uses percentile thresholds "
                             "(days above the 1998-2010 90th percentile).",

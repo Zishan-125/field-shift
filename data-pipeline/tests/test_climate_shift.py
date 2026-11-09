@@ -245,3 +245,48 @@ def test_gpm_intensity_indicators_carry_the_sensor_era_caveat(climate):
     for indicator in data["indicators"]:
         if indicator["source"] == "gpm" and indicator["indicator"] in ("extreme_rain_days", "longest_dry_spell_kharif1"):
             assert indicator["caveat"].startswith("imerg_sensor_eras")
+
+
+# ---------------------------------------------------------------------
+# Variability, extremes and crop exposure
+# ---------------------------------------------------------------------
+
+def test_short_record_limit_is_stated(climate):
+    _, data = climate
+
+    assert "short record" in data["notes"]["short_record"]
+    assert "not evidence of no change" in data["notes"]["short_record"]
+
+
+def test_crop_exposure_counts_are_frequencies(climate):
+    _, data = climate
+
+    assert data["crop_exposure"], "current pattern has crops"
+    for item in data["crop_exposure"]:
+        assert 0 <= item["n_hit"] <= item["n_years"] <= 28
+        assert item["n_hit"] == len(item["years_hit"]) == item["n_hit_before_2014"] + item["n_hit_from_2014"]
+        assert all(1998 <= year <= 2025 for year in item["years_hit"])
+        for pattern in item["better_patterns"]:
+            assert pattern["years_hit"] < item["pattern_years_hit"]
+
+
+def test_return_curve_is_ordered_and_2024_is_marked(climate):
+    _, data = climate
+    extremes = data["extremes"]
+
+    for days in ("7", "15"):
+        curve = extremes["return_curve"][days]
+        assert len(curve) == 28
+        values = [p["value_mm"] for p in curve]
+        assert values == sorted(values, reverse=True)
+        assert any(p["year"] == 2024 for p in curve)
+    assert extremes["summary"]["flood_threshold_7day_mm"] == pytest.approx(
+        extremes["summary"]["rx7_return_level_5y_mm"], abs=0.2)
+
+
+def test_fulgazi_recovery_is_in_order(climate):
+    _, data = climate
+    r = data["recovery"]
+
+    assert r["flood_start"] < r["flood_end"] < r["green_again"]
+    assert r["days_flood_start_to_green"] == r["days_under_water"] + r["days_flood_end_to_green"]

@@ -110,6 +110,70 @@ export interface ClimateShiftResponse {
     tmax_bias_correction: BiasCorrectionRow[];
   };
   advice: ClimateAdvice[];
+  crop_exposure: CropExposure[];
+  extremes: ClimateExtremes | null;
+  recovery: FloodRecovery | null;
+  projections: ClimateProjection[];
   rain_source: "gpm" | "power";
-  notes: { source: string; grid: string; significance: string };
+  notes: { source: string; grid: string; significance: string; short_record?: string; imerg_eras?: string };
+}
+
+export type ExposureHazard = "flood_rain" | "heat_flowering" | "heavy_rain_day" | "dry_spell";
+
+export interface CropExposure {
+  crop_id: string;
+  name_en: string;
+  name_bn: string;
+  position: string | null;
+  hazard: ExposureHazard;
+  definition: string;
+  years_hit: number[];
+  n_hit: number;
+  n_years: number;
+  first_year: number;
+  last_year: number;
+  n_hit_before_2014: number;
+  n_hit_from_2014: number;
+  intensity_caveat: boolean;
+  pattern_years_hit?: number;
+  better_patterns: (ClimateAdvicePattern & { years_hit: number })[];
+}
+
+export interface ReturnCurvePoint {
+  year: number;
+  end_date: string;
+  value_mm: number;
+  rank: number;
+  return_period_y: number;
+  gumbel_return_period_y: number;
+}
+
+export interface ClimateExtremes {
+  summary: Record<string, number>;
+  years: { year: number; monsoon_rain_mm: number; rx7_mm: number; rx7_end_date: string; rx15_mm: number }[];
+  return_curve: Record<"7" | "15", ReturnCurvePoint[]>;
+}
+
+export interface FloodRecovery {
+  field_id: string;
+  flood_start: string;
+  flood_end: string;
+  days_under_water: number;
+  green_again: string;
+  days_flood_start_to_green: number;
+  days_flood_end_to_green: number;
+  ndvi_before: number | null;
+  ndvi_before_date: string | null;
+  min_vh_db: number;
+  rule: string;
+}
+
+export interface ClimateProjection {
+  indicator: "hot_days_mar_may" | "rx5day_mm";
+  scenario: "ssp245" | "ssp585";
+  model: string;
+  baseline_observed: number;
+  change: number;
+  projected: number;
+  method: string;
 }

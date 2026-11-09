@@ -102,6 +102,7 @@ Cached outputs are committed so nothing needs Earth Engine to rerun.
 | Dataset | Earth Engine ID | Used for | Citation |
 |---|---|---|---|
 | GPM IMERG V07, half-hourly, 0.1° | `NASA/GPM_L3/IMERG_V07` | Daily rain 1998–2026 per upazila (`climate/fetch_gpm_imerg.py`), per demo field and per classifier point | Huffman, G.J. et al. (2023). GPM IMERG Final Precipitation L3 Half Hourly 0.1° × 0.1° V07. NASA GES DISC. doi:[10.5067/GPM/IMERG/3B-HH/07](https://doi.org/10.5067/GPM/IMERG/3B-HH/07) |
+| IMERG TRMM-era caveats | (document) | Why rain-intensity counts carry a 2014 caveat | Huffman, G.J. (2019). *Caveats for IMERG in the TRMM Era* (V06). NASA GPM. <https://gpm.nasa.gov/sites/default/files/document_files/IMERGV06_TRMMera-caveats-190503.pdf> |
 | HLS Landsat 30 m v2.0 | `NASA/HLS/HLSL30/v002` | NDVI, EVI, LSWI with Fmask (`fields/`, `classifier/`) | Masek, J. et al. (2021). HLS Operational Landsat Surface Reflectance and TOA Brightness Daily Global 30m v2.0. NASA LP DAAC. doi:[10.5067/HLS/HLSL30.002](https://doi.org/10.5067/HLS/HLSL30.002) |
 | HLS Sentinel-2 30 m v2.0 | `NASA/HLS/HLSS30/v002` | as above | Masek, J. et al. (2021). HLS Sentinel-2 MSI Surface Reflectance Daily Global 30m v2.0. NASA LP DAAC. doi:[10.5067/HLS/HLSS30.002](https://doi.org/10.5067/HLS/HLSS30.002) |
 | MODIS MOD13Q1 v6.1 | `MODIS/061/MOD13Q1` | 16-day NDVI/EVI at the demo fields | Didan, K. (2021). doi:[10.5067/MODIS/MOD13Q1.061](https://doi.org/10.5067/MODIS/MOD13Q1.061) |

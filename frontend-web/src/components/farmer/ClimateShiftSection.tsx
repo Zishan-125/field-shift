@@ -17,6 +17,8 @@ import {
 
 import { getClimateShift } from "../../services/api";
 
+import ClimateRiskPanel from "./ClimateRiskPanel";
+
 import type {
   ClimateAdvice,
   ClimateIndicator,
@@ -288,6 +290,7 @@ export default function ClimateShiftSection({ language = "bn" }: ClimateShiftSec
   const [data, setData] = useState<ClimateShiftResponse | null>(null);
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
+  const [trendOpen, setTrendOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -330,21 +333,16 @@ export default function ClimateShiftSection({ language = "bn" }: ClimateShiftSec
   const biasOffsets = data.gauge_check.tmax_bias_correction.filter((row) => row.kind === "offset");
   const biasChecks = data.gauge_check.tmax_bias_correction.filter((row) => row.kind !== "offset");
 
+  const risk = language === "bn" ? bn.climateRisk : en.climateRisk;
+
   return (
     <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-blue-700">{t.eyebrow}</p>
-          <h2 className="mt-2 text-xl font-black text-slate-900 sm:text-2xl">{t.title}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            {fill(t.subtitle, { upazila: data.upazila })}
-          </p>
-          <p className="mt-2 rounded-xl bg-blue-50 px-3 py-2 text-xs leading-5 text-blue-950">
-            🛰️ {data.rain_source === "gpm" ? t.gridGpm : t.gridPower}
-          </p>
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
+          <ClimateRiskPanel data={data} language={language} />
         </div>
 
-        <label className="text-xs font-bold text-slate-500">
+        <label className="shrink-0 text-xs font-bold text-slate-500">
           {t.upazila}
           <select
             value={data.upazila}
@@ -359,6 +357,24 @@ export default function ClimateShiftSection({ language = "bn" }: ClimateShiftSec
           </select>
         </label>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setTrendOpen((value) => !value)}
+        className="mt-6 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-black text-slate-800"
+        aria-expanded={trendOpen}
+      >
+        {trendOpen ? risk.hideTrend : risk.trendToggle} {trendOpen ? "↑" : "↓"}
+      </button>
+
+      {trendOpen && (
+      <div className="mt-4">
+      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-blue-700">{t.eyebrow}</p>
+      <h3 className="mt-2 text-lg font-black text-slate-900">{t.title}</h3>
+      <p className="mt-2 text-sm leading-6 text-slate-500">{fill(t.subtitle, { upazila: data.upazila })}</p>
+      <p className="mt-2 rounded-xl bg-blue-50 px-3 py-2 text-xs leading-5 text-blue-950">
+        🛰️ {data.rain_source === "gpm" ? t.gridGpm : t.gridPower}
+      </p>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
         {CHART_INDICATORS.map((id) => {
@@ -545,6 +561,8 @@ export default function ClimateShiftSection({ language = "bn" }: ClimateShiftSec
             </div>
           )}
         </div>
+      )}
+      </div>
       )}
     </div>
   );
