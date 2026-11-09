@@ -1,0 +1,5 @@
+district,crop,period,area_under_crop_acre,partially_damaged_acre,partial_damage_pct,full_damage_equivalent_acre,fully_damaged_acre,total_damaged_acre,production_loss_t,bbs_table,bbs_pdf_page,source_id,notes
+Noakhali,aman_local_hyv_hybrid,Aug-Sep 2024,124204,58203,44.01,32214,22442,54656,88349,4.2.9 Flood damage Aug-Sep 2024-25,447,BBS_YB_2025,"The Aman Seedbed section on p.448 repeats these exact figures for Noakhali, probably a copy error in the table"
+Cumilla,aman_local_hyv_hybrid,Aug-Sep 2024,35966,8382,63.34,4015,18766,22781,37117,4.2.9 Flood damage Aug-Sep 2024-25,447,BBS_YB_2025,"Area under crop is far below Cumilla's Aman area (317,209 acres in 2023-24): likely the affected upazilas only"
+Feni,aman_local_hyv_hybrid,Aug-Sep 2024,74106,29057,55.04,739,40049,40788,65900,4.2.9 Flood damage Aug-Sep 2024-25,448,BBS_YB_2025,"Section continues from p.447 (Aman Local+HYV+Hybrid)"
+Feni,aman_seedbed,Aug-Sep 2024,15970,14936,96.80,161,15298,15459,20515,4.2.9 Flood damage Aug-Sep 2024-25,448,BBS_YB_2025,"Seedbeds for late Aman: 97 % damaged, so little replanting was possible"

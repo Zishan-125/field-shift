@@ -1,0 +1,4 @@
+district,bbs_year,net_cropped_000_acre,gross_cropped_000_acre,total_area_000_acre,net_cropped_ha,bbs_table,bbs_pdf_page,source_id,notes
+Cumilla,2022-23,509,1002,777,205985,5.1 Land Utilization by District,456,BBS_YB_2025,ha = '000 acres x 404.686
+Noakhali,2022-23,337,711,911,136379,5.1 Land Utilization by District,456,BBS_YB_2025,
+Feni,2022-23,133,289,245,53823,5.1 Land Utilization by District,456,BBS_YB_2025,"BBS Total Aman 2023-24 (66,130 ha) exceeds this net cropped area: the two BBS series are not consistent"
