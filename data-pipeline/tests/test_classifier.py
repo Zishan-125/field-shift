@@ -99,3 +99,12 @@ def test_samples_have_full_windows_and_gap_counts():
     assert {f"NDVI_k{k:02d}" for k in range(WINDOW_DEKADS)} <= set(samples.columns)
     kharif = samples[samples["season"] == "kharif2"].iloc[0]
     assert kharif["n_optical_dekads"] == WINDOW_DEKADS - 3                 # August missing, and counted
+
+
+def test_bbs_area_reference_records_units_and_converts():
+    bbs = pd.read_csv(ROOT / "data-pipeline" / "reference" / "bbs_district_rice_area.csv")
+
+    assert bbs["area_acre_column_header"].str.startswith("Acre").all()
+    assert bbs["area_ha_column_header"].str.startswith(("Hectare", "Hector")).all()
+    ratio = bbs["area_acre"] * 0.404686 / bbs["area_ha"]
+    assert ratio.between(0.995, 1.005).all()       # every row: hectare column = acre column x 0.4047

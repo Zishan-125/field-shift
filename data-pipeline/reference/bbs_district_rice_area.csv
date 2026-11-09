@@ -1,13 +1,18 @@
-district,crop,bbs_year,season_year,area_acre,area_ha,bbs_table,bbs_pdf_page,source_id,notes
-Cumilla,total_aman,2023-24,2023,317209,128373,3.5 Total Aman,87,BBS_YB_2025,"Aman of fiscal year 2023-24 is planted Jul-Aug 2023 and harvested Nov-Dec 2023, i.e. Kharif-2 2023"
-Cumilla,total_aman,2024-25,2024,277503,112304,3.5 Total Aman,87,BBS_YB_2025,
-Feni,total_aman,2023-24,2023,163406,66130,3.5 Total Aman,87,BBS_YB_2025,
-Feni,total_aman,2024-25,2024,66107,26753,3.5 Total Aman,87,BBS_YB_2025,"August 2024 floods; -60 % on 2023-24"
-Noakhali,total_aman,2023-24,2023,395487,160051,3.5 Total Aman,87,BBS_YB_2025,
-Noakhali,total_aman,2024-25,2024,327773,132648,3.5 Total Aman,87,BBS_YB_2025,
-Cumilla,total_boro,2023-24,2024,381427,154415,4 Total Boro,97,BBS_YB_2025,"Boro of fiscal year 2023-24 is transplanted Dec 2023-Jan 2024 and harvested Apr-May 2024, i.e. Rabi season ending 2024"
-Cumilla,total_boro,2024-25,2025,386961,156654,4 Total Boro,97,BBS_YB_2025,"As printed; acre x 0.404686 gives 156,598 ha"
-Feni,total_boro,2023-24,2024,77150,31222,4 Total Boro,97,BBS_YB_2025,
-Feni,total_boro,2024-25,2025,76652,31021,4 Total Boro,97,BBS_YB_2025,
-Noakhali,total_boro,2023-24,2024,188227,76174,4 Total Boro,97,BBS_YB_2025,
-Noakhali,total_boro,2024-25,2025,186884,75631,4 Total Boro,97,BBS_YB_2025,
+district,crop,bbs_year,season_year,area_acre,area_acre_column_header,area_ha,area_ha_column_header,bbs_table,bbs_pdf_page,source_id,notes
+Feni,total_aman,2021-22,2021,162866,Acres,65935,Hectors,3.4 Total Aman,89,BBS_YB_2023,Read from the PDF text layer; acre/ha = 2.470
+Noakhali,total_aman,2021-22,2021,372889,Acres,150955,Hectors,3.4 Total Aman,89,BBS_YB_2023,Read from the PDF text layer; acre/ha = 2.470
+Cumilla,total_aman,2022-23,2022,322108,Acres,130401,Hectors,3.5 Total Aman,86,BBS_YB_2024,Read from the PDF text layer; acre/ha = 2.470
+Feni,total_aman,2022-23,2022,163014,Acres,65995,Hectors,3.5 Total Aman,86,BBS_YB_2024,Checked on the rendered page
+Noakhali,total_aman,2022-23,2022,394742,Acres,159801,Hectors,3.5 Total Aman,86,BBS_YB_2024,Checked on the rendered page
+Cumilla,total_aman,2023-24,2023,317209,Acre,128373,Hectare,3.5 Total Aman,87,BBS_YB_2025,"Aman of fiscal year 2023-24 is planted Jul-Aug 2023 and harvested Nov-Dec 2023, i.e. Kharif-2 2023. Same value in BBS_YB_2024 p.86"
+Cumilla,total_aman,2024-25,2024,277503,Acre,112304,Hectare,3.5 Total Aman,87,BBS_YB_2025,
+Feni,total_aman,2023-24,2023,163406,Acre,66130,Hectare,3.5 Total Aman,87,BBS_YB_2025,"Same value in BBS_YB_2024 p.86. Consistent with 65,935 ha (2021-22) and 65,995 ha (2022-23), and with the DAE Feni office's 66,525 ha of T. Aman in 2020 (news report, see docs/methodology/bbs-aman-area-check.md)"
+Feni,total_aman,2024-25,2024,66107,Acre,26753,Hectare,3.5 Total Aman,87,BBS_YB_2025,"-60 % on 2023-24, the lowest ratio of all 64 districts (next: Sherpur -21 %). The acre figure equals the previous years' hectare level to 0.03 %, so a data-entry slip in this one cell cannot be ruled out; see docs/methodology/bbs-aman-area-check.md"
+Noakhali,total_aman,2023-24,2023,395487,Acre,160051,Hectare,3.5 Total Aman,87,BBS_YB_2025,Same value in BBS_YB_2024 p.86
+Noakhali,total_aman,2024-25,2024,327773,Acre,132648,Hectare,3.5 Total Aman,87,BBS_YB_2025,
+Cumilla,total_boro,2023-24,2024,381427,Acre,154415,Hectare,4 Total Boro,97,BBS_YB_2025,"Boro of fiscal year 2023-24 is transplanted Dec 2023-Jan 2024 and harvested Apr-May 2024, i.e. Rabi season ending 2024"
+Cumilla,total_boro,2024-25,2025,386961,Acre,156654,Hectare,4 Total Boro,97,BBS_YB_2025,"As printed; acre x 0.404686 gives 156,598 ha"
+Feni,total_boro,2023-24,2024,77150,Acre,31222,Hectare,4 Total Boro,97,BBS_YB_2025,
+Feni,total_boro,2024-25,2025,76652,Acre,31021,Hectare,4 Total Boro,97,BBS_YB_2025,
+Noakhali,total_boro,2023-24,2024,188227,Acre,76174,Hectare,4 Total Boro,97,BBS_YB_2025,
+Noakhali,total_boro,2024-25,2025,186884,Acre,75631,Hectare,4 Total Boro,97,BBS_YB_2025,

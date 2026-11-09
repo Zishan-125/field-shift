@@ -24,6 +24,9 @@ BBS check (independent of the weak labels):
     Aman-collapse check, fixed before looking at results: PASS if the
     predicted Feni Aman 2024/2023 ratio is below 0.70 AND it is the lowest of
     the three districts (BBS: Feni 0.40, Noakhali 0.83, Cumilla 0.87).
+    BBS units were verified (docs/methodology/bbs-aman-area-check.md); the
+    Feni 2024-25 figure is plausible but not confirmed, so this check is
+    reported as agreement with BBS, not as proof of accuracy.
 
 Outputs:
     data-pipeline/derived/classifier_metrics.csv        per-class P/R/F1, val and test
