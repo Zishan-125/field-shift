@@ -1,0 +1,121 @@
+point_id,season,year,label,rule
+feni_chhagalnaiya_01,rabi,2016,,no rule fired
+feni_chhagalnaiya_01,kharif2,2016,,no rule fired
+feni_chhagalnaiya_01,rabi,2017,,no rule fired
+feni_chhagalnaiya_01,kharif2,2017,T_Aman,VH -20.3 dB Jul-Aug -> -12.6 dB Sep-Nov
+feni_chhagalnaiya_01,rabi,2018,,no rule fired
+feni_chhagalnaiya_01,kharif2,2018,,no rule fired
+feni_chhagalnaiya_01,rabi,2019,Boro,flooding at transplanting; NDVI peak 0.60 Feb-Apr
+feni_chhagalnaiya_01,kharif2,2019,T_Aman,VH -20.0 dB Jul-Aug -> -14.1 dB Sep-Nov
+feni_chhagalnaiya_01,rabi,2020,,no rule fired
+feni_chhagalnaiya_01,kharif2,2020,T_Aman,VH -20.9 dB Jul-Aug -> -15.0 dB Sep-Nov
+feni_chhagalnaiya_01,rabi,2021,Rabi_nonrice,"NDVI peak 0.64 Dec-Mar, no flooding in 9 radar dekads, April NDVI 0.45"
+feni_chhagalnaiya_01,kharif2,2021,T_Aman,VH -20.2 dB Jul-Aug -> -14.4 dB Sep-Nov
+feni_chhagalnaiya_01,rabi,2022,,no rule fired
+feni_chhagalnaiya_01,kharif2,2022,T_Aman,VH -19.1 dB Jul-Aug -> -14.3 dB Sep-Nov
+feni_chhagalnaiya_01,rabi,2023,,no rule fired
+feni_chhagalnaiya_01,kharif2,2023,T_Aman,VH -21.0 dB Jul-Aug -> -16.3 dB Sep-Nov
+feni_chhagalnaiya_01,rabi,2024,,no rule fired
+feni_chhagalnaiya_01,kharif2,2024,T_Aman,VH -24.6 dB Jul-Aug -> -15.9 dB Sep-Nov
+feni_chhagalnaiya_01,rabi,2025,,no rule fired
+feni_chhagalnaiya_01,kharif2,2025,T_Aman,VH -19.4 dB Jul-Aug -> -13.9 dB Sep-Nov
+feni_daganbhuiyan_01,rabi,2016,Boro,flooding at transplanting; NDVI peak 0.65 Feb-Apr
+feni_daganbhuiyan_01,kharif2,2016,,no rule fired
+feni_daganbhuiyan_01,rabi,2017,,no rule fired
+feni_daganbhuiyan_01,kharif2,2017,T_Aman,VH -22.6 dB Jul-Aug -> -15.9 dB Sep-Nov
+feni_daganbhuiyan_01,rabi,2018,Boro,flooding at transplanting; NDVI peak 0.68 Feb-Apr
+feni_daganbhuiyan_01,kharif2,2018,,no rule fired
+feni_daganbhuiyan_01,rabi,2019,Boro,flooding at transplanting; NDVI peak 0.73 Feb-Apr
+feni_daganbhuiyan_01,kharif2,2019,T_Aman,VH -22.0 dB Jul-Aug -> -15.7 dB Sep-Nov
+feni_daganbhuiyan_01,rabi,2020,Boro,flooding at transplanting; NDVI peak 0.71 Feb-Apr
+feni_daganbhuiyan_01,kharif2,2020,T_Aman,VH -20.7 dB Jul-Aug -> -14.1 dB Sep-Nov
+feni_daganbhuiyan_01,rabi,2021,Boro,flooding at transplanting; NDVI peak 0.67 Feb-Apr
+feni_daganbhuiyan_01,kharif2,2021,T_Aman,VH -22.6 dB Jul-Aug -> -14.4 dB Sep-Nov
+feni_daganbhuiyan_01,rabi,2022,Boro,flooding at transplanting; NDVI peak 0.73 Feb-Apr
+feni_daganbhuiyan_01,kharif2,2022,T_Aman,VH -21.5 dB Jul-Aug -> -13.1 dB Sep-Nov
+feni_daganbhuiyan_01,rabi,2023,Boro,flooding at transplanting; NDVI peak 0.70 Feb-Apr
+feni_daganbhuiyan_01,kharif2,2023,T_Aman,VH -21.6 dB Jul-Aug -> -15.8 dB Sep-Nov
+feni_daganbhuiyan_01,rabi,2024,,no rule fired
+feni_daganbhuiyan_01,kharif2,2024,T_Aman,VH -20.6 dB Jul-Aug -> -15.5 dB Sep-Nov
+feni_daganbhuiyan_01,rabi,2025,Boro,flooding at transplanting; NDVI peak 0.77 Feb-Apr
+feni_daganbhuiyan_01,kharif2,2025,,no rule fired
+feni_feni_sadar_01,rabi,2016,,no rule fired
+feni_feni_sadar_01,kharif2,2016,,no rule fired
+feni_feni_sadar_01,rabi,2017,Boro,flooding at transplanting; NDVI peak 0.73 Feb-Apr
+feni_feni_sadar_01,kharif2,2017,,no rule fired
+feni_feni_sadar_01,rabi,2018,Boro,flooding at transplanting; NDVI peak 0.76 Feb-Apr
+feni_feni_sadar_01,kharif2,2018,,no rule fired
+feni_feni_sadar_01,rabi,2019,Boro,flooding at transplanting; NDVI peak 0.74 Feb-Apr
+feni_feni_sadar_01,kharif2,2019,T_Aman,VH -19.6 dB Jul-Aug -> -15.2 dB Sep-Nov
+feni_feni_sadar_01,rabi,2020,,no rule fired
+feni_feni_sadar_01,kharif2,2020,T_Aman,VH -19.5 dB Jul-Aug -> -15.1 dB Sep-Nov
+feni_feni_sadar_01,rabi,2021,Boro,flooding at transplanting; NDVI peak 0.75 Feb-Apr
+feni_feni_sadar_01,kharif2,2021,T_Aman,VH -22.8 dB Jul-Aug -> -15.1 dB Sep-Nov
+feni_feni_sadar_01,rabi,2022,Boro,flooding at transplanting; NDVI peak 0.74 Feb-Apr
+feni_feni_sadar_01,kharif2,2022,T_Aman,VH -22.4 dB Jul-Aug -> -15.5 dB Sep-Nov
+feni_feni_sadar_01,rabi,2023,Boro,flooding at transplanting; NDVI peak 0.81 Feb-Apr
+feni_feni_sadar_01,kharif2,2023,T_Aman,VH -27.5 dB Jul-Aug -> -15.1 dB Sep-Nov
+feni_feni_sadar_01,rabi,2024,Boro,flooding at transplanting; NDVI peak 0.78 Feb-Apr
+feni_feni_sadar_01,kharif2,2024,T_Aman,VH -28.5 dB Jul-Aug -> -14.6 dB Sep-Nov
+feni_feni_sadar_01,rabi,2025,Boro,flooding at transplanting; NDVI peak 0.73 Feb-Apr
+feni_feni_sadar_01,kharif2,2025,,no rule fired
+feni_fulgazi_01,rabi,2016,,no rule fired
+feni_fulgazi_01,kharif2,2016,T_Aman,VH -26.8 dB Jul-Aug -> -13.0 dB Sep-Nov
+feni_fulgazi_01,rabi,2017,Boro,flooding at transplanting; NDVI peak 0.74 Feb-Apr
+feni_fulgazi_01,kharif2,2017,,no rule fired
+feni_fulgazi_01,rabi,2018,Boro,flooding at transplanting; NDVI peak 0.83 Feb-Apr
+feni_fulgazi_01,kharif2,2018,T_Aman,VH -26.8 dB Jul-Aug -> -14.1 dB Sep-Nov
+feni_fulgazi_01,rabi,2019,Boro,flooding at transplanting; NDVI peak 0.79 Feb-Apr
+feni_fulgazi_01,kharif2,2019,T_Aman,VH -28.1 dB Jul-Aug -> -12.0 dB Sep-Nov
+feni_fulgazi_01,rabi,2020,Boro,flooding at transplanting; NDVI peak 0.79 Feb-Apr
+feni_fulgazi_01,kharif2,2020,,no rule fired
+feni_fulgazi_01,rabi,2021,Boro,flooding at transplanting; NDVI peak 0.76 Feb-Apr
+feni_fulgazi_01,kharif2,2021,T_Aman,VH -29.2 dB Jul-Aug -> -13.4 dB Sep-Nov
+feni_fulgazi_01,rabi,2022,Boro,flooding at transplanting; NDVI peak 0.80 Feb-Apr
+feni_fulgazi_01,kharif2,2022,,no rule fired
+feni_fulgazi_01,rabi,2023,Boro,flooding at transplanting; NDVI peak 0.86 Feb-Apr
+feni_fulgazi_01,kharif2,2023,T_Aman,VH -26.0 dB Jul-Aug -> -12.4 dB Sep-Nov
+feni_fulgazi_01,rabi,2024,Boro,flooding at transplanting; NDVI peak 0.79 Feb-Apr
+feni_fulgazi_01,kharif2,2024,,no rule fired
+feni_fulgazi_01,rabi,2025,Boro,flooding at transplanting; NDVI peak 0.79 Feb-Apr
+feni_fulgazi_01,kharif2,2025,T_Aman,VH -27.7 dB Jul-Aug -> -13.3 dB Sep-Nov
+feni_parshuram_01,rabi,2016,,no rule fired
+feni_parshuram_01,kharif2,2016,,no rule fired
+feni_parshuram_01,rabi,2017,,no rule fired
+feni_parshuram_01,kharif2,2017,T_Aman,VH -20.2 dB Jul-Aug -> -14.3 dB Sep-Nov
+feni_parshuram_01,rabi,2018,,no rule fired
+feni_parshuram_01,kharif2,2018,,no rule fired
+feni_parshuram_01,rabi,2019,Boro,flooding at transplanting; NDVI peak 0.65 Feb-Apr
+feni_parshuram_01,kharif2,2019,T_Aman,VH -25.5 dB Jul-Aug -> -14.3 dB Sep-Nov
+feni_parshuram_01,rabi,2020,Rabi_nonrice,"NDVI peak 0.56 Dec-Mar, no flooding in 9 radar dekads, April NDVI 0.50"
+feni_parshuram_01,kharif2,2020,T_Aman,VH -24.1 dB Jul-Aug -> -13.8 dB Sep-Nov
+feni_parshuram_01,rabi,2021,,no rule fired
+feni_parshuram_01,kharif2,2021,T_Aman,VH -22.0 dB Jul-Aug -> -12.4 dB Sep-Nov
+feni_parshuram_01,rabi,2022,,no rule fired
+feni_parshuram_01,kharif2,2022,T_Aman,VH -22.0 dB Jul-Aug -> -14.0 dB Sep-Nov
+feni_parshuram_01,rabi,2023,Boro,flooding at transplanting; NDVI peak 0.67 Feb-Apr
+feni_parshuram_01,kharif2,2023,T_Aman,VH -25.0 dB Jul-Aug -> -16.1 dB Sep-Nov
+feni_parshuram_01,rabi,2024,Boro,flooding at transplanting; NDVI peak 0.71 Feb-Apr
+feni_parshuram_01,kharif2,2024,T_Aman,VH -22.1 dB Jul-Aug -> -15.0 dB Sep-Nov
+feni_parshuram_01,rabi,2025,Rabi_nonrice,"NDVI peak 0.66 Dec-Mar, no flooding in 9 radar dekads, April NDVI 0.39"
+feni_parshuram_01,kharif2,2025,T_Aman,VH -20.4 dB Jul-Aug -> -14.5 dB Sep-Nov
+feni_sonagazi_01,rabi,2016,Fallow,NDVI max 0.34 in 7 clear dekads Dec-Apr
+feni_sonagazi_01,kharif2,2016,,no rule fired
+feni_sonagazi_01,rabi,2017,Fallow,NDVI max 0.34 in 10 clear dekads Dec-Apr
+feni_sonagazi_01,kharif2,2017,,no rule fired
+feni_sonagazi_01,rabi,2018,Fallow,NDVI max 0.34 in 11 clear dekads Dec-Apr
+feni_sonagazi_01,kharif2,2018,,no rule fired
+feni_sonagazi_01,rabi,2019,Fallow,NDVI max 0.36 in 13 clear dekads Dec-Apr
+feni_sonagazi_01,kharif2,2019,,no rule fired
+feni_sonagazi_01,rabi,2020,Fallow,NDVI max 0.32 in 9 clear dekads Dec-Apr
+feni_sonagazi_01,kharif2,2020,,no rule fired
+feni_sonagazi_01,rabi,2021,Fallow,NDVI max 0.30 in 14 clear dekads Dec-Apr
+feni_sonagazi_01,kharif2,2021,,no rule fired
+feni_sonagazi_01,rabi,2022,,no rule fired
+feni_sonagazi_01,kharif2,2022,,no rule fired
+feni_sonagazi_01,rabi,2023,Fallow,NDVI max 0.35 in 14 clear dekads Dec-Apr
+feni_sonagazi_01,kharif2,2023,,no rule fired
+feni_sonagazi_01,rabi,2024,Fallow,NDVI max 0.37 in 10 clear dekads Dec-Apr
+feni_sonagazi_01,kharif2,2024,,no rule fired
+feni_sonagazi_01,rabi,2025,Fallow,NDVI max 0.30 in 13 clear dekads Dec-Apr
+feni_sonagazi_01,kharif2,2025,,no rule fired
