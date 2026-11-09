@@ -46,7 +46,9 @@ the value **and** the source (document, table/page) when you fill one in.
 | Long station record | Only 2016–2025 BMD Feni values were found (BBS Yearbook 2025); no published 30-year normals or daily series | Trends rest on NASA POWER alone; none of the three "trends" agrees with the station |
 | NASA POWER rainfall | Break around 1997–2007; 0.95–1.68 × the BMD gauge in 2016–24 | Replaced by GPM IMERG V07 (1998–) for all rain indicators; POWER rain kept as a comparison line only |
 | GPM IMERG intensities | 0.75–1.03 × the BMD gauge (mean 0.87); heavy-rain days and dry spells shift across the 2014 TRMM→GPM input change while totals do not | Those two indicators flagged `imerg_sensor_eras` and kept out of advice. Daily BMD Feni rain (not in the Yearbook) would settle it |
-| BMD gauge 2025 | BBS Yearbook 2025 stops at 2024 | GPM–gauge check covers 2016–2024, not 2016–2025 |
+| BMD gauge 2025 | Yearbook Table 6.1.4 has Jan–Nov 2025 only (December "not available") | Annual check 2016–2024; 2025 compared month by month |
+| BBS area series disagree | Feni Total Aman 2023-24 (66,130 ha) is 123 % of Feni's net cropped area 2022-23 (53,823 ha; Table 5.1); Noakhali 117 % | Classifier validated on year-on-year ratios and between-district ratios, which do not depend on a denominator; absolute hectares shown with this caveat |
+| Cropland mask | ESA WorldCover 2021 maps 39,927 ha of Feni as cropland and 45,284 ha as tree cover; BBS Aman alone is 66,130 ha | Points sampled only where WorldCover is sure (pure 90 m cropland); WorldCover hectares not used as the area denominator |
 | NASA POWER Tmax | 2.2 °C cooler than the BMD station on average (2023–24) | Absolute hot-day counts are too low; bias correction needs a longer station series |
 | Upazila detail | All six upazilas share one MERRA-2 cell | No upazila-level climate differences can be shown from POWER |
 | Serial correlation | Original Mann-Kendall, no pre-whitening | p-values may be optimistic |

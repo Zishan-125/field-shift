@@ -157,7 +157,9 @@ skips them**. The heavy-rain decline is "significant" in 4 of 6 upazilas
 (Feni Sadar, Fulgazi, Parshuram, Sonagazi).
 
 **Annual rain vs BMD Feni gauge (mm), 2016–2024.** The BBS Yearbook 2025 has
-no 2025 gauge value, so the requested 2016–2025 check covers 2016–2024.
+no 2025 annual value (Table 6.1.4 gives January–November 2025, December
+"not available"), so annual totals cover 2016–2024 and 2025 is checked month
+by month (table below).
 
 | Year | BMD gauge | GPM IMERG (Feni Sadar) | GPM / gauge | NASA POWER | POWER / gauge |
 |---|---|---|---|---|---|
@@ -172,9 +174,17 @@ no 2025 gauge value, so the requested 2016–2025 check covers 2016–2024.
 | 2024 | 4221 | 3171 | 0.75 | 4021 | 0.95 |
 | **Mean** | | | **0.87** | | **1.29** |
 
-Correlation of annual totals with the gauge: GPM 0.95, POWER 0.77. Monthly
-(22 months, 2023–24): GPM r = 0.97, mean bias −55 mm/month; POWER r = 0.96,
-+18 mm/month. GPM is consistently low (the area mean of a 0.1° cell against a
+Correlation of annual totals with the gauge: GPM 0.95, POWER 0.77.
+
+**Monthly, 2023 – November 2025 (33 gauge months):**
+
+| Year | Months | GPM / gauge (sum) | GPM r | POWER / gauge (sum) | POWER r |
+|---|---|---|---|---|---|
+| 2023 | 10 | 0.93 | 0.98 | 1.28 | 0.96 |
+| 2024 | 12 | 0.75 | 0.98 | 0.95 | 0.97 |
+| 2025 (Jan–Nov) | 11 | 0.78 | 0.94 | 1.09 | 0.96 |
+
+GPM misses most in the gauge's wettest months (July 2025: 630 vs 1,144 mm). GPM is consistently low (the area mean of a 0.1° cell against a
 point gauge), so GPM totals understate Feni rain by about 13 %; year-to-year
 changes follow the gauge. The ±15 % "agrees" test still fails in 2016, 2017,
 2022 and 2024, so the app keeps the gauge caveat. The "Annual rainfall" chart
