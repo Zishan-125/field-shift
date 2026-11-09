@@ -281,6 +281,66 @@ which at least one of its crops was hit. Trade-offs keep their labels: the
 only pattern with less flood exposure than Boro – Fallow – T. Aman is
 Boro – Fallow – Fallow, which drops Aman.
 
+**Do the flags line up with yield? (`climate/hazard_yield_check.py`)**
+BBS Feni district Total Boro and Total Aman, 2011-12 to 2024-25, from the
+Yearbooks 2013–2025 (`reference/bbs_feni_rice_series.csv`; the 2014-15 to
+2016-17 Boro totals are HYV + Hybrid because those editions have no Total
+Boro table and Local Boro is 0 in Feni, a rule that reproduces the
+published totals for 2013-14 and 2017-18 exactly). A year is flagged when the
+hazard hit the crop's window in at least half of the six upazilas. Flagged
+minus unflagged, exact permutation test; "local" = each year minus the median
+of the other years within ±3 years (Aman yield steps up about 0.4 t/ha in
+2020-21):
+
+| Hazard | Flagged years | Yield, local | Production, local | Verdict |
+|---|---|---|---|---|
+| Boro, heat at flowering | 7 of 14 (2012–16, 2023, 2025) | −0.02 t/ha (−0.5 %), p = 0.79 | +1 %, p = 0.78 | **exposure only** |
+| T. Aman, flood-size downpour | 3 of 14 (2017, 2019, 2024) | −0.09 t/ha (−3 %), p = 0.24 | **−29 %, p = 0.008** | **linked to loss** |
+| T. Aman, heat at flowering | 8 of 14 | −2 %, p = 0.42 | −11 %, p = 0.36 | exposure only |
+
+* Boro heat at flowering fires in 59 % of years and those years did **not**
+  have lower Boro yields. It most likely describes normal March weather. The
+  app now calls it **exposure, not proven damage**, and says so in Bangla and
+  English. The threshold was **not** retuned to find a yield effect.
+* T. Aman flooding goes with lower **production**, not much lower yield:
+  destroyed fields leave the harvested area. The result is dominated by 2024;
+  without 2024, the two flagged years (2017, 2019) still have 8–10 % less
+  production and 7–10 % lower yield than the others, p ≈ 0.04–0.05 with only
+  two flagged years: suggestive, same direction.
+* Sample: 14 years, one district, district-level statistics against
+  upazila-level flags. The raw (not local) Boro production difference of
+  +9 % (p = 0.04) is the area trend (more Boro area in 2012–16), not heat.
+
+**Two hot-day numbers, one record.** The CMIP6 table shows 45 hot days a
+year in March–May; §3 shows 37.0. Both are the same bias-corrected NASA POWER
+series counted on the same days (Tmax ≥ 35 °C, March–May), over different
+years: 45.1 is the 1998–2014 mean (the years that overlap the models'
+1995–2014 baseline, needed for the delta method), 37.0 is 1998–2026, and
+2015–2025 averages 26.5. The corrected record steps down around 2015 (the
+Pettitt break in §6; some years are near zero, 2017: 0, 2018: 1, 2020: 3, with
+no station data to check them). The app names the period under the number and
+tells the reader to read the change, not the count.
+
+**CMIP6 projections (`climate/fetch_cmip6.py`, `climate/climate_projections.py`).**
+NASA NEX-GDDP-CMIP6 (Earth Engine `NASA/GDDP-CMIP6`), area mean over Feni
+district, 10 GCMs (ACCESS-CM2, CNRM-CM6-1, EC-Earth3, GFDL-ESM4,
+IPSL-CM6A-LR, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM, UKESM1-0-LL),
+historical 1995–2014 vs 2041–2060. Delta change factors applied to
+observations, never raw model values: additive monthly Tmax change on the
+corrected 1998–2014 Tmax; multiplicative change of the median annual
+wettest-5-day total on the GPM 1998–2014 median (medians because one extreme
+model year, IPSL historical 1998, made a mean-based factor 0.49).
+
+| Indicator | 1998–2014 observed | SSP2-4.5 median (10 models' range) | SSP5-8.5 median (range) |
+|---|---|---|---|
+| Days ≥ 35 °C, March–May | 45 | 60 (47–70) | 64 (48–70) |
+| Mean March–May Tmax change | — | +1.2 °C (0.2–1.9) | +1.4 °C (0.3–2.1) |
+| Wettest 5 days of the year | 297 mm | 301 mm, +1 % (250–373) | 308 mm, +4 % (273–387) |
+
+The models agree on more heat and disagree on the sign of the change in
+extreme 5-day rain. These are projections under each emissions path, not
+forecasts; the delta method keeps today's day-to-day variability.
+
 **The 2024 flood at the Fulgazi demo field** (its own series,
 `data-pipeline/data/processed/feni_fulgazi_01.csv`): NDVI 0.65 on 29 July →
 Sentinel-1 VH below −22 dB (open water) on most passes from 4 August to

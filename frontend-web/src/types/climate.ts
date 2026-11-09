@@ -114,6 +114,7 @@ export interface ClimateShiftResponse {
   extremes: ClimateExtremes | null;
   recovery: FloodRecovery | null;
   projections: ClimateProjection[];
+  projection_context?: { hot_days_recent_mean: number | null; recent_years: string; models_total: number };
   rain_source: "gpm" | "power";
   notes: { source: string; grid: string; significance: string; short_record?: string; imerg_eras?: string };
 }
@@ -135,6 +136,13 @@ export interface CropExposure {
   n_hit_before_2014: number;
   n_hit_from_2014: number;
   intensity_caveat: boolean;
+  validation: {
+    status: "linked_to_loss" | "exposure_only" | "not_tested";
+    years?: string;
+    n_flagged?: number;
+    production_difference_pct?: number;
+    p_value?: number;
+  };
   pattern_years_hit?: number;
   better_patterns: (ClimateAdvicePattern & { years_hit: number })[];
 }

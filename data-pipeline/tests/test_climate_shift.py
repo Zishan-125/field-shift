@@ -290,3 +290,26 @@ def test_fulgazi_recovery_is_in_order(climate):
 
     assert r["flood_start"] < r["flood_end"] < r["green_again"]
     assert r["days_flood_start_to_green"] == r["days_under_water"] + r["days_flood_end_to_green"]
+
+
+def test_projections_are_deltas_from_enough_models(climate):
+    _, data = climate
+    projections = pd.DataFrame(data["projections"])
+
+    assert projections["model"].nunique() >= 5
+    assert set(projections["scenario"]) == {"ssp245", "ssp585"}
+    assert set(projections["indicator"]) == {"hot_days_mar_may", "rx5day_mm"}
+    for _, group in projections.groupby("indicator"):
+        assert group["baseline_observed"].nunique() == 1          # one observed baseline per indicator
+    rain = projections[projections["indicator"] == "rx5day_mm"]
+    assert (rain["projected"] - rain["baseline_observed"] * rain["change"]).abs().max() < 0.2
+
+
+def test_hazard_verdicts_follow_the_yield_check(climate):
+    _, data = climate
+    shown = {(e["crop_id"], e["hazard"]): e["validation"]["status"] for e in data["crop_exposure"]}
+    check = pd.read_csv(DERIVED / "hazard_yield_check.csv")
+
+    for (crop, hazard), group in check[check["basis"] == "local_anomaly"].groupby(["crop", "hazard"]):
+        linked = ((group["difference"] < 0) & (group["permutation_p"] < 0.05)).any()
+        assert shown[(crop, hazard)] == ("linked_to_loss" if linked else "exposure_only")

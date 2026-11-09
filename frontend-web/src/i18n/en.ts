@@ -206,6 +206,13 @@ const en = {
       "28 years is a short record. Trend tests have little power over it, so “no clear trend” does not mean “no change”. These are the frequencies you farm with today — not forecasts.",
     hitSentence: "{crop}: hit by {hazard} in {n} of the last {total} years.",
     lastHit: "Most recent: {years}.",
+    exposedSentence: "{crop}: exposed to {hazard} in {n} of the last {total} years.",
+    linkedBadge: "Linked to lost harvest",
+    exposureBadge: "Exposure only",
+    linkedNote:
+      "In Feni's BBS records ({years}), years like this had {pct}% less {crop} production than nearby years.",
+    exposureNote:
+      "Exposure, not proven damage: in Feni's BBS records ({years}) these years did not have lower {crop} yields.",
     notHit: "Not hit in the last {total} years: {items}.",
     hazard: {
       flood_rain: "a flood-size downpour ({mm} mm or more in 7 days, a once-in-5-years amount)",
@@ -258,10 +265,13 @@ const en = {
       "Projections from {n} NASA-downscaled climate models, applied as changes to the observed climate. They are possibilities under each emissions path, not forecasts.",
     projHot: "Days of 35 °C or more in March–May",
     projRx5: "Wettest 5 days of the year (mm)",
-    projNow: "Now (observed)",
+    projNow: "1998–2014 (observed)",
     projMid: "SSP2-4.5 (middle path)",
     projHigh: "SSP5-8.5 (high emissions)",
-    projRange: "{median} (models: {min}–{max})",
+    projRange: "{median} ({change}; models: {min}–{max})",
+    projBaselineNote:
+      "Projections are changes added to the observed 1998–2014 climate, the years that overlap the models' 1995–2014 baseline. The same corrected record averages {recent} hot days a year since 2015: NASA temperature steps down around 2015 (see the trend tests), so \"now\" depends on the years you pick. Read the change, not the exact count.",
+    projModels: "{n} of 10 models fetched so far.",
     trendToggle: "Has the climate changed? Trend tests and data checks",
     hideTrend: "Hide trend tests",
   },

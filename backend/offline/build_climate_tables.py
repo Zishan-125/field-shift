@@ -40,6 +40,7 @@ TABLES = {
     "climate_extremes_summary": "climate_extremes_summary.csv",
     "climate_return_curve": "climate_return_curve.csv",
     "climate_projections": "climate_projections.csv",
+    "hazard_yield_check": "hazard_yield_check.csv",
 }
 JSON_TABLES = {"climate_recovery": "climate_recovery_fulgazi.json"}
 

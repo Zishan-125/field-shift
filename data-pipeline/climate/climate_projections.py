@@ -11,10 +11,13 @@ and SSP5-8.5, every model in data-pipeline/data/raw/cmip6/
         applied to     observed bias-corrected daily Tmax (NASA POWER corrected to
                        BMD Feni, climate_shift.py), 1998-2014: Tmax + delta_m,
                        then days >= 35 C counted and averaged over the years
-    rx5day_mm          wettest 5-day rain total of the year
-        model change   factor = mean annual Rx5day(future) / mean annual Rx5day(historical)
+    rx5day_mm          wettest 5-day rain total of the year (median year)
+        model change   factor = median annual Rx5day(future) / median annual Rx5day(historical)
         applied to     observed GPM IMERG Rx5day, Feni district = mean of the six
-                       upazila series, 1998-2014 average
+                       upazila series, 1998-2014 median
+        Medians, not means: a single extreme model year moves a 20-year mean of
+        annual maxima a lot (IPSL-CM6A-LR historical 1998: 6,605 mm of rain in
+        the year, which made its SSP2-4.5 mean-based factor 0.49).
 
 Model values are never shown: only their change is applied to observations.
 The observed baseline starts in 1998 (POWER temperature break, GPM start),
@@ -83,7 +86,7 @@ def hot_days(tmax: pd.Series) -> float:
 def main() -> None:
     tmax_obs, rain_obs = observed()
     base_hot = hot_days(tmax_obs)
-    base_rx5 = float(rx5(rain_obs).mean())
+    base_rx5 = float(rx5(rain_obs).median())
     rows = []
 
     for model in MODELS:
@@ -106,13 +109,13 @@ def main() -> None:
                 "method": "additive monthly Tmax delta (Mar, Apr, May) on observed corrected Tmax 1998-2014; change = mean delta, C",
             })
 
-            factor = float(rx5(future["pr_mm"]).mean() / rx5(hist["pr_mm"]).mean())
+            factor = float(rx5(future["pr_mm"]).median() / rx5(hist["pr_mm"]).median())
             rows.append({
                 "indicator": "rx5day_mm", "scenario": scenario, "model": model,
                 "baseline_observed": round(base_rx5, 1),
                 "change": round(factor, 4),
                 "projected": round(base_rx5 * factor, 1),
-                "method": "multiplicative change factor on mean annual Rx5day, applied to GPM 1998-2014; change = factor",
+                "method": "multiplicative change factor on median annual Rx5day, applied to the GPM 1998-2014 median; change = factor",
             })
 
     frame = pd.DataFrame(rows)

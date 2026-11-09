@@ -93,7 +93,16 @@ function ExposureCard({
                 {number(item.n_hit, language)}/{number(item.n_years, language)}
               </span>
               <span>
-                {fill(t.hitSentence, {
+                {item.validation.status === "linked_to_loss" ? (
+                  <span className="mr-1 rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-black text-orange-900">
+                    {t.linkedBadge}
+                  </span>
+                ) : item.validation.status === "exposure_only" ? (
+                  <span className="mr-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-700">
+                    {t.exposureBadge}
+                  </span>
+                ) : null}
+                {fill(item.validation.status === "exposure_only" ? t.exposedSentence : t.hitSentence, {
                   crop,
                   hazard: hazardText(item.hazard),
                   n: number(item.n_hit, language),
@@ -107,6 +116,21 @@ function ExposureCard({
                 })}
               </span>
             </div>
+
+            {item.validation.status === "linked_to_loss" && (
+              <p className="mt-1 text-xs text-slate-700">
+                {fill(t.linkedNote, {
+                  years: item.validation.years ?? "",
+                  pct: number(Math.abs(item.validation.production_difference_pct ?? 0), language),
+                  crop,
+                })}
+              </p>
+            )}
+            {item.validation.status === "exposure_only" && (
+              <p className="mt-1 text-xs text-slate-700">
+                {fill(t.exposureNote, { years: item.validation.years ?? "", crop })}
+              </p>
+            )}
 
             {patternNames(item).length > 0 ? (
               <p className="mt-1 text-xs text-slate-600">
@@ -424,7 +448,14 @@ function Projections({ data, language }: { data: ClimateShiftResponse; language:
       .filter((p) => p.indicator === indicator && p.scenario === scenario)
       .map((p) => p.projected);
     if (!values.length) return "—";
+    const baseline = data.projections.find((p) => p.indicator === indicator)?.baseline_observed ?? 0;
+    const change = median(values) - baseline;
+    const changeText =
+      indicator === "rx5day_mm"
+        ? `${change >= 0 ? "+" : "−"}${number(Math.abs((100 * change) / baseline), language)}%`
+        : `${change >= 0 ? "+" : "−"}${number(Math.abs(change), language, digits)}`;
     return fill(t.projRange, {
+      change: changeText,
       median: number(median(values), language, digits),
       min: number(Math.min(...values), language, digits),
       max: number(Math.max(...values), language, digits),
@@ -460,6 +491,14 @@ function Projections({ data, language }: { data: ClimateShiftResponse; language:
           </tbody>
         </table>
       </div>
+      {data.projection_context?.hot_days_recent_mean != null && (
+        <p className="mt-2 text-[11px] leading-5 text-slate-500">
+          {fill(t.projBaselineNote, { recent: number(data.projection_context.hot_days_recent_mean, language) })}
+        </p>
+      )}
+      <p className="mt-1 text-[11px] leading-5 text-slate-500">
+        {fill(t.projModels, { n: number(models.size, language) })}
+      </p>
     </div>
   );
 }

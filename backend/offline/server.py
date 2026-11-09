@@ -1620,6 +1620,29 @@ def pattern_exposure(pattern: dict, upazila: str, offsets: dict) -> dict:
     return union
 
 
+def hazard_validation(crop_id: str, hazard: str) -> dict:
+    """Does this hazard line up with lower BBS Feni production? (climate/hazard_yield_check.py)"""
+
+    if not table_exists("hazard_yield_check"):
+        return {"status": "not_tested"}
+    row = fetch_one(
+        "SELECT * FROM hazard_yield_check WHERE crop = ? AND hazard = ? AND outcome = 'production_t' "
+        "AND basis = 'local_anomaly'",
+        (crop_id, hazard),
+    )
+    if row is None:
+        return {"status": "not_tested"}
+    return {
+        "status": row["verdict"],
+        "years": row["years"],
+        "n_years": row["n_years"],
+        "n_flagged": row["n_flagged"],
+        "production_difference_pct": row["difference_pct_of_unflagged_level"],
+        "p_value": row["permutation_p"],
+        "source": "BBS Feni district Total Aman / Total Boro, Yearbooks 2013-2025",
+    }
+
+
 def crop_exposure(recommendations: dict, upazila: str) -> list:
     """
     For each crop of the current pattern: how many of the last years each
@@ -1651,6 +1674,7 @@ def crop_exposure(recommendations: dict, upazila: str) -> list:
                 "n_hit_before_2014": sum(1 for y in years if y < GPM_ERA_START),
                 "n_hit_from_2014": sum(1 for y in years if y >= GPM_ERA_START),
                 "intensity_caveat": hazard in ("heavy_rain_day", "dry_spell", "flood_rain"),
+                "validation": hazard_validation(item["crop_id"], hazard),
                 "better_patterns": [],
             }
             if years:
@@ -1669,6 +1693,21 @@ def crop_exposure(recommendations: dict, upazila: str) -> list:
             out.append(entry)
 
     return out
+
+
+def projection_context(upazila: str) -> dict:
+    """Recent observed hot days, so the 1998-2014 projection baseline is not read as 'today'."""
+
+    row = fetch_one(
+        "SELECT AVG(value) AS mean FROM climate_indicator_years WHERE upazila = ? "
+        "AND indicator = 'hot_days_mar_may_bc' AND year BETWEEN 2015 AND 2025",
+        (upazila,),
+    ) if table_exists("climate_indicator_years") else None
+    return {
+        "hot_days_recent_mean": round(row["mean"], 1) if row and row["mean"] is not None else None,
+        "recent_years": "2015-2025",
+        "models_total": 10,
+    }
 
 
 def climate_extremes_block(upazila: str) -> dict | None:
@@ -1821,6 +1860,7 @@ def climate_shift(upazila: str = Query(default=DEFAULT_UPAZILA)):
             fetch_all("SELECT * FROM climate_projections ORDER BY indicator, scenario, model")
             if table_exists("climate_projections") else []
         ),
+        "projection_context": projection_context(upazila),
         "rain_source": rain_source,
         "notes": {
             "source": (
