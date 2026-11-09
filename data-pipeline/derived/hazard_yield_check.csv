@@ -1,0 +1,13 @@
+crop,hazard,outcome,basis,years,n_years,flagged_years,n_flagged,mean_flagged,mean_unflagged,difference,difference_pct_of_unflagged_level,permutation_p,verdict
+rice_boro,heat_flowering,yield_t_ha,raw,2012-2025,14,2012 2013 2014 2015 2016 2023 2025,7,3.584,3.582,0.001,0.0,0.981,exposure_only
+rice_boro,heat_flowering,yield_t_ha,local_anomaly,2012-2025,14,2012 2013 2014 2015 2016 2023 2025,7,-0.005,0.013,-0.018,-0.5,0.791,exposure_only
+rice_boro,heat_flowering,production_t,raw,2012-2025,14,2012 2013 2014 2015 2016 2023 2025,7,115057.286,104726.286,10331.0,9.4,0.041,exposure_only
+rice_boro,heat_flowering,production_t,local_anomaly,2012-2025,14,2012 2013 2014 2015 2016 2023 2025,7,1841.786,580.929,1260.857,1.1,0.78,exposure_only
+rice_aman,flood_rain,yield_t_ha,raw,2011-2024,14,2017 2019 2024,3,2.785,2.865,-0.08,-2.8,0.552,linked_to_loss
+rice_aman,flood_rain,yield_t_ha,local_anomaly,2011-2024,14,2017 2019 2024,3,-0.063,0.028,-0.091,-3.2,0.236,linked_to_loss
+rice_aman,flood_rain,production_t,raw,2011-2024,14,2017 2019 2024,3,140705.0,188029.182,-47324.182,-26.6,0.008,linked_to_loss
+rice_aman,flood_rain,production_t,local_anomaly,2011-2024,14,2017 2019 2024,3,-47345.167,3668.545,-51013.712,-28.7,0.008,linked_to_loss
+rice_aman,heat_flowering,yield_t_ha,raw,2011-2024,14,2015 2017 2018 2019 2020 2021 2023 2024,8,2.838,2.862,-0.024,-0.9,0.827,exposure_only
+rice_aman,heat_flowering,yield_t_ha,local_anomaly,2011-2024,14,2015 2017 2018 2019 2020 2021 2023 2024,8,-0.016,0.042,-0.057,-2.0,0.424,exposure_only
+rice_aman,heat_flowering,production_t,raw,2011-2024,14,2015 2017 2018 2019 2020 2021 2023 2024,8,169850.125,188605.833,-18755.708,-10.5,0.286,exposure_only
+rice_aman,heat_flowering,production_t,local_anomaly,2011-2024,14,2015 2017 2018 2019 2020 2021 2023 2024,8,-15478.75,3691.417,-19170.167,-10.8,0.357,exposure_only

@@ -1,0 +1,29 @@
+crop,bbs_year,season_year,area_ha,yield_t_ha,production_t,source_id,bbs_table,bbs_pdf_page,notes
+total_aman,2011-12,2011,65769,2.864,188358,BBS_YB_2013,3.1.1.2(d) Total Aman,82,"Feni row read from the PDF text layer; acre/ha = 2.471. season_year = calendar year of the Kharif-2 season"
+total_aman,2012-13,2012,64497,2.826,182252,BBS_YB_2014,Table-4 Total Aman,80,
+total_aman,2013-14,2013,67012,2.933,196532,BBS_YB_2015,Table-4 Total Aman,84,
+total_aman,2014-15,2014,66148,2.830,187203,BBS_YB_2016,Table-4 Total Aman,86,
+total_aman,2015-16,2015,66271,2.680,177615,BBS_YB_2017,Table-4 Total Aman,85,
+total_aman,2016-17,2016,65952,2.682,176883,BBS_YB_2018,Table-4 Total Aman,85,"The same row prints 24.10 maund/acre, which contradicts its own 2.682 t/ha (BBS_YB_2017 gives 29.08 maund/acre); t/ha used"
+total_aman,2017-18,2017,65215,2.680,174808,BBS_YB_2019,Table 4 Total Aman,86,
+total_aman,2018-19,2018,61753,2.602,160699,BBS_YB_2020,Table 3.4 Total Aman,82,
+total_aman,2019-20,2019,64740,2.512,162648,BBS_YB_2020,Table 3.4 Total Aman,82,
+total_aman,2020-21,2020,66015,2.971,196106,BBS_YB_2022,Table 3.4 Total Aman,88,
+total_aman,2021-22,2021,65935,2.985,196830,BBS_YB_2023,Table 3.4 Total Aman,89,
+total_aman,2022-23,2022,65995,3.037,200407,BBS_YB_2024,Table 3.5 Total Aman,86,
+total_aman,2023-24,2023,66130,3.107,205436,BBS_YB_2025,Table 3.5 Total Aman,87,
+total_aman,2024-25,2024,26753,3.164,84659,BBS_YB_2025,Table 3.5 Total Aman,87,"August 2024 floods; see docs/methodology/bbs-aman-area-check.md"
+total_boro,2011-12,2012,34443,3.483,119962,BBS_YB_2013,3.1.1.3(d) Total Boro,92,"season_year = calendar year of the Boro harvest (Apr-May)"
+total_boro,2012-13,2013,33186,3.667,121705,BBS_YB_2014,Table-1 Total Boro,90,
+total_boro,2013-14,2014,33163,3.663,121469,BBS_YB_2014,Table-1 Total Boro,90,"Equals HYV + Hybrid in BBS_YB_2015 (Tables 2-3, pp. 90, 92)"
+total_boro,2014-15,2015,31524,3.541,111634,BBS_YB_2016,Tables 2-3 HYV + Hybrid Boro,"92, 94","No Total Boro table in this edition; Local Boro is 0 in Feni (Table 1, p.90), so Total = HYV (29,493 ha, 103,104 t) + Hybrid (2,031 ha, 8,530 t); yield = production / area"
+total_boro,2015-16,2016,31797,3.563,113281,BBS_YB_2017,Tables 2-3 HYV + Hybrid Boro,"91, 93","Local 0; HYV 29,520 ha / 102,382 t + Hybrid 2,277 ha / 10,899 t"
+total_boro,2016-17,2017,29718,3.708,110208,BBS_YB_2018,Tables 2-3 HYV + Hybrid Boro,"91, 93","Local 0; HYV 27,378 ha / 98,616 t + Hybrid 2,340 ha / 11,592 t"
+total_boro,2017-18,2018,33480,3.637,121757,BBS_YB_2019,Table 4 Total Boro,96,"Equals HYV + Hybrid in BBS_YB_2018 (pp. 91, 93)"
+total_boro,2018-19,2019,26809,3.548,95107,BBS_YB_2020,Table 4 Total Boro,92,
+total_boro,2019-20,2020,27001,3.577,96580,BBS_YB_2020,Table 4 Total Boro,92,
+total_boro,2020-21,2021,27007,3.650,98612,BBS_YB_2022,Table 4 Total Boro,98,
+total_boro,2021-22,2022,29368,3.451,101359,BBS_YB_2023,Table 4 Total Boro,99,
+total_boro,2022-23,2023,29576,3.466,102511,BBS_YB_2024,Table 4 Total Boro,96,
+total_boro,2023-24,2024,31222,3.506,109461,BBS_YB_2025,Table 4 Total Boro,97,
+total_boro,2024-25,2025,31021,3.702,114839,BBS_YB_2025,Table 4 Total Boro,97,
