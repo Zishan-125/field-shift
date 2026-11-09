@@ -1,0 +1,13 @@
+{
+ "field_id": "feni_fulgazi_01",
+ "flood_start": "2024-08-04",
+ "flood_end": "2024-09-14",
+ "days_under_water": 41,
+ "green_again": "2024-10-22",
+ "days_flood_start_to_green": 79,
+ "days_flood_end_to_green": 38,
+ "ndvi_before": 0.65,
+ "ndvi_before_date": "2024-07-29",
+ "min_vh_db": -30.1,
+ "rule": "under water = Sentinel-1 VH < -22 dB (single scenes); green again = first clear HLS NDVI >= 0.5 after the water left"
+}

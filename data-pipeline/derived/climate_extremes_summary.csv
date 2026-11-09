@@ -1,0 +1,241 @@
+upazila,metric,value
+Feni Sadar,n_years,28.0
+Feni Sadar,monsoon_mean_mm,1864.8
+Feni Sadar,monsoon_sd_mm,299.6
+Feni Sadar,monsoon_cv,0.161
+Feni Sadar,monsoon_wettest_year,2017.0
+Feni Sadar,monsoon_wettest_mm,2507.8
+Feni Sadar,monsoon_driest_year,2022.0
+Feni Sadar,monsoon_driest_mm,1385.8
+Feni Sadar,monsoon_2024_mm,2439.9
+Feni Sadar,rx5_gumbel_loc,275.1
+Feni Sadar,rx5_gumbel_scale,55.51
+Feni Sadar,rx5_return_level_2y_mm,295.44
+Feni Sadar,rx5_return_level_5y_mm,358.36
+Feni Sadar,rx5_return_level_10y_mm,400.01
+Feni Sadar,rx5_return_level_25y_mm,452.64
+Feni Sadar,rx5_2024_mm,438.1
+Feni Sadar,rx5_2024_rank,3.0
+Feni Sadar,rx5_2024_return_period_empirical_y,9.7
+Feni Sadar,rx5_2024_return_period_gumbel_y,19.4
+Feni Sadar,rx7_gumbel_loc,323.03
+Feni Sadar,rx7_gumbel_scale,56.46
+Feni Sadar,rx7_return_level_2y_mm,343.72
+Feni Sadar,rx7_return_level_5y_mm,407.71
+Feni Sadar,rx7_return_level_10y_mm,450.08
+Feni Sadar,rx7_return_level_25y_mm,503.61
+Feni Sadar,rx7_2024_mm,549.9
+Feni Sadar,rx7_2024_rank,1.0
+Feni Sadar,rx7_2024_return_period_empirical_y,29.0
+Feni Sadar,rx7_2024_return_period_gumbel_y,56.1
+Feni Sadar,rx15_gumbel_loc,449.14
+Feni Sadar,rx15_gumbel_scale,84.73
+Feni Sadar,rx15_return_level_2y_mm,480.19
+Feni Sadar,rx15_return_level_5y_mm,576.22
+Feni Sadar,rx15_return_level_10y_mm,639.8
+Feni Sadar,rx15_return_level_25y_mm,720.14
+Feni Sadar,rx15_2024_mm,684.0
+Feni Sadar,rx15_2024_rank,2.0
+Feni Sadar,rx15_2024_return_period_empirical_y,14.5
+Feni Sadar,rx15_2024_return_period_gumbel_y,16.5
+Feni Sadar,flood_threshold_7day_mm,407.7
+Chhagalnaiya,n_years,28.0
+Chhagalnaiya,monsoon_mean_mm,1864.8
+Chhagalnaiya,monsoon_sd_mm,305.9
+Chhagalnaiya,monsoon_cv,0.164
+Chhagalnaiya,monsoon_wettest_year,2017.0
+Chhagalnaiya,monsoon_wettest_mm,2518.2
+Chhagalnaiya,monsoon_driest_year,2013.0
+Chhagalnaiya,monsoon_driest_mm,1384.5
+Chhagalnaiya,monsoon_2024_mm,2452.0
+Chhagalnaiya,rx5_gumbel_loc,279.7
+Chhagalnaiya,rx5_gumbel_scale,60.08
+Chhagalnaiya,rx5_return_level_2y_mm,301.72
+Chhagalnaiya,rx5_return_level_5y_mm,369.82
+Chhagalnaiya,rx5_return_level_10y_mm,414.91
+Chhagalnaiya,rx5_return_level_25y_mm,471.87
+Chhagalnaiya,rx5_2024_mm,493.7
+Chhagalnaiya,rx5_2024_rank,1.0
+Chhagalnaiya,rx5_2024_return_period_empirical_y,29.0
+Chhagalnaiya,rx5_2024_return_period_gumbel_y,35.7
+Chhagalnaiya,rx7_gumbel_loc,323.86
+Chhagalnaiya,rx7_gumbel_scale,62.2
+Chhagalnaiya,rx7_return_level_2y_mm,346.66
+Chhagalnaiya,rx7_return_level_5y_mm,417.15
+Chhagalnaiya,rx7_return_level_10y_mm,463.83
+Chhagalnaiya,rx7_return_level_25y_mm,522.8
+Chhagalnaiya,rx7_2024_mm,605.6
+Chhagalnaiya,rx7_2024_rank,1.0
+Chhagalnaiya,rx7_2024_return_period_empirical_y,29.0
+Chhagalnaiya,rx7_2024_return_period_gumbel_y,93.2
+Chhagalnaiya,rx15_gumbel_loc,453.86
+Chhagalnaiya,rx15_gumbel_scale,87.96
+Chhagalnaiya,rx15_return_level_2y_mm,486.1
+Chhagalnaiya,rx15_return_level_5y_mm,585.79
+Chhagalnaiya,rx15_return_level_10y_mm,651.8
+Chhagalnaiya,rx15_return_level_25y_mm,735.19
+Chhagalnaiya,rx15_2024_mm,715.1
+Chhagalnaiya,rx15_2024_rank,1.0
+Chhagalnaiya,rx15_2024_return_period_empirical_y,29.0
+Chhagalnaiya,rx15_2024_return_period_gumbel_y,20.0
+Chhagalnaiya,flood_threshold_7day_mm,417.2
+Daganbhuiyan,n_years,28.0
+Daganbhuiyan,monsoon_mean_mm,1856.6
+Daganbhuiyan,monsoon_sd_mm,290.1
+Daganbhuiyan,monsoon_cv,0.156
+Daganbhuiyan,monsoon_wettest_year,2017.0
+Daganbhuiyan,monsoon_wettest_mm,2446.2
+Daganbhuiyan,monsoon_driest_year,2022.0
+Daganbhuiyan,monsoon_driest_mm,1372.4
+Daganbhuiyan,monsoon_2024_mm,2420.0
+Daganbhuiyan,rx5_gumbel_loc,269.82
+Daganbhuiyan,rx5_gumbel_scale,52.25
+Daganbhuiyan,rx5_return_level_2y_mm,288.97
+Daganbhuiyan,rx5_return_level_5y_mm,348.19
+Daganbhuiyan,rx5_return_level_10y_mm,387.4
+Daganbhuiyan,rx5_return_level_25y_mm,436.94
+Daganbhuiyan,rx5_2024_mm,393.7
+Daganbhuiyan,rx5_2024_rank,4.0
+Daganbhuiyan,rx5_2024_return_period_empirical_y,7.2
+Daganbhuiyan,rx5_2024_return_period_gumbel_y,11.2
+Daganbhuiyan,rx7_gumbel_loc,314.46
+Daganbhuiyan,rx7_gumbel_scale,57.1
+Daganbhuiyan,rx7_return_level_2y_mm,335.38
+Daganbhuiyan,rx7_return_level_5y_mm,400.1
+Daganbhuiyan,rx7_return_level_10y_mm,442.94
+Daganbhuiyan,rx7_return_level_25y_mm,497.08
+Daganbhuiyan,rx7_2024_mm,497.8
+Daganbhuiyan,rx7_2024_rank,3.0
+Daganbhuiyan,rx7_2024_return_period_empirical_y,9.7
+Daganbhuiyan,rx7_2024_return_period_gumbel_y,25.3
+Daganbhuiyan,rx15_gumbel_loc,441.55
+Daganbhuiyan,rx15_gumbel_scale,80.3
+Daganbhuiyan,rx15_return_level_2y_mm,470.98
+Daganbhuiyan,rx15_return_level_5y_mm,561.99
+Daganbhuiyan,rx15_return_level_10y_mm,622.25
+Daganbhuiyan,rx15_return_level_25y_mm,698.39
+Daganbhuiyan,rx15_2024_mm,645.6
+Daganbhuiyan,rx15_2024_rank,3.0
+Daganbhuiyan,rx15_2024_return_period_empirical_y,9.7
+Daganbhuiyan,rx15_2024_return_period_gumbel_y,13.2
+Daganbhuiyan,flood_threshold_7day_mm,400.1
+Parshuram,n_years,28.0
+Parshuram,monsoon_mean_mm,1717.2
+Parshuram,monsoon_sd_mm,282.1
+Parshuram,monsoon_cv,0.164
+Parshuram,monsoon_wettest_year,2017.0
+Parshuram,monsoon_wettest_mm,2353.1
+Parshuram,monsoon_driest_year,2013.0
+Parshuram,monsoon_driest_mm,1288.4
+Parshuram,monsoon_2024_mm,2287.6
+Parshuram,rx5_gumbel_loc,253.51
+Parshuram,rx5_gumbel_scale,64.51
+Parshuram,rx5_return_level_2y_mm,277.15
+Parshuram,rx5_return_level_5y_mm,350.27
+Parshuram,rx5_return_level_10y_mm,398.68
+Parshuram,rx5_return_level_25y_mm,459.85
+Parshuram,rx5_2024_mm,514.9
+Parshuram,rx5_2024_rank,1.0
+Parshuram,rx5_2024_return_period_empirical_y,29.0
+Parshuram,rx5_2024_return_period_gumbel_y,58.0
+Parshuram,rx7_gumbel_loc,293.51
+Parshuram,rx7_gumbel_scale,66.36
+Parshuram,rx7_return_level_2y_mm,317.83
+Parshuram,rx7_return_level_5y_mm,393.05
+Parshuram,rx7_return_level_10y_mm,442.85
+Parshuram,rx7_return_level_25y_mm,505.77
+Parshuram,rx7_2024_mm,590.6
+Parshuram,rx7_2024_rank,1.0
+Parshuram,rx7_2024_return_period_empirical_y,29.0
+Parshuram,rx7_2024_return_period_gumbel_y,88.4
+Parshuram,rx15_gumbel_loc,421.02
+Parshuram,rx15_gumbel_scale,85.91
+Parshuram,rx15_return_level_2y_mm,452.51
+Parshuram,rx15_return_level_5y_mm,549.88
+Parshuram,rx15_return_level_10y_mm,614.34
+Parshuram,rx15_return_level_25y_mm,695.8
+Parshuram,rx15_2024_mm,674.9
+Parshuram,rx15_2024_rank,1.0
+Parshuram,rx15_2024_return_period_empirical_y,29.0
+Parshuram,rx15_2024_return_period_gumbel_y,19.7
+Parshuram,flood_threshold_7day_mm,393.0
+Fulgazi,n_years,28.0
+Fulgazi,monsoon_mean_mm,1772.9
+Fulgazi,monsoon_sd_mm,290.7
+Fulgazi,monsoon_cv,0.164
+Fulgazi,monsoon_wettest_year,2017.0
+Fulgazi,monsoon_wettest_mm,2421.3
+Fulgazi,monsoon_driest_year,2013.0
+Fulgazi,monsoon_driest_mm,1339.7
+Fulgazi,monsoon_2024_mm,2347.2
+Fulgazi,rx5_gumbel_loc,262.02
+Fulgazi,rx5_gumbel_scale,59.84
+Fulgazi,rx5_return_level_2y_mm,283.95
+Fulgazi,rx5_return_level_5y_mm,351.77
+Fulgazi,rx5_return_level_10y_mm,396.67
+Fulgazi,rx5_return_level_25y_mm,453.41
+Fulgazi,rx5_2024_mm,486.2
+Fulgazi,rx5_2024_rank,1.0
+Fulgazi,rx5_2024_return_period_empirical_y,29.0
+Fulgazi,rx5_2024_return_period_gumbel_y,42.9
+Fulgazi,rx7_gumbel_loc,302.46
+Fulgazi,rx7_gumbel_scale,63.33
+Fulgazi,rx7_return_level_2y_mm,325.67
+Fulgazi,rx7_return_level_5y_mm,397.45
+Fulgazi,rx7_return_level_10y_mm,444.97
+Fulgazi,rx7_return_level_25y_mm,505.01
+Fulgazi,rx7_2024_mm,574.8
+Fulgazi,rx7_2024_rank,1.0
+Fulgazi,rx7_2024_return_period_empirical_y,29.0
+Fulgazi,rx7_2024_return_period_gumbel_y,74.3
+Fulgazi,rx15_gumbel_loc,430.94
+Fulgazi,rx15_gumbel_scale,84.08
+Fulgazi,rx15_return_level_2y_mm,461.76
+Fulgazi,rx15_return_level_5y_mm,557.06
+Fulgazi,rx15_return_level_10y_mm,620.16
+Fulgazi,rx15_return_level_25y_mm,699.89
+Fulgazi,rx15_2024_mm,668.2
+Fulgazi,rx15_2024_rank,1.0
+Fulgazi,rx15_2024_return_period_empirical_y,29.0
+Fulgazi,rx15_2024_return_period_gumbel_y,17.3
+Fulgazi,flood_threshold_7day_mm,397.4
+Sonagazi,n_years,28.0
+Sonagazi,monsoon_mean_mm,1976.9
+Sonagazi,monsoon_sd_mm,310.5
+Sonagazi,monsoon_cv,0.157
+Sonagazi,monsoon_wettest_year,2017.0
+Sonagazi,monsoon_wettest_mm,2628.7
+Sonagazi,monsoon_driest_year,2022.0
+Sonagazi,monsoon_driest_mm,1462.4
+Sonagazi,monsoon_2024_mm,2532.9
+Sonagazi,rx5_gumbel_loc,289.1
+Sonagazi,rx5_gumbel_scale,55.7
+Sonagazi,rx5_return_level_2y_mm,309.51
+Sonagazi,rx5_return_level_5y_mm,372.64
+Sonagazi,rx5_return_level_10y_mm,414.43
+Sonagazi,rx5_return_level_25y_mm,467.24
+Sonagazi,rx5_2024_mm,406.8
+Sonagazi,rx5_2024_rank,4.0
+Sonagazi,rx5_2024_return_period_empirical_y,7.2
+Sonagazi,rx5_2024_return_period_gumbel_y,8.8
+Sonagazi,rx7_gumbel_loc,339.07
+Sonagazi,rx7_gumbel_scale,64.58
+Sonagazi,rx7_return_level_2y_mm,362.74
+Sonagazi,rx7_return_level_5y_mm,435.94
+Sonagazi,rx7_return_level_10y_mm,484.41
+Sonagazi,rx7_return_level_25y_mm,545.65
+Sonagazi,rx7_2024_mm,528.1
+Sonagazi,rx7_2024_rank,3.0
+Sonagazi,rx7_2024_return_period_empirical_y,9.7
+Sonagazi,rx7_2024_return_period_gumbel_y,19.2
+Sonagazi,rx15_gumbel_loc,478.09
+Sonagazi,rx15_gumbel_scale,89.51
+Sonagazi,rx15_return_level_2y_mm,510.9
+Sonagazi,rx15_return_level_5y_mm,612.35
+Sonagazi,rx15_return_level_10y_mm,679.52
+Sonagazi,rx15_return_level_25y_mm,764.39
+Sonagazi,rx15_2024_mm,689.5
+Sonagazi,rx15_2024_rank,2.0
+Sonagazi,rx15_2024_return_period_empirical_y,14.5
+Sonagazi,rx15_2024_return_period_gumbel_y,11.1
+Sonagazi,flood_threshold_7day_mm,435.9
