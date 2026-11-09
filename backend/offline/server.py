@@ -1695,6 +1695,55 @@ def climate_extremes_block(upazila: str) -> dict | None:
     return {"summary": summary, "years": years, "return_curve": curve}
 
 
+@app.get("/api/offline/demo-fields")
+def demo_fields():
+    """
+    The six demo fields and what the satellites saw each season (phenology
+    rules; classifier probabilities when built). Includes the coastal
+    Sonagazi Rabi-fallow comparison against the inland fields.
+    """
+
+    if not table_exists("demo_field_seasons"):
+        raise HTTPException(status_code=503, detail="Run backend/offline/build_field_tables.py")
+
+    fields = fetch_all("SELECT * FROM demo_fields ORDER BY upazila")
+    seasons = fetch_all("SELECT * FROM demo_field_seasons ORDER BY field_id, year, season")
+    by_field: dict = {}
+    for row in seasons:
+        by_field.setdefault(row["field_id"], []).append(row)
+
+    def rabi_fallow(field_id: str) -> dict:
+        rabi = [r for r in by_field.get(field_id, []) if r["season"] == "rabi"]
+        return {
+            "fallow": sum(1 for r in rabi if r["rule_label"] == "Fallow"),
+            "labelled": sum(1 for r in rabi if r["rule_label"]),
+            "years": len(rabi),
+        }
+
+    coastal = next((f for f in fields if f["upazila"] == "Sonagazi"), None)
+    inland = [f for f in fields if f["upazila"] != "Sonagazi"]
+    inland_counts = [rabi_fallow(f["field_id"]) for f in inland]
+
+    for field in fields:
+        field["seasons"] = by_field.get(field["field_id"], [])
+        field["rabi_fallow"] = rabi_fallow(field["field_id"])
+
+    return {
+        "fields": fields,
+        "coastal_fallow": {
+            "field_id": coastal["field_id"] if coastal else None,
+            "coastal": rabi_fallow(coastal["field_id"]) if coastal else None,
+            "inland_fallow": sum(c["fallow"] for c in inland_counts),
+            "inland_years": sum(c["years"] for c in inland_counts),
+            "inland_fields": len(inland),
+            "note": "Satellites show the dry-season fallow, not the salt. Dry-season fallow on the coast is what "
+                    "soil salinity would cause; no salinity measurement was used.",
+        },
+        "label_source": "phenology rules (weak labels, docs/methodology/phenology.md)",
+        "runtime": "offline",
+    }
+
+
 @app.get("/api/offline/climate-shift")
 def climate_shift(upazila: str = Query(default=DEFAULT_UPAZILA)):
     """

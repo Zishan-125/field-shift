@@ -177,6 +177,27 @@ const en = {
     noMatch: "No plans contain your selected crops.",
   },
 
+  fieldsFromSpace: {
+    eyebrow: "NASA HLS and Sentinel-1, 2016–2025",
+    title: "What satellites saw on six Feni fields",
+    subtitle:
+      "One demo field per upazila, chosen by rule on satellite cropland maps — not surveyed farms. Each square is one season.",
+    coastalLine:
+      "Coastal Sonagazi: the field lay fallow in {fallow} of {years} dry seasons. The five inland fields: fallow in {inland} of {inlandLabelled} dry seasons we could read.",
+    coastalWhy:
+      "Satellites see the empty winter field, not the salt. A fallow dry season on the coast is what soil salinity causes; no salinity was measured here.",
+    rabi: "Rabi (winter)",
+    kharif2: "Kharif-2 (monsoon)",
+    label: {
+      Boro: "Boro rice",
+      Rabi_nonrice: "Other Rabi crop",
+      Fallow: "Fallow",
+      T_Aman: "T. Aman rice",
+      none: "Not clear",
+    },
+    short: { Boro: "B", Rabi_nonrice: "R", Fallow: "F", T_Aman: "A", none: "?" },
+    source: "Labels from phenology rules on the satellite series (weak labels, not ground truth).",
+  },
   climateRisk: {
     eyebrow: "28 years of NASA satellite rain",
     title: "What your climate does to your crops",

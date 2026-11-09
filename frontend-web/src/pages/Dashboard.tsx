@@ -49,6 +49,7 @@ import WeatherSummary from "../components/farmer/WeatherSummary";
 import EnvironmentSummary from "../components/farmer/EnvironmentSummary";
 import FarmerGoalSelector from "../components/farmer/FarmerGoalSelector";
 import PatternRecommendationList from "../components/farmer/PatternRecommendationList";
+import DemoFieldsSection from "../components/farmer/DemoFieldsSection";
 
 // Charts (recharts) load in their own chunk so the rest of the page is not delayed.
 const ClimateShiftSection = lazy(
@@ -908,6 +909,10 @@ export default function Dashboard() {
           >
             <ClimateShiftSection language={language} />
           </Suspense>
+        </section>
+
+        <section className="fs-section">
+          <DemoFieldsSection language={language} />
         </section>
 
         {/* =====================================================

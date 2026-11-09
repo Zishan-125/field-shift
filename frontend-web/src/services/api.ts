@@ -10,6 +10,7 @@ import type {
   PatternRecommendationResponse,
 } from "../types/pattern";
 import type { ClimateShiftResponse } from "../types/climate";
+import type { DemoFieldsResponse } from "../types/demoFields";
 import type {
   CropResponse,
 } from "../types/crop";
@@ -104,6 +105,12 @@ export async function getClimateShift(
       "/api/offline/climate-shift",
       { params: upazila ? { upazila } : {} },
     );
+
+  return response.data;
+}
+
+export async function getDemoFields(): Promise<DemoFieldsResponse> {
+  const response = await api.get<DemoFieldsResponse>("/api/offline/demo-fields");
 
   return response.data;
 }

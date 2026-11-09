@@ -108,3 +108,19 @@ def test_bbs_area_reference_records_units_and_converts():
     assert bbs["area_ha_column_header"].str.startswith(("Hectare", "Hector")).all()
     ratio = bbs["area_acre"] * 0.404686 / bbs["area_ha"]
     assert ratio.between(0.995, 1.005).all()       # every row: hectare column = acre column x 0.4047
+
+
+def test_demo_fields_endpoint_reports_coastal_fallow():
+    sys.path.insert(0, str(ROOT / "backend" / "offline"))
+    from fastapi.testclient import TestClient
+    import server
+
+    response = TestClient(server.app).get("/api/offline/demo-fields")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert len(data["fields"]) == 6
+    coastal = data["coastal_fallow"]
+    assert coastal["field_id"] == "feni_sonagazi_01"
+    assert coastal["coastal"]["fallow"] <= coastal["coastal"]["years"]
+    assert "not the salt" in coastal["note"]
