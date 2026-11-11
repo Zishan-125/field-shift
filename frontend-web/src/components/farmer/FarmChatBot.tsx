@@ -57,21 +57,24 @@ export default function FarmChatBot({
   const getOfflineResponse = (query: string): string => {
     const q = query.toLowerCase();
     if (isBangla) {
-      if (q.includes("সার") || q.includes("fertilizer")) {
-        return `[অফলাইন মোড] ${selectedFieldName}-এর জন্য ইউরিয়া এবং টিএসপি সার পরিমিত পরিমাণে ব্যবহার করুন। মাটির আর্দ্রতা পরীক্ষা করে সেচ দিন।`;
+      if (q.includes("সার") || q.includes("fertilizer") || q.includes("ইউরিয়া")) {
+        return `[অফলাইন মোড] ${selectedFieldName}-এর জন্য ইউরিয়া এবং টিএসপি সার পরিমিত পরিমাণে ব্যবহার করুন। বর্তমান স্বাস্থ্য স্কোর ${cropHealthScore}/100-এর জন্য মাটির আর্দ্রতা পরীক্ষা করে সেচ দিন।`;
       }
-      if (q.includes("পোকা") || q.includes("pest") || q.includes("disease")) {
+      if (q.includes("পোকা") || q.includes("pest") || q.includes("disease") || q.includes("রোগ")) {
         return `[অফলাইন মোড] পোকামাকড়ের আক্রমণ রোধে জৈব বালাইনাশক বা অনুমোদিত কীটনাশক ব্যবহার করুন। পাতা হলুদ হলে নাইট্রোজেনের ঘাটতি হতে পারে।`;
       }
-      return `[অফলাইন মোড] আপনার সংযোগ বিচ্ছিন্ন রয়েছে। ${selectedFieldName}-এর স্বাস্থ্য স্কোর বর্তমানে ${cropHealthScore}/100। ইন্টারনেট সংযোগ আসলে রিয়েল-টাইম এআই পরামর্শ পাবেন।`;
+      if (q.includes("মাটি") || q.includes("soil") || q.includes("quality")) {
+        return `[অফলাইন মোড] ${selectedFieldName}-এর মাটির মান উন্নয়নে জৈব সার প্রয়োগ করুন এবং ড্রেনেজ ব্যবস্থা উন্নত রাখুন।`;
+      }
+      return `[অফলাইন মোড] আপনার প্রশ্নটি নথিভুক্ত করা হয়েছে। ${selectedFieldName}-এর স্বাস্থ্য স্কোর বর্তমানে ${cropHealthScore}/100। ইন্টারনেট সংযোগ আসলে বা সঠিক ব্যাকএন্ড রাউটে যুক্ত হলে রিয়েল-টাইম এআই পরামর্শ পাবেন।`;
     } else {
-      if (q.includes("fertilizer") || q.includes("urea")) {
-        return `[Offline Mode] For ${selectedFieldName}, apply balanced NPK fertilizers based on soil testing. Avoid over-irrigation.`;
+      if (q.includes("fertilizer") || q.includes("urea") || q.includes("soil")) {
+        return `[Offline Mode] For ${selectedFieldName} (Health: ${cropHealthScore}/100), apply balanced NPK fertilizers based on soil testing. Avoid over-irrigation.`;
       }
       if (q.includes("pest") || q.includes("disease") || q.includes("bug")) {
         return `[Offline Mode] Inspect leaf undersides for aphid activity. Apply organic neem oil or recommended safe pesticides if needed.`;
       }
-      return `[Offline Mode] You are currently offline. ${selectedFieldName} health score is ${cropHealthScore}/100. Local advisory cache active.`;
+      return `[Offline Mode] Local advisory cache active for ${selectedFieldName}. Health score is ${cropHealthScore}/100. Connect your live API endpoint for full generative insights.`;
     }
   };
 
@@ -107,6 +110,7 @@ export default function FarmChatBot({
     }
 
     try {
+      // Replace with your real backend endpoint when live, or fallback cleanly
       const response = await fetch("https://your-backend-api.com/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -124,20 +128,23 @@ export default function FarmChatBot({
       const aiReply: Message = {
         id: (Date.now() + 1).toString(),
         sender: "ai",
-        text: data.reply || (isBangla ? "দুঃখিত, উত্তর পাওয়া যায়নি।" : "Sorry, no response generated."),
+        text: data.reply || data.answer || (isBangla ? "দুঃখিত, উত্তর পাওয়া যায়নি।" : "Sorry, no response generated."),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isOffline: false,
       };
       setMessages((prev) => [...prev, aiReply]);
     } catch (error) {
-      const fallbackReply: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: "ai",
-        text: getOfflineResponse(userText) + " (Network error fallback)",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isOffline: true,
-      };
-      setMessages((prev) => [...prev, fallbackReply]);
+      // Graceful fallback to local advisory rule engine if backend URL is unconfigured
+      setTimeout(() => {
+        const fallbackReply: Message = {
+          id: (Date.now() + 1).toString(),
+          sender: "ai",
+          text: getOfflineResponse(userText),
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isOffline: true,
+        };
+        setMessages((prev) => [...prev, fallbackReply]);
+      }, 500);
     } finally {
       setLoading(false);
     }
@@ -184,7 +191,7 @@ export default function FarmChatBot({
             >
               {msg.isOffline && (
                 <span className="block text-[9px] text-amber-600 font-bold mb-0.5">
-                  ⚡ {isBangla ? "অফলাইন রুল ইঞ্জিন" : "Offline Rule Engine"}
+                  ⚡ {isBangla ? "লোকাল খামার অ্যাডভাইজরি ইঞ্জিন" : "Local Farm Advisory Engine"}
                 </span>
               )}
               <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
