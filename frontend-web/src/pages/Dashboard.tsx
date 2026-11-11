@@ -1,4 +1,4 @@
-
+import FarmChatBot from "../components/farmer/FarmChatBot";
 import {
   lazy,
   Suspense,
@@ -739,11 +739,7 @@ export default function Dashboard() {
           />
         </section>
 
-        {/* =====================================================
-            2. INTERACTIVE FARM MAP
-        ====================================================== */}
-
-       {/* =======================================================
+ {/* =======================================================
     2. INTERACTIVE FARM MAP
    ======================================================= */}
 <section
@@ -751,59 +747,70 @@ export default function Dashboard() {
   className="fs-section scroll-mt-6 space-y-4"
 >
   <FarmMap
-    selectedFieldName={field?.name || (isBangla ? "নির্বাচিত জমির প্লট" : "Selected Field Plot")}
+    selectedFieldName={field?.name || (language === "bn" ? "নির্বাচিত জমির প্লট" : "Selected Field Plot")}
+    cropHealthScore={CROP_HEALTH_SCORE}
+    isBangla={language === "bn"}
+  />
+</section>
+
+{/* =======================================================
+    2.1. OFFLINE-FIRST BILINGUAL FARM CHATBOT
+   ======================================================= */}
+<section className="fs-section scroll-mt-6 mt-6">
+  <FarmChatBot
+    isBangla={language === "bn"}
+    selectedFieldName={field?.name || (language === "bn" ? "নির্বাচিত জমির প্লট" : "Selected Field Plot")}
     cropHealthScore={CROP_HEALTH_SCORE}
   />
 </section>
 
-        {/* =====================================================
-            3. SIMPLE FIELD ENVIRONMENT
-        ====================================================== */}
+{/* =====================================================
+    3. SIMPLE FIELD ENVIRONMENT
+   ===================================================== */}
 
-        <section className="fs-section">
-          <SectionTitle
-            eyebrow={
-              language === "bn"
-                ? "মাঠের অবস্থা"
-                : "Field environment"
-            }
-            title={
-              language === "bn"
-                ? "আজকের মাঠের পরিবেশ"
-                : "Today's field environment"
-            }
-            description={
-              language === "bn"
-                ? "মাঠের জন্য পাওয়া প্রধান পরিবেশগত তথ্য এক নজরে দেখুন।"
-                : "See the main environmental signals available for your field at a glance."
-            }
-          />
+<section className="fs-section mt-6">
+  <SectionTitle
+    eyebrow={
+      language === "bn"
+        ? "মাঠের অবস্থা"
+        : "Field environment"
+    }
+    title={
+      language === "bn"
+        ? "আজকের মাঠের পরিবেশ"
+        : "Today's field environment"
+    }
+    description={
+      language === "bn"
+        ? "মাঠের জন্য পাওয়া প্রধান পরিবেশগত তথ্য এক নজরে দেখুন।"
+        : "See the main environmental signals available for your field at a glance."
+    }
+  />
 
-          <div className="mt-5 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-            <div className="p-5 sm:p-6">
-              <WeatherSummary
-                environment={currentEnvironment}
-              />
+  <div className="mt-5 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+    <div className="p-5 sm:p-6">
+      <WeatherSummary
+        environment={currentEnvironment}
+      />
 
-              <div className="mt-4">
-                <EnvironmentSummary
-                  environment={currentEnvironment}
-                />
-              </div>
-            </div>
-          </div>
+      <div className="mt-4">
+        <EnvironmentSummary
+          environment={currentEnvironment}
+        />
+      </div>
+    </div>
+  </div>
 
-          <div
-            id="earth-observations"
-            className="mt-4 scroll-mt-6"
-          >
-            <EarthObservationContext
-              data={environmentRows}
-              language={language}
-            />
-          </div>
-        </section>
-
+  <div
+    id="earth-observations"
+    className="mt-4 scroll-mt-6"
+  >
+    <EarthObservationContext
+      data={environmentRows}
+      language={language}
+    />
+  </div>
+</section>
         {/* =====================================================
             4. SOIL
         ====================================================== */}
