@@ -716,7 +716,7 @@ export default function Dashboard() {
       </div>
 
       <FarmerHeader
-        fieldName={
+        selectedFieldName={
           field?.name || "Feni Test Plot"
         }
       />
@@ -740,17 +740,18 @@ export default function Dashboard() {
             2. INTERACTIVE FARM MAP
         ====================================================== */}
 
-        <section
-          id="farm-map"
-          className="fs-section scroll-mt-6 space-y-4"
-        >
-          <FarmMap
-            fieldName={
-              field?.name || "Feni Test Plot"
-            }
-            cropHealthScore={CROP_HEALTH_SCORE}
-          />
-        </section>
+       {/* =======================================================
+    2. INTERACTIVE FARM MAP
+   ======================================================= */}
+<section
+  id="farm-map"
+  className="fs-section scroll-mt-6 space-y-4"
+>
+  <FarmMap
+    selectedFieldName={field?.name || "Feni Test Plot"}
+    cropHealthScore={CROP_HEALTH_SCORE}
+  />
+</section>
 
         {/* =====================================================
             3. SIMPLE FIELD ENVIRONMENT
