@@ -1,3 +1,4 @@
+
 import {
   lazy,
   Suspense,
@@ -16,14 +17,8 @@ import {
 } from "../services/api";
 
 import type { Field } from "../types/field";
-
-import type {
-  Environment,
-} from "../types/environment";
-
-import type {
-  SoilProfile,
-} from "../types/soil";
+import type { Environment } from "../types/environment";
+import type { SoilProfile } from "../types/soil";
 
 import {
   DEFAULT_CURRENT_PATTERN_ID,
@@ -51,10 +46,14 @@ import FarmerGoalSelector from "../components/farmer/FarmerGoalSelector";
 import PatternRecommendationList from "../components/farmer/PatternRecommendationList";
 import DemoFieldsSection from "../components/farmer/DemoFieldsSection";
 
-// Charts (recharts) load in their own chunk so the rest of the page is not delayed.
+// Interactive farm map
+import FarmMap from "../components/farmer/FarmMap";
+
+// Charts load in their own chunk.
 const ClimateShiftSection = lazy(
   () => import("../components/farmer/ClimateShiftSection"),
 );
+
 import CropSelector from "../components/farmer/CropSelector";
 import LanguageSwitcher from "../components/farmer/LanguageSwitcher";
 
@@ -71,6 +70,10 @@ const FIELD_ID =
   import.meta.env.VITE_FIELD_ID ||
   "426e9d97-78cf-45d2-82ae-8131040b5ee7";
 
+// Temporary demonstration score.
+// Replace with a real backend-derived score when available.
+const CROP_HEALTH_SCORE = 78;
+
 function getObject(
   data: unknown,
   ...keys: string[]
@@ -82,20 +85,14 @@ function getObject(
       key in data
     ) {
       const value = (
-        data as Record<
-          string,
-          unknown
-        >
+        data as Record<string, unknown>
       )[key];
 
       if (
         value &&
         typeof value === "object"
       ) {
-        return value as Record<
-          string,
-          unknown
-        >;
+        return value as Record<string, unknown>;
       }
     }
   }
@@ -104,10 +101,7 @@ function getObject(
     data &&
     typeof data === "object"
   ) {
-    return data as Record<
-      string,
-      unknown
-    >;
+    return data as Record<string, unknown>;
   }
 
   return {};
@@ -129,10 +123,8 @@ function getApiErrorMessage(
     };
 
   return (
-    errorObject?.response?.data
-      ?.detail ||
-    errorObject?.response?.data
-      ?.message ||
+    errorObject?.response?.data?.detail ||
+    errorObject?.response?.data?.message ||
     errorObject?.message ||
     fallback
   );
@@ -242,13 +234,12 @@ function normalizeCrop(
 function extractCrops(
   data: unknown,
 ): NormalizedCrop[] {
-  const raw =
-    getObject(
-      data,
-      "crops",
-      "data",
-      "results",
-    );
+  const raw = getObject(
+    data,
+    "crops",
+    "data",
+    "results",
+  );
 
   const candidates: unknown[] =
     Array.isArray(data)
@@ -262,8 +253,7 @@ function extractCrops(
       (item): item is Crop =>
         Boolean(
           item &&
-            typeof item ===
-              "object",
+            typeof item === "object",
         ),
     )
     .map(normalizeCrop);
@@ -277,11 +267,6 @@ function matchesSelectedCrops(
     return true;
   }
 
-  /*
-   * A pattern matches when at least one of
-   * its three seasons grows a crop the
-   * farmer selected.
-   */
   return Object.values(
     pattern.seasons,
   ).some((crop) =>
@@ -329,13 +314,6 @@ export default function Dashboard() {
       ? bn
       : en;
 
-  /*
-   * Normalize recommendation labels here.
-   *
-   * This avoids TypeScript errors when the
-   * translation files do not yet expose the
-   * optional recommendation labels.
-   */
   const recommendationLabels = {
     selectedCropFilter:
       "selectedCropFilter" in
@@ -346,8 +324,7 @@ export default function Dashboard() {
                 string,
                 unknown
               >
-            )
-              .selectedCropFilter ??
+            ).selectedCropFilter ??
               (
                 language === "bn"
                   ? "নির্বাচিত ফসল"
@@ -409,29 +386,22 @@ export default function Dashboard() {
   };
 
   const [field, setField] =
-    useState<Field | null>(
-      null,
-    );
+    useState<Field | null>(null);
 
   const [
     environment,
     setEnvironment,
-  ] = useState<Environment | null>(
-    null,
-  );
+  ] = useState<Environment | null>(null);
 
   const [soil, setSoil] =
-    useState<SoilProfile | null>(
-      null,
-    );
+    useState<SoilProfile | null>(null);
 
   const [
     recommendations,
     setRecommendations,
-  ] =
-    useState<PatternRecommendationResponse | null>(
-      null,
-    );
+  ] = useState<PatternRecommendationResponse | null>(
+    null,
+  );
 
   const [priorities, setPriorities] =
     useState<PatternPriorities>({
@@ -439,9 +409,7 @@ export default function Dashboard() {
     });
 
   const [crops, setCrops] =
-    useState<NormalizedCrop[]>(
-      [],
-    );
+    useState<NormalizedCrop[]>([]);
 
   const [
     selectedCropIds,
@@ -489,21 +457,13 @@ export default function Dashboard() {
           cropData,
         ] = await Promise.all([
           getField(FIELD_ID),
-
-          getEnvironment(
-            FIELD_ID,
-          ),
-
-          getSoil(
-            FIELD_ID,
-          ),
-
+          getEnvironment(FIELD_ID),
+          getSoil(FIELD_ID),
           getPatternRecommendations(
             FIELD_ID,
             DEFAULT_PATTERN_PRIORITIES,
             DEFAULT_CURRENT_PATTERN_ID,
           ),
-
           getCrops(),
         ]);
 
@@ -541,9 +501,7 @@ export default function Dashboard() {
         );
 
         setCrops(
-          extractCrops(
-            cropData,
-          ),
+          extractCrops(cropData),
         );
       } catch (err: unknown) {
         console.error(
@@ -583,15 +541,9 @@ export default function Dashboard() {
     }
 
     try {
-      setRecommendationLoading(
-        true,
-      );
-
+      setRecommendationLoading(true);
       setError("");
-
-      setRecommendationUpdated(
-        false,
-      );
+      setRecommendationUpdated(false);
 
       const data =
         await getPatternRecommendations(
@@ -600,19 +552,12 @@ export default function Dashboard() {
           DEFAULT_CURRENT_PATTERN_ID,
         );
 
-      setRecommendations(
-        data,
-      );
-
-      setRecommendationUpdated(
-        true,
-      );
+      setRecommendations(data);
+      setRecommendationUpdated(true);
 
       window.setTimeout(() => {
         document
-          .getElementById(
-            "recommendations",
-          )
+          .getElementById("recommendations")
           ?.scrollIntoView({
             behavior: "smooth",
             block: "start",
@@ -637,9 +582,7 @@ export default function Dashboard() {
 
       return false;
     } finally {
-      setRecommendationLoading(
-        false,
-      );
+      setRecommendationLoading(false);
     }
   }
 
@@ -647,20 +590,13 @@ export default function Dashboard() {
     useMemo(
       () =>
         crops.filter((crop) =>
-          selectedCropIds.includes(
-            crop.id,
-          ),
+          selectedCropIds.includes(crop.id),
         ),
-      [
-        crops,
-        selectedCropIds,
-      ],
+      [crops, selectedCropIds],
     );
 
   const recommendationResults =
-    useMemo<
-      RecommendedPattern[]
-    >(
+    useMemo<RecommendedPattern[]>(
       () => {
         if (
           !Array.isArray(
@@ -678,21 +614,11 @@ export default function Dashboard() {
             ),
         );
       },
-      [
-        recommendations,
-        selectedCropIds,
-      ],
+      [recommendations, selectedCropIds],
     );
 
-  const currentSoil =
-    soil || {};
+  const currentSoil = soil || {};
 
-  /*
-   * `environment` holds all monthly rows
-   * (the Earth-observation cards need the
-   * history); weather and status cards use
-   * the latest month.
-   */
   const environmentRows =
     environment || {};
 
@@ -702,19 +628,13 @@ export default function Dashboard() {
     });
 
   const soilStatus =
-    calculateSoilStatus(
-      currentSoil,
-    );
+    calculateSoilStatus(currentSoil);
 
   const waterStatus =
-    calculateWaterStatus(
-      currentEnvironment,
-    );
+    calculateWaterStatus(currentEnvironment);
 
   const climateStatus =
-    calculateClimateStatus(
-      currentEnvironment,
-    );
+    calculateClimateStatus(currentEnvironment);
 
   const selectedCropNames =
     selectedCrops.map(
@@ -772,9 +692,7 @@ export default function Dashboard() {
 
           <button
             type="button"
-            onClick={() =>
-              window.location.reload()
-            }
+            onClick={() => window.location.reload()}
             className="fs-primary-button mt-5 w-full"
           >
             {language === "bn"
@@ -799,8 +717,7 @@ export default function Dashboard() {
 
       <FarmerHeader
         fieldName={
-          field?.name ||
-          "Feni Test Plot"
+          field?.name || "Feni Test Plot"
         }
       />
 
@@ -812,23 +729,31 @@ export default function Dashboard() {
 
         <section className="fs-section">
           <FarmerFieldStatus
-            soilStatus={
-              soilStatus
-            }
-            waterStatus={
-              waterStatus
-            }
-            climateStatus={
-              climateStatus
-            }
-            language={
-              language
-            }
+            soilStatus={soilStatus}
+            waterStatus={waterStatus}
+            climateStatus={climateStatus}
+            language={language}
           />
         </section>
 
         {/* =====================================================
-            2. SIMPLE FIELD ENVIRONMENT
+            2. INTERACTIVE FARM MAP
+        ====================================================== */}
+
+        <section
+          id="farm-map"
+          className="fs-section scroll-mt-6 space-y-4"
+        >
+          <FarmMap
+            fieldName={
+              field?.name || "Feni Test Plot"
+            }
+            cropHealthScore={CROP_HEALTH_SCORE}
+          />
+        </section>
+
+        {/* =====================================================
+            3. SIMPLE FIELD ENVIRONMENT
         ====================================================== */}
 
         <section className="fs-section">
@@ -853,52 +778,41 @@ export default function Dashboard() {
           <div className="mt-5 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
             <div className="p-5 sm:p-6">
               <WeatherSummary
-                environment={
-                  currentEnvironment
-                }
+                environment={currentEnvironment}
               />
 
               <div className="mt-4">
                 <EnvironmentSummary
-                  environment={
-                    currentEnvironment
-                  }
+                  environment={currentEnvironment}
                 />
               </div>
             </div>
           </div>
 
-          {/* NASA / Earth observation anchor */}
           <div
             id="earth-observations"
             className="mt-4 scroll-mt-6"
           >
             <EarthObservationContext
-              data={
-                environmentRows
-              }
-              language={
-                language
-              }
+              data={environmentRows}
+              language={language}
             />
           </div>
         </section>
 
         {/* =====================================================
-            3. SOIL
+            4. SOIL
         ====================================================== */}
 
         <section className="fs-section">
           <FarmerSoilView
             soil={currentSoil}
-            language={
-              language
-            }
+            language={language}
           />
         </section>
 
         {/* =====================================================
-            3b. CLIMATE SHIFT (NASA POWER since 1984)
+            5. CLIMATE SHIFT
         ====================================================== */}
 
         <section className="fs-section">
@@ -911,50 +825,38 @@ export default function Dashboard() {
           </Suspense>
         </section>
 
+        {/* =====================================================
+            6. DEMO FIELDS
+        ====================================================== */}
+
         <section className="fs-section">
           <DemoFieldsSection language={language} />
         </section>
 
         {/* =====================================================
-            4. CROP SELECTION
+            7. CROP SELECTION
         ====================================================== */}
 
         <section className="fs-section">
           <CropSelector
             crops={crops}
-            selectedCrops={
-              selectedCropIds
-            }
-            onChange={
-              setSelectedCropIds
-            }
-            language={
-              language
-            }
+            selectedCrops={selectedCropIds}
+            onChange={setSelectedCropIds}
+            language={language}
           />
         </section>
 
         {/* =====================================================
-            5. FARMER PRIORITIES
+            8. FARMER PRIORITIES
         ====================================================== */}
 
         <section className="fs-section">
           <FarmerGoalSelector
-            priorities={
-              priorities
-            }
-            onChange={
-              setPriorities
-            }
-            onApply={
-              updateRecommendations
-            }
-            loading={
-              recommendationLoading
-            }
-            language={
-              language
-            }
+            priorities={priorities}
+            onChange={setPriorities}
+            onApply={updateRecommendations}
+            loading={recommendationLoading}
+            language={language}
           />
 
           {recommendationLoading && (
@@ -965,17 +867,11 @@ export default function Dashboard() {
 
               <div>
                 <p className="text-sm font-black text-blue-900">
-                  {
-                    t.status
-                      .updating
-                  }
+                  {t.status.updating}
                 </p>
 
                 <p className="mt-0.5 text-xs text-blue-800/70">
-                  {
-                    t.status
-                      .comparing
-                  }
+                  {t.status.comparing}
                 </p>
               </div>
             </div>
@@ -994,15 +890,11 @@ export default function Dashboard() {
 
                 <div>
                   <p className="text-sm font-black text-green-900">
-                    {
-                      t.status
-                        .updated
-                    }
+                    {t.status.updated}
                   </p>
 
                   <p className="mt-0.5 text-xs text-green-800/70">
-                    {language ===
-                    "bn"
+                    {language === "bn"
                       ? "আপনার ফসল এবং অগ্রাধিকার অনুযায়ী ফলাফল তৈরি হয়েছে।"
                       : "The results now reflect your selected crops and priorities."}
                   </p>
@@ -1021,10 +913,7 @@ export default function Dashboard() {
 
               <div>
                 <p className="text-sm font-black text-red-800">
-                  {
-                    t.status
-                      .error
-                  }
+                  {t.status.error}
                 </p>
 
                 <p className="mt-1 text-xs leading-5 text-red-700/80">
@@ -1036,7 +925,7 @@ export default function Dashboard() {
         </section>
 
         {/* =====================================================
-            6. RECOMMENDATIONS
+            9. RECOMMENDATIONS
         ====================================================== */}
 
         <section
@@ -1047,92 +936,67 @@ export default function Dashboard() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-green-600">
-                  {
-                    recommendationLabels.selectedCropFilter
-                  }
+                  {recommendationLabels.selectedCropFilter}
                 </p>
 
                 <h2 className="mt-2 text-xl font-black text-green-950 sm:text-2xl">
-                  {
-                    recommendationLabels.title
-                  }
+                  {recommendationLabels.title}
                 </h2>
 
                 <p className="mt-2 text-sm leading-6 text-green-900/70">
-                  {
-                    recommendationLabels.subtitle
-                  }
+                  {recommendationLabels.subtitle}
                 </p>
               </div>
 
               <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
                 <p className="text-2xl font-black text-green-700">
-                  {
-                    recommendationResults.length
-                  }
+                  {recommendationResults.length}
                 </p>
 
                 <p className="text-[10px] font-black uppercase tracking-wide text-green-600">
-                  {
-                    recommendationLabels.scenarios
-                  }
+                  {recommendationLabels.scenarios}
                 </p>
               </div>
             </div>
 
-            {selectedCropNames.length >
-              0 && (
+            {selectedCropNames.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
-                {selectedCropNames.map(
-                  (name) => (
-                    <span
-                      key={name}
-                      className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-green-800 shadow-sm"
-                    >
-                      🌱 {name}
-                    </span>
-                  ),
-                )}
+                {selectedCropNames.map((name) => (
+                  <span
+                    key={name}
+                    className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-green-800 shadow-sm"
+                  >
+                    🌱 {name}
+                  </span>
+                ))}
               </div>
             )}
           </div>
 
           {recommendations ? (
             <PatternRecommendationList
-              data={
-                recommendations
-              }
-              results={
-                recommendationResults
-              }
+              data={recommendations}
+              results={recommendationResults}
               initialItems={3}
-              language={
-                language
-              }
+              language={language}
             />
           ) : (
             <div className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 text-center">
-              <div className="text-4xl">
-                🌱
-              </div>
+              <div className="text-4xl">🌱</div>
 
               <h3 className="mt-3 text-lg font-black text-amber-950">
-                {
-                  recommendationLabels.noMatch
-                }
+                {recommendationLabels.noMatch}
               </h3>
 
               <p className="mt-2 text-sm text-amber-900/70">
-                {
-                  recommendationLabels.changeCrops
-                }
+                {recommendationLabels.changeCrops}
               </p>
             </div>
           )}
         </section>
 
         {/* =====================================================
-            7. HOW FIELD SHIFT WORKS
+            10. HOW FIELD SHIFT WORKS
         ====================================================== */}
 
         <section className="fs-section overflow-hidden rounded-[2rem] border border-blue-100 bg-blue-50 p-6 sm:p-7">
@@ -1165,7 +1029,6 @@ export default function Dashboard() {
                   ? "NASA Earth data থেকে পরিবেশগত তথ্য।"
                   : "Environmental conditions derived from NASA Earth data.",
               ],
-
               [
                 "🌱",
                 language === "bn"
@@ -1175,7 +1038,6 @@ export default function Dashboard() {
                   ? "নির্বাচিত মাঠের মাটির তথ্য।"
                   : "Soil information associated with the selected field.",
               ],
-
               [
                 "🌾",
                 language === "bn"
@@ -1185,7 +1047,6 @@ export default function Dashboard() {
                   ? "ফসল ও rotation-এর তথ্য।"
                   : "Stored crop and rotation information.",
               ],
-
               [
                 "🎯",
                 language === "bn"
@@ -1195,42 +1056,32 @@ export default function Dashboard() {
                   ? "আপনার farming goals decision score-কে প্রভাবিত করে।"
                   : "Your farming goals influence the decision-support score.",
               ],
-            ].map(
-              ([
-                icon,
-                title,
-                description,
-              ]) => (
-                <div
-                  key={title}
-                  className="rounded-2xl bg-white/70 p-4"
-                >
-                  <div className="text-2xl">
-                    {icon}
-                  </div>
+            ].map(([icon, title, description]) => (
+              <div
+                key={title}
+                className="rounded-2xl bg-white/70 p-4"
+              >
+                <div className="text-2xl">{icon}</div>
 
-                  <p className="mt-3 text-sm font-black text-blue-950">
-                    {title}
-                  </p>
+                <p className="mt-3 text-sm font-black text-blue-950">
+                  {title}
+                </p>
 
-                  <p className="mt-1 text-xs leading-5 text-blue-900/70">
-                    {description}
-                  </p>
-                </div>
-              ),
-            )}
+                <p className="mt-1 text-xs leading-5 text-blue-900/70">
+                  {description}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 
         {/* =====================================================
-            8. NOTICE
+            11. NOTICE
         ====================================================== */}
 
         <section className="fs-section">
           <div className="fs-notice flex items-start gap-3 p-4 sm:p-5">
-            <span className="text-base">
-              ℹ️
-            </span>
+            <span className="text-base">ℹ️</span>
 
             <div>
               <p className="font-black text-slate-700">
@@ -1249,7 +1100,7 @@ export default function Dashboard() {
         </section>
 
         {/* =====================================================
-            9. TECHNICAL DETAILS
+            12. TECHNICAL DETAILS
         ====================================================== */}
 
         <details className="mb-10 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -1275,9 +1126,7 @@ export default function Dashboard() {
                 </p>
 
                 <p className="mt-1 text-sm font-bold text-slate-800">
-                  {language === "bn"
-                    ? "Offline"
-                    : "Offline"}
+                  Offline
                 </p>
               </div>
 
@@ -1289,11 +1138,7 @@ export default function Dashboard() {
                 </p>
 
                 <p className="mt-1 text-sm font-bold text-slate-800">
-                  {
-                    recommendations?.counts
-                      .patterns ??
-                    0
-                  }
+                  {recommendations?.counts.patterns ?? 0}
                 </p>
               </div>
 
