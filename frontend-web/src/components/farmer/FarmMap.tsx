@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, LayersControl, useMapEvents, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, LayersControl, useMapEvents, useMap, FeatureGroup } from "react-leaflet";
+import { EditControl } from "react-leaflet-draw";
 import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
 
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -20,6 +22,7 @@ interface FarmMapProps {
   initialLon?: number;
   selectedFieldName?: string;
   cropHealthScore?: number;
+  isBangla?: boolean; // Toggle for English/Bangla language
 }
 
 // Automatically re-center map smoothly when coordinates change
@@ -45,8 +48,9 @@ export default function FarmMap({
   onLocationSelect,
   initialLat = 23.0185,
   initialLon = 91.3976,
-  selectedFieldName = "Custom Selected Field",
-  cropHealthScore = 78,
+  selectedFieldName,
+  cropHealthScore,
+  isBangla = false,
 }: FarmMapProps) {
   const [lat, setLat] = useState<number>(initialLat);
   const [lon, setLon] = useState<number>(initialLon);
@@ -54,7 +58,10 @@ export default function FarmMap({
   const [loadingWeather, setLoadingWeather] = useState<boolean>(false);
   const [climateData, setClimateData] = useState<{ temp?: number; rainfall?: number } | null>(null);
 
-  // Handle map click anywhere on earth
+  // Dynamic values defaulting cleanly if parent props are missing
+  const activeFieldName = selectedFieldName || (isBangla ? "নির্বাচিত জমির প্লট" : "Custom Field Plot");
+  const activeHealthScore = cropHealthScore ?? 82;
+
   const handleMapClick = async (clickedLat: number, clickedLon: number) => {
     const roundedLat = Number(clickedLat.toFixed(4));
     const roundedLon = Number(clickedLon.toFixed(4));
@@ -65,7 +72,6 @@ export default function FarmMap({
       onLocationSelect(roundedLat, roundedLon);
     }
 
-    // Fetch live NASA POWER meteorology for this exact coordinate point
     setLoadingWeather(true);
     try {
       const endDateObj = new Date();
@@ -96,7 +102,7 @@ export default function FarmMap({
         });
       }
     } catch (err) {
-      console.error("Failed to fetch NASA POWER telemetry:", err);
+      console.error("Failed to fetch NASA telemetry:", err);
     } finally {
       setLoadingWeather(false);
     }
@@ -107,13 +113,15 @@ export default function FarmMap({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
-            Global Geospatial Engine
+            {isBangla ? "গ্লোবাল জিওস্পেসিয়াল ইন্টেলিজেন্স" : "Global Geospatial Intelligence"}
           </span>
           <h3 className="text-lg font-black text-slate-900">
-            Click Anywhere on Earth to Analyze Farm
+            {isBangla ? "খামারের সীমানা আঁকুন এবং আবহাওয়া বিশ্লেষণ করুন" : "Draw Farmland Boundary & Live Telemetry"}
           </h3>
           <p className="text-xs text-slate-500">
-            Select any region globally to stream live NASA POWER climate telemetry and tailors crop rotations.
+            {isBangla 
+              ? "কৃষক হিসেবে আপনার জমির সীমানা ড্র করুন অথবা যেকোনো স্থানে ক্লিক করে নাসার লাইভ আবহাওয়া উপাত্ত দেখুন।"
+              : "Farmers must draw their farmland boundary using the draw tool or click anywhere globally to stream live NASA telemetry."}
           </p>
         </div>
 
@@ -126,7 +134,7 @@ export default function FarmMap({
               mapLayer === "standard" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600"
             }`}
           >
-            Terrain
+            {isBangla ? "ম্যাপ" : "Terrain"}
           </button>
           <button
             type="button"
@@ -135,31 +143,54 @@ export default function FarmMap({
               mapLayer === "nasa" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600"
             }`}
           >
-            🛰️ NASA Satellite
+            🛰️ {isBangla ? "নাসা স্যাটেলাইট" : "NASA Satellite"}
           </button>
         </div>
       </div>
 
-      {/* Map Display Container */}
-      <div className="relative h-[420px] w-full overflow-hidden rounded-2xl border border-slate-200/60 z-0">
+      {/* Map Container */}
+      <div className="relative h-[440px] w-full overflow-hidden rounded-2xl border border-slate-200/60 z-0">
         <MapContainer
           center={[lat, lon]}
-          zoom={6}
+          zoom={14}
           scrollWheelZoom={true}
           style={{ height: "100%", width: "100%" }}
         >
           <MapRecenter lat={lat} lon={lon} />
           <LocationClickHandler onSelect={handleMapClick} />
 
+          {/* FeatureGroup & EditControl enabling Polygon / Boundary Drawing for Farmers */}
+          <FeatureGroup>
+            <EditControl
+              position="topleft"
+              draw={{
+                rectangle: false,
+                circle: false,
+                circlemarker: false,
+                marker: false,
+                polyline: false,
+                polygon: {
+                  allowIntersection: false,
+                  showArea: true,
+                  shapeOptions: {
+                    color: "#059669",
+                    fillColor: "#10b981",
+                    fillOpacity: 0.3,
+                  },
+                },
+              }}
+            />
+          </FeatureGroup>
+
           <LayersControl position="topright">
-            <LayersControl.BaseLayer checked name="OpenStreetMap Standard">
+            <LayersControl.BaseLayer checked name={isBangla ? "স্ট্যান্ডার্ড ওপেনস্ট্রিটম্যাপ" : "OpenStreetMap Standard"}>
               <TileLayer
                 attribution='&copy; OpenStreetMap contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
             </LayersControl.BaseLayer>
 
-            <LayersControl.BaseLayer name="NASA MODIS True Color">
+            <LayersControl.BaseLayer name={isBangla ? "নাসা মোডিস ট্রু কালার" : "NASA MODIS True Color"}>
               <TileLayer
                 attribution='&copy; NASA GIBS'
                 url="https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2026-03-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg"
@@ -170,23 +201,29 @@ export default function FarmMap({
 
           <Marker position={[lat, lon]} icon={customMarker}>
             <Popup>
-              <div className="p-2 space-y-1.5 min-w-[160px]">
-                <p className="font-extrabold text-slate-900 text-sm">{selectedFieldName}</p>
-                <p className="text-[11px] text-slate-500">Lat: {lat} | Lon: {lon}</p>
+              <div className="p-2 space-y-1.5 min-w-[170px]">
+                <p className="font-extrabold text-slate-900 text-sm">{activeFieldName}</p>
+                <p className="text-[11px] text-slate-500">
+                  {isBangla ? "অক্ষাংশ" : "Lat"}: {lat} | {isBangla ? "দ্রাঘিমাংশ" : "Lon"}: {lon}
+                </p>
                 
                 <div className="mt-1 inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md text-[11px]">
-                  <span>Health Score: {cropHealthScore}/100</span>
+                  <span>{isBangla ? "ফসলের স্বাস্থ্য স্কোর" : "Health Score"}: {activeHealthScore}/100</span>
                 </div>
 
                 {loadingWeather ? (
-                  <p className="text-[11px] text-emerald-600 font-bold animate-pulse mt-1">Fetching NASA telemetry...</p>
+                  <p className="text-[11px] text-emerald-600 font-bold animate-pulse mt-1">
+                    {isBangla ? "নাসার উপাত্ত লোড হচ্ছে..." : "Streaming NASA Telemetry..."}
+                  </p>
                 ) : climateData ? (
                   <div className="mt-1 pt-1 border-t border-slate-100 text-[11px] space-y-0.5">
-                    <p className="text-slate-700">🌡️ Temp: <b>{climateData.temp ?? "--"}°C</b></p>
-                    <p className="text-slate-700">🌧️ Rainfall: <b>{climateData.rainfall ?? "--"} mm/day</b></p>
+                    <p className="text-slate-700">🌡️ {isBangla ? "তাপমাত্রা" : "Temp"}: <b>{climateData.temp ?? "--"}°C</b></p>
+                    <p className="text-slate-700">🌧️ {isBangla ? "বৃষ্টিপাত" : "Rainfall"}: <b>{climateData.rainfall ?? "--"} mm/day</b></p>
                   </div>
                 ) : (
-                  <p className="text-[10px] text-slate-400 italic mt-1">Click map for climate telemetry</p>
+                  <p className="text-[10px] text-slate-400 italic mt-1">
+                    {isBangla ? "আবহাওয়া জানতে ম্যাপে ক্লিক করুন" : "Click map for live climate data"}
+                  </p>
                 )}
               </div>
             </Popup>
@@ -195,9 +232,11 @@ export default function FarmMap({
       </div>
 
       <div className="mt-3 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
-        <span>Active Coordinates: <strong className="text-slate-900">{lat}, {lon}</strong></span>
+        <span>
+          {isBangla ? "সক্রিয় স্থানাঙ্ক:" : "Active Coordinates:"} <strong className="text-slate-900">{lat}, {lon}</strong>
+        </span>
         <span className="text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg">
-          ✨ Global Mode Active: Click anywhere to re-target recommendations
+          {isBangla ? "✏️ কৃষকের সীমানা অঙ্কন ও গ্লোবাল ইঞ্জিন সক্রিয়" : "✏️ Boundary Drawing & Global Engine Active"}
         </span>
       </div>
     </div>

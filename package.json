@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "@types/leaflet-draw": "^1.0.13",
     "leaflet": "^1.9.4",
+    "leaflet-draw": "^1.0.4",
     "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
