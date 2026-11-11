@@ -314,6 +314,8 @@ export default function Dashboard() {
       ? bn
       : en;
 
+  const isBangla = language === "bn";
+
   const recommendationLabels = {
     selectedCropFilter:
       "selectedCropFilter" in
@@ -716,10 +718,11 @@ export default function Dashboard() {
       </div>
 
       <FarmerHeader
-        selectedFieldName={
-          field?.name || "Feni Test Plot"
-        }
-      />
+  selectedFieldName={
+    field?.name || (isBangla ? "নির্বাচিত জমির প্লট" : "Selected Field Plot")
+  }
+  isBangla={isBangla}
+/>
 
       <section className="fs-container py-6 sm:py-8 lg:py-10">
 
@@ -748,7 +751,7 @@ export default function Dashboard() {
   className="fs-section scroll-mt-6 space-y-4"
 >
   <FarmMap
-    selectedFieldName={field?.name || "Feni Test Plot"}
+    selectedFieldName={field?.name || (isBangla ? "নির্বাচিত জমির প্লট" : "Selected Field Plot")}
     cropHealthScore={CROP_HEALTH_SCORE}
   />
 </section>
