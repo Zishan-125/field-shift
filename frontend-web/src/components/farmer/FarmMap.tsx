@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, LayersControl, useMapEvents } from "react-leaflet";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, LayersControl, useMapEvents, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -19,6 +19,16 @@ interface FarmMapProps {
   initialLat?: number;
   initialLon?: number;
   selectedFieldName?: string;
+  cropHealthScore?: number;
+}
+
+// Automatically re-center map smoothly when coordinates change
+function MapRecenter({ lat, lon }: { lat: number; lon: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView([lat, lon], map.getZoom(), { animate: true });
+  }, [lat, lon, map]);
+  return null;
 }
 
 // Internal component to capture clicks anywhere on the map
@@ -36,6 +46,7 @@ export default function FarmMap({
   initialLat = 23.0185,
   initialLon = 91.3976,
   selectedFieldName = "Custom Selected Field",
+  cropHealthScore = 78,
 }: FarmMapProps) {
   const [lat, setLat] = useState<number>(initialLat);
   const [lon, setLon] = useState<number>(initialLon);
@@ -57,23 +68,33 @@ export default function FarmMap({
     // Fetch live NASA POWER meteorology for this exact coordinate point
     setLoadingWeather(true);
     try {
-      // Fetching recent daily parameters (Temperature at 2M, Corrected Precipitation)
-      const url = `https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M,PRECTOTCORR&community=AG&longitude=${roundedLon}&latitude=${roundedLat}&start=20260101&end=20260107&format=JSON`;
+      const endDateObj = new Date();
+      endDateObj.setDate(endDateObj.getDate() - 10);
+      const startDateObj = new Date();
+      startDateObj.setDate(startDateObj.getDate() - 17);
+
+      const formatDate = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, "");
+      const startStr = formatDate(startDateObj);
+      const endStr = formatDate(endDateObj);
+
+      const url = `https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M,PRECTOTCORR&community=AG&longitude=${roundedLon}&latitude=${roundedLat}&start=${startStr}&end=${endStr}&format=JSON`;
+      
       const res = await fetch(url);
       const data = await res.json();
       
-      const temps = data.properties.parameter.T2M;
-      const rains = data.properties.parameter.PRECTOTCORR;
+      const temps = data?.properties?.parameter?.T2M;
+      const rains = data?.properties?.parameter?.PRECTOTCORR;
       
-      // Get latest available average
-      const tempKeys = Object.keys(temps);
-      const latestTemp = temps[tempKeys[tempKeys.length - 1]];
-      const latestRain = rains[tempKeys[tempKeys.length - 1]];
+      if (temps && rains) {
+        const tempKeys = Object.keys(temps);
+        const latestTemp = temps[tempKeys[tempKeys.length - 1]];
+        const latestRain = rains[tempKeys[tempKeys.length - 1]];
 
-      setClimateData({
-        temp: latestTemp,
-        rainfall: latestRain,
-      });
+        setClimateData({
+          temp: latestTemp,
+          rainfall: latestRain,
+        });
+      }
     } catch (err) {
       console.error("Failed to fetch NASA POWER telemetry:", err);
     } finally {
@@ -123,10 +144,11 @@ export default function FarmMap({
       <div className="relative h-[420px] w-full overflow-hidden rounded-2xl border border-slate-200/60 z-0">
         <MapContainer
           center={[lat, lon]}
-          zoom={7}
+          zoom={6}
           scrollWheelZoom={true}
           style={{ height: "100%", width: "100%" }}
         >
+          <MapRecenter lat={lat} lon={lon} />
           <LocationClickHandler onSelect={handleMapClick} />
 
           <LayersControl position="topright">
@@ -152,15 +174,19 @@ export default function FarmMap({
                 <p className="font-extrabold text-slate-900 text-sm">{selectedFieldName}</p>
                 <p className="text-[11px] text-slate-500">Lat: {lat} | Lon: {lon}</p>
                 
+                <div className="mt-1 inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md text-[11px]">
+                  <span>Health Score: {cropHealthScore}/100</span>
+                </div>
+
                 {loadingWeather ? (
-                  <p className="text-[11px] text-emerald-600 font-bold animate-pulse">Fetching NASA telemetry...</p>
+                  <p className="text-[11px] text-emerald-600 font-bold animate-pulse mt-1">Fetching NASA telemetry...</p>
                 ) : climateData ? (
                   <div className="mt-1 pt-1 border-t border-slate-100 text-[11px] space-y-0.5">
                     <p className="text-slate-700">🌡️ Temp: <b>{climateData.temp ?? "--"}°C</b></p>
                     <p className="text-slate-700">🌧️ Rainfall: <b>{climateData.rainfall ?? "--"} mm/day</b></p>
                   </div>
                 ) : (
-                  <p className="text-[10px] text-slate-400 italic">Click map for climate telemetry</p>
+                  <p className="text-[10px] text-slate-400 italic mt-1">Click map for climate telemetry</p>
                 )}
               </div>
             </Popup>
