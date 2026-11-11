@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, LayersControl, useMapEvents, useMap, FeatureGroup } from "react-leaflet";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, LayersControl, useMapEvents, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
-import "leaflet-draw"; // Import Leaflet draw JS core directly
+import "leaflet-draw";
 
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
@@ -229,7 +229,7 @@ export default function FarmMap({
               <div className="p-2 space-y-1.5 min-w-[170px]">
                 <p className="font-extrabold text-slate-900 text-sm">{activeFieldName}</p>
                 <p className="text-[11px] text-slate-500">
-                  {isBangla ? "অক্ষাংশ" : "Lat"}: {lat} | {isBangla ? "দ্রাghিমাংশ" : "Lon"}: {lon}
+                  {isBangla ? "অক্ষাংশ" : "Lat"}: {lat} | {isBangla ? "দ্রাঘিমাংশ" : "Lon"}: {lon}
                 </p>
                 
                 <div className="mt-1 inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md text-[11px]">
