@@ -106,8 +106,14 @@ export default function FarmMap({
   const [loadingWeather, setLoadingWeather] = useState<boolean>(false);
   const [climateData, setClimateData] = useState<{ temp?: number; rainfall?: number } | null>(null);
 
-  const activeFieldName = selectedFieldName || (isBangla ? "নির্বাচিত জমির প্লট" : "Custom Field Plot");
-  const activeHealthScore = cropHealthScore ?? 82;
+  // Fully dynamic bilingual field name & health score evaluation
+  const activeFieldName = selectedFieldName && selectedFieldName.trim() !== "" 
+    ? selectedFieldName 
+    : (isBangla ? "নির্বাচিত জমির প্লট" : "Custom Field Plot");
+    
+  const activeHealthScore = cropHealthScore !== undefined && !isNaN(cropHealthScore) 
+    ? cropHealthScore 
+    : 82;
 
   const handleMapClick = async (clickedLat: number, clickedLon: number) => {
     const roundedLat = Number(clickedLat.toFixed(4));
