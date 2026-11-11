@@ -1,4 +1,4 @@
-import FarmChatBot from "../components/farmer/FarmChatBot";
+
 import {
   lazy,
   Suspense,
@@ -36,6 +36,7 @@ import type {
   NormalizedCrop,
 } from "../types/crop";
 
+import FarmChatBot from "../components/farmer/FarmChatBot";
 import FarmerHeader from "../components/farmer/FarmerHeader";
 import FarmerFieldStatus from "../components/farmer/FarmerFieldStatus";
 import FarmerSoilView from "../components/farmer/FarmerSoilView";
