@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, LayersControl, useMapEvents, useMap, FeatureGroup } from "react-leaflet";
-import { EditControl } from "react-leaflet-draw";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
+import "leaflet-draw"; // Import Leaflet draw JS core directly
 
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
@@ -22,7 +22,7 @@ interface FarmMapProps {
   initialLon?: number;
   selectedFieldName?: string;
   cropHealthScore?: number;
-  isBangla?: boolean; // Toggle for English/Bangla language
+  isBangla?: boolean;
 }
 
 // Automatically re-center map smoothly when coordinates change
@@ -31,6 +31,54 @@ function MapRecenter({ lat, lon }: { lat: number; lon: number }) {
   useEffect(() => {
     map.setView([lat, lon], map.getZoom(), { animate: true });
   }, [lat, lon, map]);
+  return null;
+}
+
+// Component to handle drawing controls natively via Leaflet
+function DrawControlComponent() {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (!map) return;
+
+    const drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    const drawControl = new L.Control.Draw({
+      position: "topleft",
+      draw: {
+        polygon: {
+          allowIntersection: false,
+          showArea: true,
+          shapeOptions: {
+            color: "#059669",
+            fillColor: "#10b981",
+            fillOpacity: 0.3,
+          },
+        },
+        rectangle: false,
+        circle: false,
+        circlemarker: false,
+        marker: false,
+        polyline: false,
+      },
+      edit: {
+        featureGroup: drawnItems,
+      },
+    });
+
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, (e: any) => {
+      const layer = e.layer;
+      drawnItems.addLayer(layer);
+    });
+
+    return () => {
+      map.removeControl(drawControl);
+    };
+  }, [map]);
+
   return null;
 }
 
@@ -58,7 +106,6 @@ export default function FarmMap({
   const [loadingWeather, setLoadingWeather] = useState<boolean>(false);
   const [climateData, setClimateData] = useState<{ temp?: number; rainfall?: number } | null>(null);
 
-  // Dynamic values defaulting cleanly if parent props are missing
   const activeFieldName = selectedFieldName || (isBangla ? "নির্বাচিত জমির প্লট" : "Custom Field Plot");
   const activeHealthScore = cropHealthScore ?? 82;
 
@@ -158,29 +205,7 @@ export default function FarmMap({
         >
           <MapRecenter lat={lat} lon={lon} />
           <LocationClickHandler onSelect={handleMapClick} />
-
-          {/* FeatureGroup & EditControl enabling Polygon / Boundary Drawing for Farmers */}
-          <FeatureGroup>
-            <EditControl
-              position="topleft"
-              draw={{
-                rectangle: false,
-                circle: false,
-                circlemarker: false,
-                marker: false,
-                polyline: false,
-                polygon: {
-                  allowIntersection: false,
-                  showArea: true,
-                  shapeOptions: {
-                    color: "#059669",
-                    fillColor: "#10b981",
-                    fillOpacity: 0.3,
-                  },
-                },
-              }}
-            />
-          </FeatureGroup>
+          <DrawControlComponent />
 
           <LayersControl position="topright">
             <LayersControl.BaseLayer checked name={isBangla ? "স্ট্যান্ডার্ড ওপেনস্ট্রিটম্যাপ" : "OpenStreetMap Standard"}>
@@ -204,7 +229,7 @@ export default function FarmMap({
               <div className="p-2 space-y-1.5 min-w-[170px]">
                 <p className="font-extrabold text-slate-900 text-sm">{activeFieldName}</p>
                 <p className="text-[11px] text-slate-500">
-                  {isBangla ? "অক্ষাংশ" : "Lat"}: {lat} | {isBangla ? "দ্রাঘিমাংশ" : "Lon"}: {lon}
+                  {isBangla ? "অক্ষাংশ" : "Lat"}: {lat} | {isBangla ? "দ্রাghিমাংশ" : "Lon"}: {lon}
                 </p>
                 
                 <div className="mt-1 inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md text-[11px]">
