@@ -652,6 +652,35 @@ function RecommendationCard({
   );
 }
 
+function NotObservedPatterns({
+  data,
+  language,
+}: {
+  data: PatternRecommendationResponse;
+  language: Language;
+}) {
+  const patterns = data.not_observed_on_field ?? [];
+  const obs = data.field_observation;
+  if (patterns.length === 0 || !obs) {
+    return null;
+  }
+  const v = language === "bn" ? bn.verdict : en.verdict;
+  const num = (n: number) => n.toLocaleString(language === "bn" ? "bn-BD" : "en-GB");
+
+  return (
+    <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5">
+      <p className="text-sm font-black text-amber-950">{fill(v.notObservedTitle, { n: num(patterns.length) })}</p>
+      <p className="mt-1 text-xs leading-5 text-amber-950">{fill(v.notObservedReason, { n: num(obs.readable) })}</p>
+      <ul className="mt-2 space-y-1 text-xs text-slate-700">
+        {patterns.map((pattern) => (
+          <li key={pattern.pattern_id}>· {patternName(pattern, language)}</li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[11px] leading-5 text-slate-500">{fill(v.notObservedRule, { min: num(obs.min_readable) })}</p>
+    </div>
+  );
+}
+
 function OtherPatterns({
   data,
   language,
@@ -762,6 +791,8 @@ export default function PatternRecommendationList({
           </button>
         </div>
       )}
+
+      <NotObservedPatterns data={data} language={language} />
 
       <OtherPatterns data={data} language={language} />
     </div>

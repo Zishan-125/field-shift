@@ -152,3 +152,33 @@ def test_recommendations_name_the_driving_hazard_from_the_field_record():
     assert drivers, "some recommendation must be driven by this field's own hazards"
     for d in drivers:
         assert 0 < d["evidence"]["n_hit"] <= d["evidence"]["n_years"]
+
+
+def test_never_observed_dry_season_is_feasibility_not_score():
+    sys.path.insert(0, str(ROOT / "backend" / "offline"))
+    import server
+
+    sonagazi = server.pattern_recommendations("feni_sonagazi_01", server.PatternRecommendationRequest())
+    obs = sonagazi["field_observation"]
+    assert obs["never_cropped"] and obs["readable"] >= server.MIN_READABLE_SEASONS and obs["cropped"] == 0
+    assert sonagazi["not_observed_on_field"], "gated patterns are listed, not hidden"
+    for p in sonagazi["results"]:
+        assert not server.needs_dry_season_crop(p)
+    for p in sonagazi["not_observed_on_field"]:
+        assert server.needs_dry_season_crop(p)
+        assert "salinity" not in p["not_observed_reason"]["detail"].lower()
+
+    # Too few readable seasons: the rule must not fire.
+    chhagalnaiya = server.pattern_recommendations("feni_chhagalnaiya_01", server.PatternRecommendationRequest())
+    assert chhagalnaiya["field_observation"]["readable"] < server.MIN_READABLE_SEASONS
+    assert not chhagalnaiya["field_observation"]["never_cropped"]
+    assert chhagalnaiya["not_observed_on_field"] == []
+
+
+def test_guard_six_fields_do_not_all_share_a_top_pick():
+    sys.path.insert(0, str(ROOT / "backend" / "offline"))
+    from fastapi.testclient import TestClient
+    import server
+
+    data = TestClient(server.app).get("/api/offline/demo-fields").json()
+    assert not data["same_top_everywhere"]

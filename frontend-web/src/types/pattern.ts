@@ -236,6 +236,17 @@ export interface PatternRecommendationResponse {
   results: RecommendedPattern[];
   not_scored: RecommendedPattern[];
   not_recommended: CroppingPattern[];
+  not_observed_on_field?: (CroppingPattern & {
+    not_observed_reason: { code: string; readable: number; cropped: number; min_readable: number; detail: string };
+  })[];
+  field_observation?: {
+    season: string;
+    readable: number;
+    cropped: number;
+    years: number;
+    min_readable: number;
+    never_cropped: boolean;
+  } | null;
   counts: {
     patterns: number;
     recommended: number;

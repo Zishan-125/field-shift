@@ -80,3 +80,37 @@ pattern, so its "Why?" line is food and water). The app says so on screen:
 the fields in this sample are too similar for the ranking to separate their
 top pick. `same_top_everywhere` in `GET /api/offline/demo-fields`; tests in
 `data-pipeline/tests/test_classifier.py`.
+
+## Observed-season feasibility (added 12 Nov 2026)
+
+A score penalty was not enough: Sonagazi carried the highest risk yet still
+got a dry-season pattern on top, because the food advantage outran the
+penalty. A season that has **never been seen cropped** on a field is now
+treated like a calendar conflict: patterns that need it leave the ranking
+and are listed below it with the reason.
+
+* **Dry season** = the Rabi window of the phenology rules (Oct–May). A
+  pattern needs it if its Rabi slot is a crop, or if it has Boro in any
+  slot (Boro grows December–April wherever a pattern files it).
+* **Readable** = a Rabi season the rules labelled (Boro, Rabi_nonrice or
+  Fallow); unlabelled seasons do not count either way.
+* **Fires only** when a field has at least **5** readable Rabi seasons (half
+  of 2016–2025) and none of them showed a crop. Chhagalnaiya (2 readable) and
+  Parshuram (5 readable, 5 cropped) are not gated.
+* **Wording**: "No dry-season crop observed on this field in 9 of 9 readable
+  years." Salinity is not mentioned; it was not measured.
+* Kharif-1 is not labelled by the rules and Sonagazi's monsoon seasons are
+  all unlabelled, so no other season is gated.
+
+| Field | Readable / cropped dry seasons | Top pick before | Top pick after |
+|---|---|---|---|
+| Chhagalnaiya | 2 / 2 | Mustard – Boro – T. Aman | Mustard – Boro – T. Aman |
+| Daganbhuiyan | 8 / 8 | Mustard – Boro – T. Aman | Mustard – Boro – T. Aman |
+| Feni Sadar | 8 / 8 | Mustard – Boro – T. Aman | Mustard – Boro – T. Aman |
+| Fulgazi | 9 / 9 | Mustard – Boro – T. Aman | Mustard – Boro – T. Aman |
+| Parshuram | 5 / 5 | Mustard – Boro – T. Aman | Mustard – Boro – T. Aman |
+| **Sonagazi** | **9 / 0** | Mustard – Boro – T. Aman | **Fallow – Aus – T. Aman** (then Fallow – Fallow – T. Aman; 15 patterns not offered) |
+
+**Guard now passes**: the six fields no longer share a top pick. No
+threshold was changed to get there; the limitation text stays in the app and
+shows only when the guard fails.

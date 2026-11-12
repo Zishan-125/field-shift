@@ -201,6 +201,9 @@ const en = {
     error: "Could not load the recommendation. Is the offline server running?",
     sameTop:
       "Limitation: all six demo fields get the same first choice. Their own satellite records differ (coastal Sonagazi carries much more flood and dry-season risk than the inland fields, and the second choices differ), but the fields in this sample are too similar for the ranking to separate their top pick.",
+    notObservedTitle: "Not offered on this field ({n})",
+    notObservedReason: "No dry-season crop observed here in {n} of {n} readable years (satellite record). These patterns all need one.",
+    notObservedRule: "The rule fires only with at least {min} readable dry seasons. It uses what the satellites saw, not the cause.",
     howTitle: "How is this decided?",
     howText:
       "Patterns are real Feni crop sequences that fit the DAE crop calendar. They are ranked on food (BBS Feni yields), water (FAO-56), soil, diversity and climate risk. For these demo fields the climate risk comes from the field's own satellite record: Sentinel-1 flooding, SMAP soil moisture, flowering heat and seasons left fallow. Keep = the best pattern scores less than 0.02 above yours; Adjust = one season changes; Shift = two or more change.",

@@ -1235,7 +1235,9 @@ def pattern_recommendations(
     # Demo fields: the climate score comes from the field's own satellite
     # record instead of the hand-set crop priors.
     demo_field = None
+    observation = None
     if demo:
+        observation = dry_season_observation(field_id)
         demo_field = fetch_one("SELECT * FROM demo_fields WHERE field_id = ?", (field_id,))
         offsets = flowering_offsets()
         for pattern in patterns.values():
@@ -1269,6 +1271,7 @@ def pattern_recommendations(
     recommended = []
     not_scored = []
     not_recommended = []
+    not_observed = []
 
     for pattern_id, pattern in patterns.items():
         if pattern_id == request.current_pattern_id:
@@ -1276,6 +1279,22 @@ def pattern_recommendations(
 
         if pattern["feasibility"]["status"] not in RECOMMENDABLE_STATUSES:
             not_recommended.append(pattern)
+            continue
+
+        if observation and observation["never_cropped"] and needs_dry_season_crop(pattern):
+            not_observed.append({
+                **pattern,
+                "not_observed_reason": {
+                    "code": "dry_season_crop_not_observed",
+                    "readable": observation["readable"],
+                    "cropped": observation["cropped"],
+                    "min_readable": observation["min_readable"],
+                    "detail": (
+                        f"No dry-season crop observed on this field in {observation['readable']} of "
+                        f"{observation['readable']} readable years."
+                    ),
+                },
+            })
             continue
 
         pattern_score, contributions = score(pattern)
@@ -1335,11 +1354,14 @@ def pattern_recommendations(
         "results": recommended,
         "not_scored": not_scored,
         "not_recommended": not_recommended,
+        "not_observed_on_field": not_observed,
+        "field_observation": observation,
         "counts": {
             "patterns": len(patterns),
             "recommended": len(recommended),
             "not_scored": len(not_scored),
             "not_recommended": len(not_recommended),
+            "not_observed_on_field": len(not_observed),
         },
         "methodology": {
             "version": PATTERN_METHODOLOGY_VERSION,
@@ -1758,6 +1780,38 @@ DRY_RUN_DAYS = 10
 S1_FIRST_YEAR = 2017                 # full three-orbit coverage from 2017 (orbit-mix table)
 
 _FIELD_CACHE: dict = {}
+
+
+# Observed-season feasibility: a season never seen cropped on a field is not
+# offered there. Observed record only (phenology rule labels); the cause is
+# not known (no salinity was measured).
+MIN_READABLE_SEASONS = 5   # half of the 10 Rabi seasons 2016-2025; fewer and the rule does not fire
+
+
+def dry_season_observation(field_id: str) -> dict:
+    """Readable Rabi seasons on a demo field and how many showed a crop."""
+
+    rows = fetch_all(
+        "SELECT year, rule_label FROM demo_field_seasons WHERE field_id = ? AND season = 'rabi'", (field_id,)
+    )
+    readable = [r for r in rows if r["rule_label"]]
+    cropped = [r for r in readable if r["rule_label"] in ("Boro", "Rabi_nonrice")]
+    return {
+        "season": "dry_season",
+        "readable": len(readable),
+        "cropped": len(cropped),
+        "years": len(rows),
+        "min_readable": MIN_READABLE_SEASONS,
+        "never_cropped": len(readable) >= MIN_READABLE_SEASONS and not cropped,
+    }
+
+
+def needs_dry_season_crop(pattern: dict) -> bool:
+    """A crop in the Rabi slot, or Boro in any slot (Boro grows Dec-Apr wherever a pattern files it)."""
+
+    if not pattern["seasons"]["rabi"]["is_fallow"]:
+        return True
+    return any(pattern["seasons"][s]["crop_id"] == "rice_boro" for s in ("kharif1", "kharif2"))
 
 
 def is_demo_field(field_id: str) -> bool:

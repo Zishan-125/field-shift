@@ -185,6 +185,13 @@ export default function VerdictCard({
         ))}
       </ul>
 
+      {data.field_observation?.never_cropped && (
+        <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-950">
+          🚫 {fill(t.notObservedReason, { n: num(data.field_observation.readable, language) })}{" "}
+          ({fill(t.notObservedTitle, { n: num(data.not_observed_on_field?.length ?? 0, language) })})
+        </p>
+      )}
+
       {sameTopEverywhere && (
         <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-[11px] leading-5 text-amber-950">⚠️ {t.sameTop}</p>
       )}
