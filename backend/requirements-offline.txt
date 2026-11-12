@@ -6,7 +6,7 @@
 #   .venv\Scripts\activate          (Windows)   |   source .venv/bin/activate   (Linux/macOS)
 #   pip install -r requirements-offline.txt
 #
-# Pinned to the versions verified on 2026-10-28 with Python 3.13.
+# Pinned to the versions verified on 2026-11-12 with Python 3.13.
 
 # --- backend/offline/server.py ---
 fastapi==0.162.0
@@ -20,11 +20,16 @@ requests==2.34.2           # fetch_nasa_power.py, test_ecostress_qc.py
 httpx==0.28.1              # _common.py, dags/refresh_daily.py
 python-dotenv==1.2.4       # _common.py, test_ecostress_qc.py
 
-# --- data-pipeline/ Google Earth Engine ingestion (ingest_*.py, gee_field_clip.py, build_soil_profile.py) ---
 pymannkendall==1.4.3       # climate/climate_shift.py (Mann-Kendall, Sen's slope)
+scipy==1.18.1              # climate/climate_extremes.py (Gumbel fit), classifier/features.py (Savitzky-Golay)
+lightgbm==4.7.0            # classifier/train_lightgbm.py, predict_demo_fields.py
+scikit-learn==1.9.1        # classifier metrics
+shap==0.54.1               # classifier SHAP summary
+
+# --- data-pipeline/ Google Earth Engine ingestion (climate/fetch_*, fields/, classifier/extract_*) ---
 
 earthengine-api==1.7.50
-shapely==2.2.0             # only test_soilgrids_field_polygon.py
+shapely==2.2.0             # fields/select_fields.py, test_soilgrids_field_polygon.py
 
 # --- tests (cd data-pipeline && python -m pytest) ---
 pytest==9.2.0
