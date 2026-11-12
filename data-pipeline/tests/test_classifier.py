@@ -190,3 +190,18 @@ def test_demo_field_response_names_the_demo_field():
 
     result = server.pattern_recommendations("feni_sonagazi_01", server.PatternRecommendationRequest())
     assert result["field"]["field_id"] == "feni_sonagazi_01" and result["field"]["demo"]
+
+
+def test_static_export_covers_every_demo_field():
+    import json
+
+    data = ROOT / "frontend-web" / "public" / "data"
+    manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
+    fields = json.loads((data / "demo-fields.json").read_text(encoding="utf-8"))["fields"]
+
+    for field in fields:
+        assert f"recommendations/{field['field_id']}.json" in manifest["files"]
+        exported = json.loads((data / "recommendations" / f"{field['field_id']}.json").read_text(encoding="utf-8"))
+        assert exported["pattern_order"], "tie order needed for the static re-ranking"
+        for pattern in exported["results"]:
+            assert pattern["indicators"] is not None

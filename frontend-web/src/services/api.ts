@@ -5,9 +5,10 @@ import type { EnvironmentResponse } from "../types/environment";
 import type { SoilResponse } from "../types/soil";
 import type { FarmerPriorities } from "../types/farmer";
 import type { RecommendationResponse } from "../types/recommendation";
-import type {
-  PatternPriorities,
-  PatternRecommendationResponse,
+import {
+  DEFAULT_CURRENT_PATTERN_ID,
+  type PatternPriorities,
+  type PatternRecommendationResponse,
 } from "../types/pattern";
 import type { ClimateShiftResponse } from "../types/climate";
 import type { DemoFieldsResponse } from "../types/demoFields";
@@ -15,68 +16,103 @@ import type {
   CropResponse,
 } from "../types/crop";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://127.0.0.1:8001";
+import { rerank, type StaticRecommendations } from "./staticRanking";
+
+/*
+ * Two data sources:
+ *   live    the FastAPI server (backend/offline/server.py), when VITE_API_BASE_URL is set
+ *   static  JSON exported from the same server at build time
+ *           (backend/offline/export_static.py -> public/data/), precached by the
+ *           service worker, so the site runs with no backend and offline.
+ * With an API URL the live server is tried first and the static data is the
+ * fallback; without one the static data is used directly.
+ */
+const API_BASE_URL: string | undefined = import.meta.env.VITE_API_BASE_URL || undefined;
 
 export const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL ?? "http://127.0.0.1:8001",
   headers: {
     "Content-Type": "application/json",
   },
   timeout: 60000,
 });
 
-export async function getHealth() {
-  const response = await api.get(
-    "/api/offline/health",
-  );
+let lastSource: "live" | "static" = API_BASE_URL ? "live" : "static";
 
-  return response.data;
+/** Where the last response came from (shown in the technical details). */
+export function dataSource(): "live" | "static" {
+  return lastSource;
+}
+
+async function staticJson<T>(path: string): Promise<T> {
+  const response = await fetch(`${import.meta.env.BASE_URL}data/${path}`);
+  if (!response.ok) {
+    throw new Error(`Static data not found: ${path} (${response.status})`);
+  }
+  return (await response.json()) as T;
+}
+
+async function liveOrStatic<T>(live: () => Promise<T>, fallback: () => Promise<T>): Promise<T> {
+  if (API_BASE_URL) {
+    try {
+      const data = await live();
+      lastSource = "live";
+      return data;
+    } catch (error) {
+      console.warn("Field Shift: live API unavailable, using built-in data.", error);
+    }
+  }
+  const data = await fallback();
+  lastSource = "static";
+  return data;
+}
+
+function slug(text: string): string {
+  return text.toLowerCase().replace(/ /g, "_");
+}
+
+export async function getHealth() {
+  return liveOrStatic(
+    async () => (await api.get("/api/offline/health")).data,
+    () => staticJson("health.json"),
+  );
 }
 
 export async function getField(
   fieldId: string,
 ): Promise<FieldResponse> {
-  const response =
-    await api.get<FieldResponse>(
-      `/api/offline/fields/${fieldId}`,
-    );
-
-  return response.data;
+  return liveOrStatic(
+    async () => (await api.get<FieldResponse>(`/api/offline/fields/${fieldId}`)).data,
+    () => staticJson<FieldResponse>("field.json"),
+  );
 }
 
 export async function getEnvironment(
   fieldId: string,
 ): Promise<EnvironmentResponse> {
-  const response =
-    await api.get<EnvironmentResponse>(
-      `/api/offline/fields/${fieldId}/environment`,
-    );
-
-  return response.data;
+  return liveOrStatic(
+    async () => (await api.get<EnvironmentResponse>(`/api/offline/fields/${fieldId}/environment`)).data,
+    () => staticJson<EnvironmentResponse>("environment.json"),
+  );
 }
 
 export async function getSoil(
   fieldId: string,
 ): Promise<SoilResponse> {
-  const response =
-    await api.get<SoilResponse>(
-      `/api/offline/fields/${fieldId}/soil`,
-    );
-
-  return response.data;
+  return liveOrStatic(
+    async () => (await api.get<SoilResponse>(`/api/offline/fields/${fieldId}/soil`)).data,
+    () => staticJson<SoilResponse>("soil.json"),
+  );
 }
 
 export async function getCrops(): Promise<CropResponse> {
-  const response =
-    await api.get<CropResponse>(
-      "/api/offline/crops",
-    );
-
-  return response.data;
+  return liveOrStatic(
+    async () => (await api.get<CropResponse>("/api/offline/crops")).data,
+    () => staticJson<CropResponse>("crops.json"),
+  );
 }
 
+/** Live API only (legacy rotation endpoints are not exported). */
 export async function getRotations(
   fieldId: string,
 ) {
@@ -87,6 +123,7 @@ export async function getRotations(
   return response.data;
 }
 
+/** Live API only (legacy rotation endpoints are not exported). */
 export async function getEvaluatedRotations(
   fieldId: string,
 ) {
@@ -100,19 +137,18 @@ export async function getEvaluatedRotations(
 export async function getClimateShift(
   upazila?: string,
 ): Promise<ClimateShiftResponse> {
-  const response =
-    await api.get<ClimateShiftResponse>(
-      "/api/offline/climate-shift",
-      { params: upazila ? { upazila } : {} },
-    );
-
-  return response.data;
+  return liveOrStatic(
+    async () =>
+      (await api.get<ClimateShiftResponse>("/api/offline/climate-shift", { params: upazila ? { upazila } : {} })).data,
+    () => staticJson<ClimateShiftResponse>(`climate-shift/${upazila ? slug(upazila) : "default"}.json`),
+  );
 }
 
 export async function getDemoFields(): Promise<DemoFieldsResponse> {
-  const response = await api.get<DemoFieldsResponse>("/api/offline/demo-fields");
-
-  return response.data;
+  return liveOrStatic(
+    async () => (await api.get<DemoFieldsResponse>("/api/offline/demo-fields")).data,
+    () => staticJson<DemoFieldsResponse>("demo-fields.json"),
+  );
 }
 
 export async function getPatternRecommendations(
@@ -120,19 +156,25 @@ export async function getPatternRecommendations(
   priorities: PatternPriorities,
   currentPatternId: string,
 ): Promise<PatternRecommendationResponse> {
-  const response =
-    await api.post<PatternRecommendationResponse>(
-      `/api/offline/fields/${fieldId}/pattern-recommendations`,
-      {
-        ...priorities,
-        current_pattern_id: currentPatternId,
-      },
-    );
-
-  return response.data;
+  return liveOrStatic(
+    async () =>
+      (
+        await api.post<PatternRecommendationResponse>(`/api/offline/fields/${fieldId}/pattern-recommendations`, {
+          ...priorities,
+          current_pattern_id: currentPatternId,
+        })
+      ).data,
+    async () => {
+      if (currentPatternId !== DEFAULT_CURRENT_PATTERN_ID) {
+        throw new Error("The built-in data covers the default current pattern only.");
+      }
+      // Same ranking as the API: weighted sum of exported component scores.
+      return rerank(await staticJson<StaticRecommendations>(`recommendations/${fieldId}.json`), priorities);
+    },
+  );
 }
 
-/** @deprecated crop permutations without a season check; use getPatternRecommendations */
+/** @deprecated crop permutations without a season check; live API only */
 export async function getRecommendations(
   fieldId: string,
   priorities: FarmerPriorities,

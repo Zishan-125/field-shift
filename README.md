@@ -169,18 +169,38 @@ flowchart LR
   one district. BBS land-use and crop-area tables disagree (Aman exceeds net cropped area in four districts).
 * **Same first choice inland.** The five inland fields share a top pick; only coastal Sonagazi differs.
 * **No cost or income** in the ranking yet. Soil and diversity scores still use hand-set crop priors.
-* **Map tiles need internet**; the data and API run offline.
+* **Map tiles need internet** the first time; tiles already seen in Feni are cached for offline use.
 
 ## 7. Run it
 
-Requires Python 3.13 and Node 22.12+ (tested with Node 24). The SQLite database (`backend/offline/field_shift.db`) is in the repo,
-so no Earth Engine account is needed to run the app or the tests.
+Requires Python 3.13 and Node 22.12+ (tested with Node 24).
+
+### The app alone (no backend, works offline)
+
+The frontend ships the API's answers as static JSON in `frontend-web/public/data/` (exported from
+`backend/offline/field_shift.db` by `backend/offline/export_static.py`). With no API URL set, it reads those
+files and re-ranks patterns for the farmer's priorities in the browser: the score is a weighted sum of the
+exported component scores, so no scoring logic is duplicated. `npm test` checks that this ranking matches the
+API exactly for three fields × three priority settings.
 
 ```bash
 git clone -b improve/feni-v2 https://github.com/Zishan-125/field-shift.git
-cd field-shift
+cd field-shift/frontend-web
+npm ci
+npm run build && npx vite preview      # http://localhost:4173 — no server needed
+npm test                               # static ranking == API ranking
+```
 
-# Backend (offline API on port 8001)
+**Works offline (tested).** It is a PWA (vite-plugin-pwa): the service worker precaches the app and every
+file in `public/data/`, and caches OpenStreetMap tiles inside the Feni bounding box as they are viewed. Test,
+12 Nov 2026, headless Chrome at 360 px: build, serve, load once (service worker active, 34 entries cached),
+**stop the web server and switch the network off**, reload. The verdict card, the top 3, the map with all six
+fields and the full recommendation list all rendered. With the tile server blocked, the map shows a plain
+note that its background needs internet; everything else still works.
+
+### With the live API (optional)
+
+```bash
 cd backend
 python -m venv .venv
 .venv\Scripts\activate                 # Windows;  source .venv/bin/activate on Linux/macOS
@@ -188,19 +208,17 @@ pip install -r requirements-offline.txt
 cd offline
 uvicorn server:app --port 8001         # check: http://127.0.0.1:8001/api/offline/health
 
-# Frontend (new terminal)
-cd frontend-web
-npm ci
-npm run dev                            # http://localhost:5173 (API URL: VITE_API_BASE_URL, default 127.0.0.1:8001)
+# in frontend-web/: use the live server, with the built-in data as fallback
+VITE_API_BASE_URL=http://127.0.0.1:8001 npm run dev
 
-# Tests (backend venv active)
-cd data-pipeline
-python -m pytest
+# tests (backend venv active)
+cd data-pipeline && python -m pytest
 ```
 
-Rebuilding the data needs an Earth Engine Cloud project (`EE_PROJECT=<id>`). The order is in
-[docs/methodology/climate-shift.md](docs/methodology/climate-shift.md#9-reproduce) and the headers of each
-script; tables are reloaded with `backend/offline/build_*_tables.py`.
+After changing the database, re-export: `python backend/offline/export_static.py`. Rebuilding the data
+itself needs an Earth Engine Cloud project (`EE_PROJECT=<id>`); the order is in
+[docs/methodology/climate-shift.md](docs/methodology/climate-shift.md#9-reproduce) and each script's header;
+tables are reloaded with `backend/offline/build_*_tables.py`.
 
 ### Repository map
 

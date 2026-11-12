@@ -209,8 +209,9 @@ const en = {
       "Patterns are real Feni crop sequences that fit the DAE crop calendar. They are ranked on food (BBS Feni yields), water (FAO-56), soil, diversity and climate risk. For these demo fields the climate risk comes from the field's own satellite record: Sentinel-1 flooding, SMAP soil moisture, flowering heat and seasons left fallow. Keep = the best pattern scores less than 0.02 above yours; Adjust = one season changes; Shift = two or more change.",
   },
   mapPicker: {
+    offlineTiles: "The map background cannot load without internet. The field dots, the verdict and the recommendations still work offline.",
     title: "Choose a field",
-    hint: "Tap a dot to choose one of six demo fields. Tap anywhere else and we use the nearest demo field. Map © OpenStreetMap (needs internet).",
+    hint: "Tap a dot to choose one of six demo fields. Tap anywhere else and we use the nearest demo field. Map © OpenStreetMap (internet; areas you have seen are kept for offline use).",
     nearest: "You tapped {km} km from the nearest demo field, {field}. These are that field's results — your own field may differ.",
     outside: "That point is outside Feni district. Showing the nearest demo field, {field} ({km} km away).",
     selected: "Demo field in {field}: a 90 m square chosen by rule from satellite cropland maps, not a surveyed farm.",

@@ -1,5 +1,7 @@
 import "leaflet/dist/leaflet.css";
 
+import { useState } from "react";
+
 import { CircleMarker, GeoJSON, MapContainer, TileLayer, Tooltip, useMapEvents } from "react-leaflet";
 
 import type { DemoField } from "../../types/demoFields";
@@ -86,6 +88,8 @@ export default function FieldMapPicker({
   language: Language;
 }) {
   const t = language === "bn" ? bn.mapPicker : en.mapPicker;
+  // Background tiles come from OpenStreetMap; offline only tiles already seen in Feni are cached.
+  const [tilesFailed, setTilesFailed] = useState(false);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200">
@@ -98,7 +102,8 @@ export default function FieldMapPicker({
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          eventHandlers={{ tileerror: () => setTilesFailed(true), tileload: () => setTilesFailed(false) }}
         />
         {upazilas ? (
           <GeoJSON
@@ -134,6 +139,9 @@ export default function FieldMapPicker({
         })}
         <TapHandler fields={fields} upazilas={upazilas} onPick={onPick} />
       </MapContainer>
+      {tilesFailed && (
+        <p className="bg-amber-50 px-2.5 py-1 text-[11px] leading-4 text-amber-950">🗺️ {t.offlineTiles}</p>
+      )}
       <p className="bg-slate-50 px-2.5 py-1 text-[10px] leading-4 text-slate-500">{t.hint}</p>
     </div>
   );
