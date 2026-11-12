@@ -25,5 +25,6 @@ Start with the [project README](../README.md) for the validation table and how t
 | [data-gaps.md](data-gaps.md) | What is missing or inconsistent in the data and what the app does about it |
 | [demo-script.md](demo-script.md) | A four-minute walk-through for judges |
 | [deployment.md](deployment.md) | Deploying the static site (no backend) or with the API |
+| [merge-notes.md](merge-notes.md) | Conflicts with the base branch, region by region (merge not performed) |
 
 Older material that is no longer used is listed in [../archive/README.md](../archive/README.md).
