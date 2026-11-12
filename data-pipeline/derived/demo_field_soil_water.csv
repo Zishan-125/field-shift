@@ -1,0 +1,7 @@
+field_id,sand_pct,clay_pct,soc_g_kg,theta_fc,theta_wp,theta_sat,smap_porosity,method
+feni_chhagalnaiya_01,23.6,41.1,16.9,0.388,0.25,0.498,0.396,"SoilGrids 2.0 0-30 cm, Saxton & Rawls (2006); SMAP porosity = sm_rootzone / sm_rootzone_wetness"
+feni_daganbhuiyan_01,28.5,38.8,17.5,0.376,0.24,0.489,0.428,"SoilGrids 2.0 0-30 cm, Saxton & Rawls (2006); SMAP porosity = sm_rootzone / sm_rootzone_wetness"
+feni_feni_sadar_01,24.5,43.2,19.3,0.396,0.263,0.502,0.428,"SoilGrids 2.0 0-30 cm, Saxton & Rawls (2006); SMAP porosity = sm_rootzone / sm_rootzone_wetness"
+feni_fulgazi_01,23.9,36.7,17.8,0.373,0.228,0.498,0.396,"SoilGrids 2.0 0-30 cm, Saxton & Rawls (2006); SMAP porosity = sm_rootzone / sm_rootzone_wetness"
+feni_parshuram_01,24.9,38.1,16.5,0.377,0.235,0.493,0.396,"SoilGrids 2.0 0-30 cm, Saxton & Rawls (2006); SMAP porosity = sm_rootzone / sm_rootzone_wetness"
+feni_sonagazi_01,25.0,39.0,17.6,0.38,0.24,0.497,0.428,"SoilGrids 2.0 0-30 cm, Saxton & Rawls (2006); SMAP porosity = sm_rootzone / sm_rootzone_wetness"

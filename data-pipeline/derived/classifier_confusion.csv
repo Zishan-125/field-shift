@@ -1,0 +1,9 @@
+,split,pred_Boro,pred_Rabi_nonrice,pred_Fallow,pred_T_Aman
+true_Boro,validate_2023,880,2,0,0
+true_Rabi_nonrice,validate_2023,0,9,0,0
+true_Fallow,validate_2023,0,0,21,0
+true_T_Aman,validate_2023,0,0,0,840
+true_Boro,test_2024,790,3,0,0
+true_Rabi_nonrice,test_2024,0,15,0,0
+true_Fallow,test_2024,0,0,33,0
+true_T_Aman,test_2024,0,0,0,866

@@ -1,0 +1,13 @@
+split,class,precision,recall,f1,support
+validate_2023,Boro,1.0,0.998,0.999,882
+validate_2023,Rabi_nonrice,0.818,1.0,0.9,9
+validate_2023,Fallow,1.0,1.0,1.0,21
+validate_2023,T_Aman,1.0,1.0,1.0,840
+validate_2023,macro,,,0.975,1752
+validate_2023,accuracy,,,0.999,1752
+test_2024,Boro,1.0,0.996,0.998,793
+test_2024,Rabi_nonrice,0.833,1.0,0.909,15
+test_2024,Fallow,1.0,1.0,1.0,33
+test_2024,T_Aman,1.0,1.0,1.0,866
+test_2024,macro,,,0.977,1707
+test_2024,accuracy,,,0.998,1707

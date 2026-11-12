@@ -1,0 +1,13 @@
+method,district,year,window,n,share_under_water_pct,bbs_aman_damaged_pct,excess_over_2023_pct
+B_points_aman_2023,Cumilla,2023.0,"dekads 08-21, 09-01, 09-11, 09-21",198.0,39.9,,
+B_points_aman_2023,Feni,2023.0,"dekads 08-21, 09-01, 09-11, 09-21",320.0,37.2,55.0,
+B_points_aman_2023,Noakhali,2023.0,"dekads 08-21, 09-01, 09-11, 09-21",322.0,50.9,44.0,
+B_points_aman_2023,Cumilla,2024.0,"dekads 08-21, 09-01, 09-11, 09-21",198.0,60.1,,20.2
+B_points_aman_2023,Feni,2024.0,"dekads 08-21, 09-01, 09-11, 09-21",320.0,69.1,55.0,31.9
+B_points_aman_2023,Noakhali,2024.0,"dekads 08-21, 09-01, 09-11, 09-21",322.0,74.8,44.0,23.9
+A_pixels_worldcover_cropland,Feni,2023.0,2023-08-21 to 2023-09-11,6.0,0.6,55.0,
+A_pixels_worldcover_cropland,Feni,2024.0,2024-08-21 to 2024-09-11,5.0,14.1,55.0,13.5
+A_pixels_worldcover_cropland,Noakhali,2023.0,2023-08-21 to 2023-09-11,12.0,2.6,44.0,
+A_pixels_worldcover_cropland,Noakhali,2024.0,2024-08-21 to 2024-09-11,10.0,12.8,44.0,10.2
+A_pixels_worldcover_cropland,Cumilla,2023.0,2023-08-21 to 2023-09-11,10.0,1.4,,
+A_pixels_worldcover_cropland,Cumilla,2024.0,2024-08-21 to 2024-09-11,9.0,10.6,,9.2
