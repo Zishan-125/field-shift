@@ -11,11 +11,12 @@ Goal: help a farmer decide whether to keep, adjust, or shift their crop rotation
 - `backend/offline/build_offline_database.py` — builds the SQLite DB from `data-pipeline/output/` (that folder is git-ignored and NOT in the repo).
 - `data-pipeline/` — GEE / NASA ingestion (SMAP, MODIS, GPM IMERG, ECOSTRESS, GRACE), NASA POWER, SoilGrids, monthly features, crop profiles, rotation scenarios, scoring.
 
-## Legacy / unused code (from an older "TerraShift" design)
+## Archived code (archive/, see archive/README.md)
 
-- `backend/app/` (Postgres/PostGIS, Ollama RAG copilot, Twilio SMS, ML scorer) — not used by the frontend. `docker-compose.yml`, `backend/Dockerfile`, `backend/tests/` and `.env.example` all describe this old design.
-- `ml-models/` — trained ONLY on synthetic data from `generate_realistic_data.py` (fake field histories). Stress labels come from a rule, so the model just re-learns the rule. Must not be presented as validated.
-- Root files `economic_environmental_model.py`, `Feni_Economic_Environmental_Dataset.*` (solar/diesel irrigation economics) and `Feni_Daily_Weather_NASA_POWER_ML.*` (real NASA POWER daily 2015–2024) are not wired into the app.
+- `archive/backend-legacy/` — the old "TerraShift" backend (Postgres/PostGIS, Ollama RAG copilot, Twilio SMS, ML scorer, Turso option), its tests, Dockerfile, docker-compose and .env.example. Not used.
+- `archive/ml-models/` — trained ONLY on synthetic data from `generate_realistic_data.py`. Must not be presented as validated.
+- `archive/economics/` — solar/diesel irrigation economics; not wired into the app.
+- `Feni_Daily_Weather_NASA_POWER_ML.csv` stays at the root: `climate/climate_shift.py` and `water/build_monthly_climate.py` read it.
 
 ## Current data (in field_shift.db)
 

@@ -394,7 +394,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("ml-models/data/raw"),
+        default=Path("archive/ml-models/data/raw"),
     )
 
     args = parser.parse_args()

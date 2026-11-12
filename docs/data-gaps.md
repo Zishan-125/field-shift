@@ -62,7 +62,7 @@ the value **and** the source (document, table/page) when you fill one in.
 | Turnaround between crops = **7 days** | `ASSUMED_TURNAROUND_DAYS` in `data-pipeline/rotation/feasibility.py` | Only separates "feasible" from "tight". Rejections never depend on it. SHAHIDULLAH_2006 says turnaround after T. Aman in coastal Feni is "very short" but gives no number |
 | Crop parameters in `crop_profiles` | `field_shift.db` | Soil-health and climate-resilience scores (see `docs/data-sources.md`, last section) |
 | Default priority weights (food 0.30, water productivity 0.25, soil 0.20, climate 0.15, variety 0.10) | `DEFAULT_PATTERN_PRIORITIES` in `server.py` and `types/pattern.ts` | A UI starting point, not data; the farmer can change every weight |
-| Historical soil context = **0.5** | `data-pipeline/build_farmer_priority_scenarios.py` (`safe_mean` default) | Soil score. It is a fallback, because `soil_topsoil_fertility_proxy` is null in every month (BASELINE.md) |
+| Historical soil context = **0.5** | `data-pipeline/build_farmer_priority_scenarios.py` (`safe_mean` default) | Soil score. It is a fallback, because `soil_topsoil_fertility_proxy` is null in every month (archive/BASELINE.md) |
 
 ## Suspicious values
 

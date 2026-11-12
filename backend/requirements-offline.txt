@@ -1,5 +1,5 @@
 # Dependencies for the code that actually runs: backend/offline/ and data-pipeline/.
-# (backend/requirements.txt is for the legacy backend/app/ Postgres design.)
+# (The legacy backend and its requirements are in archive/backend-legacy/.)
 #
 # Setup (from backend/):
 #   python -m venv .venv
