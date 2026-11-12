@@ -249,7 +249,7 @@ export default function FarmChatBot({
         ? "🛰️ নাসা এআই কৃষি বন্ধু"
         : "🛰️ NASA AI Farm Companion",
       content: isBangla
-        ? `নমস্কার! আমি আপনার নাসা এআই কৃষি বন্ধু (${selectedFieldName})। ম্যাপে যেকোনো জমির ওপর ক্লিক করুন এবং আপনার এলাকার আবহাওয়া, সেচ বা ফসল আবর্তন নিয়ে যেকোনো প্রশ্ন করুন।`
+        ? `হ্যালো! আমি আপনার নাসা এআই কৃষি বন্ধু (${selectedFieldName})। ম্যাপে যেকোনো জমির ওপর ক্লিক করুন এবং আপনার এলাকার আবহাওয়া, সেচ বা ফসল আবর্তন নিয়ে যেকোনো প্রশ্ন করুন।`
         : `Hello! I am your NASA AI Farm Companion for ${selectedFieldName}. Click anywhere on the global map and ask me about local weather, irrigation, or crop rotation for your farm.`,
     },
   ]);
