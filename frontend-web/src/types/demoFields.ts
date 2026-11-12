@@ -33,4 +33,7 @@ export interface DemoFieldsResponse {
     note: string;
   };
   label_source: string;
+  upazilas: unknown;
+  top_picks: Record<string, { top: string | null; second: string | null; risk: number | null }>;
+  same_top_everywhere: boolean;
 }

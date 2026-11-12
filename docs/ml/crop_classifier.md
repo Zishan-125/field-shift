@@ -137,3 +137,14 @@ the crop classifier does not turn it into lost area.**
 * One cropland mask (WorldCover 2021) for all years.
 * Points sample only land WorldCover is sure is cropland; homestead-mixed
   fields are not represented.
+
+## Use in the app
+
+Only the season timeline "What satellites saw on six Feni fields" uses it:
+rule labels first; where the rules abstain, the classifier's label is drawn
+faded and marked as the model's (`classifier/predict_demo_fields.py`). It is
+**not** in the pattern ranking; the field-risk score uses the rule labels,
+Sentinel-1, SMAP and heat (`docs/methodology/field-risk.md`). The timeline's
+"details" text states the failed BBS check next to the radar flood result
+that did match (Feni/Noakhali 1.33 by satellite vs 1.25 by the BBS damage
+table).

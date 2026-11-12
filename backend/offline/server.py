@@ -1292,6 +1292,9 @@ def pattern_recommendations(
             not_scored.append(item)
             continue
 
+        if demo and "field_risk" in pattern and "field_risk" in current:
+            item["risk_driver"] = risk_driver(current["field_risk"], pattern["field_risk"])
+
         item["score_change"] = (
             round(pattern_score - current_score, 6)
             if current_score is not None
@@ -1900,6 +1903,38 @@ def field_pattern_risk(pattern: dict, field_id: str, upazila: str, offsets: dict
             "crops": crops, "drivers": drivers[:3]}
 
 
+def hazard_exposure(risk: dict) -> dict:
+    """Weighted exposure per hazard, summed over the pattern's crops."""
+
+    totals: dict = {}
+    for crop in risk["crops"]:
+        for h in crop["hazards"]:
+            totals[h["hazard"]] = totals.get(h["hazard"], 0.0) + h["weighted"]
+    return totals
+
+
+def risk_driver(current: dict, candidate: dict) -> dict | None:
+    """
+    The hazard the candidate pattern avoids most compared with the current
+    one, with the evidence from this field's record (the current crop worst
+    hit by it). None when the candidate is not less exposed to anything.
+    """
+
+    before, after = hazard_exposure(current), hazard_exposure(candidate)
+    gains = {h: before.get(h, 0.0) - after.get(h, 0.0) for h in before}
+    if not gains:
+        return None
+    hazard, gain = max(gains.items(), key=lambda kv: kv[1])
+    if gain < 0.01:
+        return None
+    worst = max(
+        ({**h, "crop_id": c["crop_id"], "name_en": c["name_en"], "name_bn": c["name_bn"]}
+         for c in current["crops"] for h in c["hazards"] if h["hazard"] == hazard),
+        key=lambda h: h["weighted"],
+    )
+    return {"hazard": hazard, "exposure_reduction": round(gain, 3), "evidence": worst}
+
+
 def climate_extremes_block(upazila: str) -> dict | None:
     if not table_exists("climate_extremes_summary"):
         return None
@@ -1922,6 +1957,23 @@ def climate_extremes_block(upazila: str) -> dict | None:
         for days in (7, 15)
     }
     return {"summary": summary, "years": years, "return_curve": curve}
+
+
+_TOP_PICKS: dict = {}
+
+
+def demo_top_picks() -> dict:
+    """Top recommended pattern per demo field with default priorities (cached)."""
+
+    if not _TOP_PICKS:
+        for row in fetch_all("SELECT field_id FROM demo_fields ORDER BY field_id"):
+            result = pattern_recommendations(row["field_id"], PatternRecommendationRequest())
+            _TOP_PICKS[row["field_id"]] = {
+                "top": result["results"][0]["pattern_id"] if result["results"] else None,
+                "second": result["results"][1]["pattern_id"] if len(result["results"]) > 1 else None,
+                "risk": result["current"].get("field_risk", {}).get("risk"),
+            }
+    return _TOP_PICKS
 
 
 @app.get("/api/offline/demo-fields")
@@ -1969,6 +2021,12 @@ def demo_fields():
                     "soil salinity would cause; no salinity measurement was used.",
         },
         "label_source": "phenology rules (weak labels, docs/methodology/phenology.md)",
+        "top_picks": demo_top_picks(),
+        "same_top_everywhere": len({v["top"] for v in demo_top_picks().values()}) == 1,
+        "upazilas": (
+            json.loads(fetch_one("SELECT geojson FROM demo_area WHERE key = 'feni_upazilas'")["geojson"])
+            if table_exists("demo_area") else None
+        ),
         "runtime": "offline",
     }
 

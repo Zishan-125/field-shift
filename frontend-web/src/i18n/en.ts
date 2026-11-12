@@ -177,6 +177,41 @@ const en = {
     noMatch: "No plans contain your selected crops.",
   },
 
+  verdict: {
+    eyebrow: "Verdict for {field}",
+    label: { keep: "Keep", adjust: "Adjust", shift: "Shift" },
+    labelOther: { keep: "রাখুন", adjust: "একটু বদলান", shift: "বদলান" },
+    keepSentence: "Your current pattern ({current}) is about as good as it gets on this field; there is no strong reason to change.",
+    adjustSentence: "Change one season: {to} instead of {from} in {season}. Why: {why}",
+    shiftSentence: "Change the pattern to {best}. Why: {why}",
+    season: { rabi: "Rabi (winter)", kharif1: "Kharif-1 (summer)", kharif2: "Kharif-2 (monsoon)" },
+    now: "What you grow now",
+    food: "Food",
+    foodUnit: "t rice-equivalent/ha",
+    irrigation: "Irrigation",
+    mm: "mm/year",
+    whyLabel: "Why?",
+    why: {
+      inundation: "Radar (Sentinel-1) shows this field under water for 15 days or more during {crop} in {n} of the last {m} years.",
+      soil_dry: "SMAP shows this field's soil too dry for {crop} for 10 days or more in {n} of the last {m} years.",
+      heat_flowering: "{crop} had 35 °C or more in its flowering week in {n} of the last {m} years (exposure; not linked to lower yield in Feni's records).",
+      rabi_fallow_observed: "Satellites saw this field left empty in the dry season in {n} of the last {m} years.",
+    },
+    whyFoodWater: "More food: {food} vs {foodNow} t rice-equivalent/ha a year (irrigation {water} vs {waterNow} mm).",
+    error: "Could not load the recommendation. Is the offline server running?",
+    sameTop:
+      "Limitation: all six demo fields get the same first choice. Their own satellite records differ (coastal Sonagazi carries much more flood and dry-season risk than the inland fields, and the second choices differ), but the fields in this sample are too similar for the ranking to separate their top pick.",
+    howTitle: "How is this decided?",
+    howText:
+      "Patterns are real Feni crop sequences that fit the DAE crop calendar. They are ranked on food (BBS Feni yields), water (FAO-56), soil, diversity and climate risk. For these demo fields the climate risk comes from the field's own satellite record: Sentinel-1 flooding, SMAP soil moisture, flowering heat and seasons left fallow. Keep = the best pattern scores less than 0.02 above yours; Adjust = one season changes; Shift = two or more change.",
+  },
+  mapPicker: {
+    title: "Choose a field",
+    hint: "Tap a dot to choose one of six demo fields. Tap anywhere else and we use the nearest demo field. Map © OpenStreetMap (needs internet).",
+    nearest: "You tapped {km} km from the nearest demo field, {field}. These are that field's results — your own field may differ.",
+    outside: "That point is outside Feni district. Showing the nearest demo field, {field} ({km} km away).",
+    selected: "Demo field in {field}: a 90 m square chosen by rule from satellite cropland maps, not a surveyed farm.",
+  },
   fieldsFromSpace: {
     eyebrow: "NASA HLS and Sentinel-1, 2016–2025",
     title: "What satellites saw on six Feni fields",
@@ -196,7 +231,11 @@ const en = {
       none: "Not clear",
     },
     short: { Boro: "B", Rabi_nonrice: "R", Fallow: "F", T_Aman: "A", none: "?" },
-    source: "Labels from phenology rules on the satellite series (weak labels, not ground truth).",
+    source: "Labels from phenology rules on the satellite series (weak labels, not ground truth). Faded squares: the crop classifier, where the rules could not decide.",
+    fromModel: "classifier, rules undecided",
+    classifierTitle: "How good is the crop classifier?",
+    classifierNote:
+      "A LightGBM classifier trained on 1,200 Feni, Noakhali and Cumilla points copies the rules almost perfectly (2024 test year: 99.8% agreement) but it FAILED the independent check: BBS reports Feni's Aman area fell 60% in 2024-25; the classifier saw no fall (0.99 of 2023). Radar flood mapping did match the official damage reports: Feni was 1.33 times as flooded as Noakhali by satellite, 1.25 times by the BBS damage table. The classifier only fills this timeline; it does not affect recommendations.",
   },
   climateRisk: {
     eyebrow: "28 years of NASA satellite rain",
@@ -232,7 +271,7 @@ const en = {
     eraCaveat:
       "Rain counts may shift with the 2014 change of satellites ({before} hits before 2014, {after} from 2014).",
     heatCaveat:
-      "Heat uses NASA temperature corrected to the BMD Feni station; the correction rests on two years of station data.",
+      "Heat: NASA temperature 1998–2025 corrected to the BMD Feni station (two years of station data); the record has a known step down around 2015.",
     monsoonTitle: "Monsoon rain swings from year to year",
     monsoonSentence:
       "June–September rain: driest {driest} mm ({driestYear}), wettest {wettest} mm ({wettestYear}). A typical year is {cv}% above or below the average of {mean} mm.",
@@ -270,7 +309,7 @@ const en = {
     projHigh: "SSP5-8.5 (high emissions)",
     projRange: "{median} ({change}; models: {min}–{max})",
     projBaselineNote:
-      "Projections are changes added to the observed 1998–2014 climate, the years that overlap the models' 1995–2014 baseline. The same corrected record averages {recent} hot days a year since 2015: NASA temperature steps down around 2015 (see the trend tests), so \"now\" depends on the years you pick. Read the change, not the exact count.",
+      "One baseline everywhere: the observed 1998–2014 climate, the years that overlap the models' 1995–2014 baseline. The NASA temperature record has a known step down around 2015 (an inhomogeneity in the data, not investigated here), so read the change, not the exact count.",
     projModels: "{n} of 10 models fetched so far.",
     trendToggle: "Has the climate changed? Trend tests and data checks",
     hideTrend: "Hide trend tests",

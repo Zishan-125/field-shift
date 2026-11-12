@@ -491,11 +491,7 @@ function Projections({ data, language }: { data: ClimateShiftResponse; language:
           </tbody>
         </table>
       </div>
-      {data.projection_context?.hot_days_recent_mean != null && (
-        <p className="mt-2 text-[11px] leading-5 text-slate-500">
-          {fill(t.projBaselineNote, { recent: number(data.projection_context.hot_days_recent_mean, language) })}
-        </p>
-      )}
+      <p className="mt-2 text-[11px] leading-5 text-slate-500">{t.projBaselineNote}</p>
       <p className="mt-1 text-[11px] leading-5 text-slate-500">
         {fill(t.projModels, { n: number(models.size, language) })}
       </p>

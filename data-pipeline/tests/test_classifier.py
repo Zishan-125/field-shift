@@ -124,3 +124,31 @@ def test_demo_fields_endpoint_reports_coastal_fallow():
     assert coastal["field_id"] == "feni_sonagazi_01"
     assert coastal["coastal"]["fallow"] <= coastal["coastal"]["years"]
     assert "not the salt" in coastal["note"]
+
+
+def test_field_signal_reaches_the_score_and_the_top_pick_check_is_reported():
+    sys.path.insert(0, str(ROOT / "backend" / "offline"))
+    from fastapi.testclient import TestClient
+    import server
+
+    data = TestClient(server.app).get("/api/offline/demo-fields").json()
+    picks = data["top_picks"]
+
+    assert len(picks) == 6
+    # Guard: if all six share a top pick, the API must say so (shown on screen as a limitation).
+    assert data["same_top_everywhere"] == (len({p["top"] for p in picks.values()}) == 1)
+    # The field-specific signal must reach the score: coastal Sonagazi is not scored like the inland fields.
+    inland = [p["risk"] for f, p in picks.items() if f != "feni_sonagazi_01"]
+    assert picks["feni_sonagazi_01"]["risk"] > max(inland)
+    assert len({p["second"] for p in picks.values()}) > 1
+
+
+def test_recommendations_name_the_driving_hazard_from_the_field_record():
+    sys.path.insert(0, str(ROOT / "backend" / "offline"))
+    import server
+
+    result = server.pattern_recommendations("feni_sonagazi_01", server.PatternRecommendationRequest())
+    drivers = [p["risk_driver"] for p in result["results"] if p.get("risk_driver")]
+    assert drivers, "some recommendation must be driven by this field's own hazards"
+    for d in drivers:
+        assert 0 < d["evidence"]["n_hit"] <= d["evidence"]["n_years"]

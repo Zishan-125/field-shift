@@ -185,9 +185,30 @@ export interface SeasonChange {
   to: PatternCrop;
 }
 
+export type FieldHazard = "inundation" | "soil_dry" | "heat_flowering" | "rabi_fallow_observed";
+
+export interface FieldHazardCount {
+  hazard: FieldHazard;
+  weight: number;
+  n_hit: number;
+  n_years: number;
+  years_hit: number[];
+  frequency: number;
+  weighted: number;
+}
+
+export interface FieldRisk {
+  field_id: string;
+  risk: number;
+  resilience_score: number;
+  crops: { crop_id: string; name_en: string; name_bn: string; position: string | null; risk: number; hazards: FieldHazardCount[] }[];
+  drivers: (FieldHazardCount & { crop_id: string; name_en: string; name_bn: string })[];
+}
+
 export interface ScoredPattern extends CroppingPattern {
   score: number | null;
   priority_contributions: Record<string, number> | null;
+  field_risk?: FieldRisk;
 }
 
 export interface RecommendedPattern extends ScoredPattern {
@@ -196,12 +217,19 @@ export interface RecommendedPattern extends ScoredPattern {
   indicator_changes?: PatternIndicators | null;
   season_changes: SeasonChange[];
   comparison: Comparison;
+  risk_driver?: {
+    hazard: FieldHazard;
+    exposure_reduction: number;
+    evidence: FieldHazardCount & { crop_id: string; name_en: string; name_bn: string };
+  } | null;
 }
 
 export interface PatternRecommendationResponse {
   field: {
     field_id: string;
     name: string;
+    demo?: boolean;
+    upazila?: string;
   };
   priority_profile: Record<string, number>;
   current: ScoredPattern;

@@ -27,24 +27,25 @@ function fill(template: string, values: Record<string, string | number>): string
   return Object.entries(values).reduce((text, [key, value]) => text.split(`{${key}}`).join(String(value)), template);
 }
 
-function seasonClass(season: DemoFieldSeason | undefined): SeasonLabel | null {
-  if (!season) return null;
-  if (season.predicted && !season.uncertain) return season.predicted;
-  return season.rule_label;
+function seasonClass(season: DemoFieldSeason | undefined): { label: SeasonLabel | null; fromModel: boolean } {
+  if (!season) return { label: null, fromModel: false };
+  if (season.rule_label) return { label: season.rule_label, fromModel: false };
+  if (season.predicted && !season.uncertain) return { label: season.predicted, fromModel: true };
+  return { label: null, fromModel: false };
 }
 
 function Cell({ season, language }: { season: DemoFieldSeason | undefined; language: Language }) {
   const t = strings(language);
-  const label = seasonClass(season);
+  const { label, fromModel } = seasonClass(season);
   const name = label ? t.label[label] : t.label.none;
 
   return (
     <div
       className={`flex h-7 w-7 items-center justify-center rounded-md text-[10px] font-black ${
         label ? "text-white" : "border border-dashed border-slate-300 text-slate-400"
-      }`}
+      } ${fromModel ? "opacity-60" : ""}`}
       style={label ? { background: CLASS_COLOR[label] } : undefined}
-      title={`${season?.year ?? ""} · ${name}`}
+      title={`${season?.year ?? ""} · ${name}${fromModel ? ` · ${t.fromModel}` : ""}`}
       aria-label={`${season?.year ?? ""} ${name}`}
     >
       {label ? t.short[label] : t.short.none}
@@ -154,6 +155,10 @@ export default function DemoFieldsSection({ language = "bn" }: { language?: Lang
         </span>
       </div>
       <p className="mt-2 text-[11px] leading-5 text-slate-500">{t.source}</p>
+      <details className="mt-2 text-[11px] leading-5 text-slate-600">
+        <summary className="cursor-pointer font-black text-blue-700">{t.classifierTitle}</summary>
+        <p className="mt-1">{t.classifierNote}</p>
+      </details>
     </div>
   );
 }
