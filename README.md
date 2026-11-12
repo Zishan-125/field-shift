@@ -9,6 +9,8 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=for-the-badge&logo=leaflet&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
@@ -35,6 +37,7 @@ It translates complex Earth-observation and agricultural signals into one plain-
 | **Frontend** | [Vercel](https://vercel.com) | React + TypeScript farmer dashboard | [field-shift-five.vercel.app](https://field-shift-five.vercel.app/) |
 | **Backend API** | [Render](https://render.com) | Hosted FastAPI decision engine | Render web service |
 | **Database** | [Turso](https://turso.tech) | Hosted LibSQL — distributed SQLite at the edge | Turso database |
+| **App release** | [GitHub Releases](https://github.com/Zishan-125/field-shift/releases) | Installable Progressive Web App (PWA) release | [Zishan-125/field-shift](https://github.com/Zishan-125/field-shift/releases) |
 
 **Production data path:** Vercel Dashboard → Render FastAPI → Turso (LibSQL), with IndexedDB / Local Storage on the client as the offline fallback.
 
@@ -119,6 +122,14 @@ The system can:
 -  Explain why a recommendation received its score
 -  Run the farmer-facing decision layer offline
 -  Separate online data preparation from offline decision support
+-  🗺️ Let farmers explore any location on an interactive Leaflet map, draw a farmland boundary and view live **NASA POWER** telemetry
+-  🤖 Answer farm questions through the **NASA AI Farm Companion**, in Bangla and English with voice replies
+-  🌱 Show **ISRIC SoilGrids 2.0** soil information, labelled as modelled estimates
+-  🌡️ Show **28 years of NASA satellite rain and heat exposure** per crop, with flood return periods and 2041–2060 climate projections
+-  🛰️ Show what **Sentinel-1 and NASA HLS** satellites saw on demo fields in every Feni upazila (2016–2025)
+-  🌾 Compare **14 crop-rotation plans** against the most common pattern farmers use today, with food produced and irrigation water needed
+-  🎯 Support five farmer priorities: food production, water efficiency, soil protection, climate readiness and crop variety
+-  📱 Install as a **Progressive Web App**, with an app release on GitHub
 
 ---
 
@@ -217,6 +228,8 @@ flowchart TD
     A3["GPM IMERG"] --> B
     A4["ECOSTRESS"] --> B
     A5["GRACE"] --> B
+    A6["NASA POWER"] --> B
+    A7["Sentinel-1 + NASA HLS"] --> B
 
     B --> C["🧹 Canonical Observations"]
 
@@ -238,9 +251,16 @@ flowchart TD
 
     K --> L["🔎 Explainability Layer"]
 
-    L --> M["🖥️ Vercel Dashboard"]
+    L --> M["🖥️ Vercel Dashboard (PWA)"]
 
-    M --> N["👨‍🌾 Farmer UI"]
+    M --> N["👨‍🌾 Farmer UI — Bangla / English"]
+    M --> P["🤖 NASA AI Farm Companion"]
+    M --> Q["🗺️ Interactive Farm Map"]
+    P --> N
+    Q --> N
+
+    M -.->|"cache for offline use"| R["📴 IndexedDB / Local Storage"]
+    R -.->|"offline fallback"| N
 ```
 
 ---
@@ -267,9 +287,13 @@ flowchart LR
     end
 
     subgraph CLIENT["🌐 Vercel — Client App"]
-        WEB["React + TypeScript Dashboard"]
+        WEB["React + TypeScript Dashboard<br/>(Installable PWA)"]
         STORAGE["IndexedDB / Local Storage<br/>(offline fallback)"]
+        MAP["Leaflet Farm Map<br/>(boundary drawing)"]
+        COMPANION["NASA AI Farm Companion<br/>(Bangla / English, voice reply)"]
     end
+
+    POWER["NASA POWER Daily API"]
 
     NASA --> PIPE
     GEE --> PIPE
@@ -282,6 +306,9 @@ flowchart LR
     API -->|"JSON responses"| WEB
 
     WEB <-->|"cache / read when offline"| STORAGE
+    WEB --> MAP
+    WEB --> COMPANION
+    MAP -->|"click / drawn boundary (online only)"| POWER
 ```
 
 ---
@@ -297,7 +324,11 @@ The current ingestion pipeline has processed the following NASA datasets:
 | GPM IMERG | Precipitation | ✅ Ingested |
 | ECOSTRESS | Land-surface temperature / thermal condition | ✅ Ingested |
 | GRACE | Land-water-storage signal | ✅ Ingested |
-| NASA POWER | Climate/weather variables | 🔄 Feature pipeline |
+| NASA POWER | Temperature, precipitation, wind speed and solar radiation | ✅ In the dashboard |
+| NASA HLS | Green-crop signal on demo fields | ✅ In the dashboard |
+| Sentinel-1 | Radar water detection on demo fields | ✅ In the dashboard |
+| NASA-downscaled climate models | 2041–2060 projections (10 models, SSP2-4.5 and SSP5-8.5) | ✅ In the dashboard |
+| ISRIC SoilGrids 2.0 | Modelled surface-soil properties | ✅ In the dashboard |
 
 ### Primary datasets
 
@@ -350,6 +381,35 @@ WS10M
 T2M_MAX
 T2M_MIN
 ```
+
+The dashboard's live telemetry and Earth Observation Context panels use the NASA POWER Daily API:
+
+```text
+T2M                  Temperature (°C)
+PRECTOTCORR          Precipitation (mm/day)
+WS2M                 Wind speed at 2 metres (m/s)
+ALLSKY_SFC_SW_DWN    Solar radiation (kWh/m²/day)
+```
+
+NASA POWER daily observations may have a publication delay. The dashboard shows the latest available observation, not instantaneous real-time weather.
+
+#### NASA HLS and Sentinel-1
+
+**Signal:** Green-crop signal (NASA HLS) and radar water detection (Sentinel-1)
+
+Used to show what satellites saw on one demo field per Feni upazila (2016–2025) and to show the 2024 Fulgazi flood from space. These are weak phenology-based labels on demo fields, not surveyed farms.
+
+#### NASA-downscaled climate models
+
+**Signal:** 2041–2060 projections from 10 climate models under SSP2-4.5 (middle path) and SSP5-8.5 (high emissions)
+
+Applied as changes to the observed 1998–2014 climate. They are possibilities under each emissions path, not forecasts.
+
+#### ISRIC SoilGrids 2.0
+
+**Signal:** Soil pH, organic carbon, clay, sand and silt
+
+Modelled soil estimates used as context for rotation comparison. They are not direct field-measured soil samples.
 
 ---
 
@@ -428,10 +488,15 @@ Field Shift allows the farmer to define the importance of different decision obj
 
 ### Current priorities
 
-- 💧 Water Conservation
-- 🌱 Soil Health
-- ☀️ Climate Resilience
-- 🌾 Crop Diversity
+| Priority | Farmer-facing label | Default weight |
+|---|---|---|
+| 🍚 Food production | Grow more food | 30% |
+| 💧 Water efficiency | More food per drop | 25% |
+| 🌱 Soil health | Protect soil | 20% |
+| ☀️ Climate resilience | Handle climate | 15% |
+| 🌾 Crop diversity | More crop variety | 10% |
+
+Farmers can pick a main goal, raise or lower any goal with `−` / `+`, and reset at any time.
 
 The priority system allows the same rotation to receive a different ranking depending on the farmer's current priorities.
 
@@ -444,7 +509,8 @@ Priority Contribution = Factor Score × Farmer Weight
 The final decision-support score is:
 
 ```text
-Priority Fit = Water Contribution
+Priority Fit = Food Contribution
+             + Water-Efficiency Contribution
              + Soil Contribution
              + Climate Contribution
              + Diversity Contribution
@@ -453,7 +519,8 @@ Priority Fit = Water Contribution
 For example:
 
 ```text
-Water     rotation score × current weight  →  contribution
+Food             rotation score × current weight  →  contribution
+Water efficiency rotation score × current weight  →  contribution
 Soil      rotation score × current weight  →  contribution
 Climate   rotation score × current weight  →  contribution
 Diversity rotation score × current weight  →  contribution
@@ -472,7 +539,9 @@ Each recommendation can expose:
 ```text
 Rotation
    ↓
-Water score
+Food score
+   ↓
+Water-efficiency score
    ↓
 Soil score
    ↓
@@ -559,8 +628,11 @@ This distinction is intentional: a decision-support score should not be presente
 - TypeScript
 - Vite
 - Tailwind CSS
+- Leaflet (interactive farm map with boundary drawing)
 - Responsive farmer-first UI
 - Bangla / English interface
+- Voice replies for the AI Farm Companion
+- Installable PWA
 - IndexedDB
 - Local Storage
 - Offline-first frontend architecture
@@ -582,6 +654,10 @@ This distinction is intentional: a decision-support score should not be presente
 - NASA ECOSTRESS
 - NASA GRACE
 - NASA POWER
+- NASA HLS
+- Sentinel-1
+- NASA-downscaled climate models
+- ISRIC SoilGrids 2.0
 - Google Earth Engine
 - Python data-processing pipeline
 
@@ -602,7 +678,8 @@ This distinction is intentional: a decision-support score should not be presente
 - Render (backend hosting)
 - Turso (database hosting)
 - Vite
-- PWA / Service Worker roadmap
+- PWA / Service Worker
+- GitHub Releases (installable PWA app release)
 - IndexedDB
 - Local browser caching
 
@@ -668,6 +745,19 @@ Current frontend capabilities include:
 - Local storage architecture
 - Bangla / English interface
 - Farmer-oriented visual dashboard
+- Hero section and Feni regional scope summary
+- Today's field status (soil, water and weather indicators)
+- Interactive Leaflet farm map with terrain and NASA satellite layers
+- Farmland boundary drawing, editing and deletion
+- Live NASA POWER telemetry for any clicked location
+- NASA AI Farm Companion with Bangla / English replies and voice output
+- Feni regional environmental context from the prepared offline dataset
+- ISRIC SoilGrids 2.0 soil panel
+- 28-year climate evidence: heat exposure, flood-size downpours, return periods and 2041–2060 projections
+- Sentinel-1 and NASA HLS crop history on six Feni demo fields
+- Five-priority farmer weighting with `−` / `+` controls and reset
+- 14 ranked rotation plans with food, irrigation-water, calendar and local-availability details
+- Installable Progressive Web App
 
 ### 📁 Frontend Architecture
 
@@ -751,6 +841,11 @@ Farmer
 ```
 
 This means the farmer-facing decision layer does not need to continuously query NASA or Google Earth Engine. When the network or API is unreachable, the dashboard falls back to the last data cached on the device.
+
+- The **Feni regional dataset** is updated and saved locally, and the app shows an *Offline data available* status.
+- The header shows *Online / Offline* status and Bangla / English language switching.
+- Only the interactive map and live NASA POWER lookups need an internet connection.
+- The app is installable as a Progressive Web App, and an app release is published on [GitHub Releases](https://github.com/Zishan-125/field-shift/releases).
 
 ### 💾 Local Development Runtime
 
@@ -916,10 +1011,11 @@ Year 3  →  🌼 Mustard
 ### 3. Farmer Priorities
 
 ```text
-💧 Water conservation
-🌱 Soil health
-☀️ Climate resilience
-🌾 Crop diversity
+🍚 Grow more food          30%   − / +
+💧 More food per drop      25%   − / +
+🌱 Protect soil            20%   − / +
+☀️ Handle climate          15%   − / +
+🌾 More crop variety       10%   − / +
 ```
 
 ### 4. Recommendation
@@ -933,11 +1029,59 @@ Priority Fit: XX%
 
 Why?
 
-Water      XX
-Soil       XX
-Climate    XX
-Diversity  XX
+Food              XX
+Water efficiency  XX
+Soil              XX
+Climate           XX
+Diversity         XX
 ```
+
+### 🗺️ Interactive Farm Map
+
+- Leaflet map with terrain and 🛰️ NASA satellite layers
+- Draw, edit and delete a farmland boundary polygon
+- Click anywhere to retrieve **NASA POWER Daily API** observations: temperature, rainfall, wind speed and solar radiation
+- Map exploration is online-only and kept separate from the prepared Feni regional dataset, so coordinates outside Feni never change the farmer decision-support dataset
+- Daily observations may be delayed and are not real-time weather measurements
+
+### 🤖 NASA AI Farm Companion
+
+- Ask about the weather, irrigation and crop rotation for the selected location
+- Quick-question shortcuts such as *What is the best crop rotation here?*, *Do I need irrigation right now?* and *How can I improve soil health?*
+- Replies in Bangla or English, with a **Listen Voice Reply** option
+
+### 🌡️ Climate Evidence for Feni Crops
+
+Built from 28 years of NASA satellite rain (1998–2025) for Feni Sadar, and honest about its limits:
+
+- **Heat exposure** — for Boro rice and T. Aman rice, how many years reached 35 °C or more in the flowering week, using NASA temperature corrected to the BMD Feni station
+- **Flood-size downpours** — how often T. Aman rice was hit by 7-day rain of a once-in-5-years size, linked to BBS production records
+- **Exposure vs. proven damage** — each result is labelled as *exposure only* or *linked to lost harvest*
+- **Hit less often with** — shows which alternative rotations were exposed in fewer years
+- **Monsoon rain swings** — June–September rain by year, plus a *How rare was 2024?* return-period chart (7-day and 15-day) with a fitted Gumbel curve
+- **2024 flood from space** — a Fulgazi demo field seen with Sentinel-1 radar (water) and NASA HLS (green crop)
+- **2041–2060 climate projections** — 10 NASA-downscaled models under SSP2-4.5 and SSP5-8.5, shown as possibilities and not forecasts
+- **Trend tests and data checks** — for transparency about what 28 years can and cannot show
+
+### 🛰️ What Satellites Saw on Six Feni Fields
+
+One demo field per upazila (Sonagazi, Chhagalnaiya, Daganbhuiyan, Feni Sadar, Fulgazi, Parshuram), 2016–2025, from NASA HLS and Sentinel-1. Each square is a season labelled as Boro rice, T. Aman rice, fallow, other Rabi crop or not clear. These are weak phenology-based labels on demo fields chosen by rule, not surveyed farms or ground truth.
+
+### 🌾 Crop Selection & Rotation Plans
+
+- Choose up to **5 crops** from Aman rice, Aus rice, Boro rice, Lentil, Maize, Mungbean, Mustard and Wheat, with Bangla names and search
+- Field Shift compares **14 rotation plans** with **what you grow now** (Boro rice – Fallow – T. Aman rice, the most common pattern in Feni)
+- Each plan shows:
+  - **Points vs. now** and a *Best match for your priorities* highlight
+  - **What changes** by season: Rabi (winter), Kharif-1 (summer) and Kharif-2 (monsoon)
+  - 🍚 **Food produced** (t rice-equivalent / ha / year) and 💧 **irrigation water needed** (mm / year), each compared with the current pattern
+  - Whether the plan is *Better on both* or a *Trade-off*
+  - Crop type and the share of the harvest eaten by people
+  - A month-by-month crop calendar with *Fits the crop calendar* or *Tight timing* checks
+  - How widely the pattern is grown in the Chittagong region, and a warning when seed, market and advice may be hard to find locally
+- Patterns that cannot be ranked yet are listed separately as *Other patterns grown in the region*
+
+Example: **Mungbean – Aus rice – T. Aman rice** raises food produced from 5.1 to 5.7 t rice-equivalent / ha / year while cutting irrigation water by 192 mm / year.
 
 ---
 
@@ -966,16 +1110,20 @@ Where soil values originate from modelled background datasets, the interface sho
 
 This distinction is important for scientific transparency.
 
+The dashboard shows **ISRIC SoilGrids 2.0** surface-soil properties and notes that soil information is one input to rotation comparison, not a crop-specific soil diagnosis.
+
 Example:
 
 ```text
-Soil Information
+Soil Information (Feni field)
 
-pH                5.48
-Organic Carbon    XX
-Clay              XX%
+pH               5.48
+Organic carbon   22.0 g/kg
+Clay             37.9%
+Sand             27.9%
+Silt             34.2%
 
-Source: SoilGrids modelled estimate
+Source: ISRIC SoilGrids 2.0 modelled estimates
 ```
 
 ---
@@ -1068,6 +1216,8 @@ Crop-rotation decision support
 
 The goal is to demonstrate how Earth observation can be translated into locally understandable agricultural decision support.
 
+The live app is built for Feni farmers across six upazilas — Feni Sadar, Chhagalnaiya, Daganbhuiyan, Fulgazi, Parshuram and Sonagazi — using a prepared Feni regional dataset that is available offline.
+
 ---
 
 ## 🗂️ Project Structure
@@ -1147,6 +1297,10 @@ field-shift/
 - [x] GRACE ingestion
 - [x] Current dataset validation
 - [x] Canonical observation workflow
+- [x] NASA POWER live telemetry in the dashboard
+- [x] NASA HLS and Sentinel-1 crop history and flood view
+- [x] 28-year climate evidence and 2041–2060 projections
+- [x] ISRIC SoilGrids 2.0 soil panel
 - [ ] Environmental feature pipeline
 - [ ] Final ML-ready dataset refinement
 
@@ -1182,6 +1336,12 @@ field-shift/
 - [x] Local storage architecture
 - [x] Bangla / English interface
 - [x] Farmer-first visual redesign
+- [x] Interactive Leaflet farm map with boundary drawing
+- [x] NASA AI Farm Companion with voice replies
+- [x] Five-priority farmer weighting
+- [x] 14 ranked rotation plans with food and irrigation-water comparison
+- [x] Feni regional dataset with offline status
+- [x] Installable PWA with GitHub app release
 - [ ] Final production PWA workflow
 
 ### 🤖 Machine Learning
@@ -1286,6 +1446,13 @@ Primary sources include:
 - **ECOSTRESS** — ECOsystem Spaceborne Thermal Radiometer Experiment on Space Station
 - **GRACE** — Gravity Recovery and Climate Experiment
 - **NASA POWER** — Prediction Of Worldwide Energy Resources
+- **NASA HLS** — Harmonized Landsat Sentinel-2
+- **Sentinel-1** — radar imagery (ESA / Copernicus)
+- **NASA-downscaled climate models** — 2041–2060 projections
+- **ISRIC SoilGrids 2.0** — modelled soil properties
+- **BBS** — Bangladesh Bureau of Statistics crop records, used to check exposure against production
+- **BMD** — Bangladesh Meteorological Department Feni station, used to correct NASA temperature
+- Map data © OpenStreetMap contributors
 
 Additional soil and agricultural datasets may be incorporated as required by the research and feature-engineering pipeline.
 
