@@ -391,6 +391,16 @@ export default function Dashboard() {
   const [field, setField] =
     useState<Field | null>(null);
 
+  // Coordinates currently selected on FarmMap.
+  const [mapLat, setMapLat] = useState<number>(23.0185);
+  const [mapLon, setMapLon] = useState<number>(91.3976);
+  const [selectedMapLocation, setSelectedMapLocation] = useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
+  const [environmentLoading, setEnvironmentLoading] = useState(false);
+  const [environmentError, setEnvironmentError] = useState("");
+
   const [
     environment,
     setEnvironment,
@@ -537,6 +547,133 @@ export default function Dashboard() {
       active = false;
     };
   }, []);
+
+  // Fetch NASA POWER daily observations whenever the map selection changes.
+  // NASA POWER daily data is delayed, so this requests a recent completed window.
+  useEffect(() => {
+    if (!selectedMapLocation) return;
+
+    const selectedLocation = selectedMapLocation;
+    const controller = new AbortController();
+
+    async function loadSelectedLocationEnvironment() {
+      try {
+        setEnvironmentLoading(true);
+        setEnvironmentError("");
+
+        const endDate = new Date();
+        endDate.setUTCDate(endDate.getUTCDate() - 10);
+
+        const startDate = new Date();
+        startDate.setUTCDate(startDate.getUTCDate() - 17);
+
+        const formatDate = (date: Date) =>
+          date.toISOString().slice(0, 10).replace(/-/g, "");
+
+        const params = new URLSearchParams({
+          parameters: "T2M,PRECTOTCORR,WS10M,ALLSKY_SFC_SW_DWN",
+          community: "AG",
+          longitude: String(selectedLocation.lon),
+          latitude: String(selectedLocation.lat),
+          start: formatDate(startDate),
+          end: formatDate(endDate),
+          format: "JSON",
+        });
+
+        const response = await fetch(
+          `https://power.larc.nasa.gov/api/temporal/daily/point?${params.toString()}`,
+          { signal: controller.signal }
+        );
+
+        if (!response.ok) {
+          throw new Error(`NASA POWER request failed (${response.status})`);
+        }
+
+        const payload = await response.json();
+        const parameters = payload?.properties?.parameter;
+
+        const temperature = parameters?.T2M ?? {};
+        const rainfall = parameters?.PRECTOTCORR ?? {};
+        const windSpeed = parameters?.WS10M ?? {};
+        const solarRadiation = parameters?.ALLSKY_SFC_SW_DWN ?? {};
+
+        const dates = Object.keys(temperature).sort();
+
+        const rows = dates
+          .map((date) => {
+            const temp = Number(temperature[date]);
+            const rain = Number(rainfall[date]);
+            const wind = Number(windSpeed[date]);
+            const solar = Number(solarRadiation[date]);
+
+            return {
+              date,
+              observation_date: date,
+              power_temperature_mean: Number.isFinite(temp) && temp !== -999
+                ? temp
+                : null,
+              ag_rainfall_mm: Number.isFinite(rain) && rain !== -999
+                ? rain
+                : null,
+              power_precipitation: Number.isFinite(rain) && rain !== -999
+                ? rain
+                : null,
+              precipitation: Number.isFinite(rain) && rain !== -999
+                ? rain
+                : null,
+              rainfall: Number.isFinite(rain) && rain !== -999
+                ? rain
+                : null,
+              power_wind_speed: Number.isFinite(wind) && wind !== -999
+                ? wind
+                : null,
+              power_solar_radiation: Number.isFinite(solar) && solar !== -999
+                ? solar
+                : null,
+            };
+          })
+          .filter((row) =>
+            row.power_temperature_mean !== null ||
+            row.ag_rainfall_mm !== null ||
+            row.power_wind_speed !== null ||
+            row.power_solar_radiation !== null
+          );
+
+        if (rows.length === 0) {
+          throw new Error("NASA POWER returned no usable observations for these coordinates.");
+        }
+
+        // Keep the existing Environment component contract: its `data` member
+        // contains chronological observation rows.
+        setEnvironment({ data: rows } as unknown as Environment);
+      } catch (err: unknown) {
+        if (
+          err instanceof Error &&
+          err.name === "AbortError"
+        ) {
+          return;
+        }
+
+        console.error("Selected-location NASA POWER fetch failed:", err);
+        setEnvironmentError(
+          getApiErrorMessage(
+            err,
+            language === "bn"
+              ? "নির্বাচিত স্থানের NASA পরিবেশগত তথ্য লোড করা যায়নি।"
+              : "Could not load NASA environmental data for the selected location."
+          )
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setEnvironmentLoading(false);
+        }
+      }
+    }
+
+    loadSelectedLocationEnvironment();
+
+    return () => controller.abort();
+  }, [selectedMapLocation, language]);
 
   async function updateRecommendations(): Promise<boolean> {
     if (recommendationLoading) {
@@ -748,6 +885,13 @@ export default function Dashboard() {
   className="fs-section scroll-mt-6 space-y-4"
 >
   <FarmMap
+    initialLat={mapLat}
+    initialLon={mapLon}
+    onLocationSelect={(lat, lon) => {
+      setMapLat(lat);
+      setMapLon(lon);
+      setSelectedMapLocation({ lat, lon });
+    }}
     selectedFieldName={field?.name || (language === "bn" ? "নির্বাচিত জমির প্লট" : "Selected Field Plot")}
     cropHealthScore={CROP_HEALTH_SCORE}
     isBangla={language === "bn"}
@@ -790,6 +934,27 @@ export default function Dashboard() {
 
   <div className="mt-5 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
     <div className="p-5 sm:p-6">
+      {environmentLoading && (
+        <p
+          className="mb-3 rounded-xl bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700"
+          role="status"
+          aria-live="polite"
+        >
+          {language === "bn"
+            ? "নির্বাচিত স্থানাঙ্কের NASA POWER তথ্য লোড হচ্ছে..."
+            : "Loading NASA POWER observations for the selected coordinates..."}
+        </p>
+      )}
+
+      {environmentError && (
+        <p
+          className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800"
+          role="alert"
+        >
+          {environmentError}
+        </p>
+      )}
+
       <WeatherSummary
         environment={currentEnvironment}
       />
@@ -801,6 +966,12 @@ export default function Dashboard() {
       </div>
     </div>
   </div>
+
+  <p className="mt-2 text-[11px] leading-5 text-slate-500">
+    {language === "bn"
+      ? "তথ্যসূত্র: NASA POWER Daily API। দৈনিক স্যাটেলাইট/আবহাওয়া উপাত্ত প্রকাশে বিলম্ব থাকতে পারে; এটি তাৎক্ষণিক আবহাওয়া পর্যবেক্ষণ নয়।"
+      : "Source: NASA POWER Daily API. Daily observations are published with a data latency and are not instantaneous live weather measurements."}
+  </p>
 
   <div
     id="earth-observations"
