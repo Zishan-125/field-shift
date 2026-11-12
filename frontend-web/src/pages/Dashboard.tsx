@@ -1886,18 +1886,45 @@ export default function Dashboard() {
         ============================================== */}
 
         <section className="fs-section scroll-mt-6 mt-6">
-
           <FarmChatBot
             isBangla={isBangla}
             selectedFieldName={
               field?.name ||
-              (isBangla
+              (language === "bn"
                 ? "নির্বাচিত জমির প্লট"
                 : "Selected Field Plot")
             }
             cropHealthScore={CROP_HEALTH_SCORE}
+            lat={mapLat}
+            lon={mapLon}
+            liveTelemetry={{
+              temp: Number.isFinite(Number(currentEnvironment.power_temperature_mean))
+                ? Number(currentEnvironment.power_temperature_mean)
+                : null,
+              rainfall: Number.isFinite(
+                Number(
+                  currentEnvironment.ag_rainfall_mm ??
+                    currentEnvironment.power_precipitation
+                )
+              )
+                ? Number(
+                    currentEnvironment.ag_rainfall_mm ??
+                      currentEnvironment.power_precipitation
+                  )
+                : null,
+              windSpeed: Number.isFinite(Number(currentEnvironment.power_wind_speed))
+                ? Number(currentEnvironment.power_wind_speed)
+                : null,
+              solarRadiation: Number.isFinite(
+                Number(currentEnvironment.power_solar_radiation)
+              )
+                ? Number(currentEnvironment.power_solar_radiation)
+                : null,
+              observationDate: String(
+                currentEnvironment.observation_date ?? ""
+              ),
+            }}
           />
-
         </section>
 
         {/* ==============================================
