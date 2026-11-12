@@ -23,6 +23,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   sourceTag?: string;
+  locationName?: string;
 }
 
 function toValidNum(val: unknown): number | null {
@@ -33,6 +34,33 @@ function toValidNum(val: unknown): number | null {
 
 function formatNASADate(date: Date): string {
   return date.toISOString().slice(0, 10).replace(/-/g, "");
+}
+
+// Reverse geocode lat/lon to get a readable location name
+async function fetchLocationName(lat: number, lon: number): Promise<string> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`,
+      { headers: { "Accept-Language": "en" } }
+    );
+    if (!res.ok) return "";
+    const data = await res.json();
+    const address = data?.address;
+    if (!address) return data?.display_name?.split(",")[0] || "";
+
+    const locality =
+      address.village ||
+      address.town ||
+      address.city ||
+      address.county ||
+      address.state_district ||
+      address.state ||
+      "";
+    const country = address.country || "";
+    return locality && country ? `${locality}, ${country}` : locality || country;
+  } catch {
+    return "";
+  }
 }
 
 async function fetchGlobalNASATelemetry(
@@ -87,51 +115,31 @@ async function fetchGlobalNASATelemetry(
   }
 }
 
-function generateGlobalFieldAdvice(
+function generateFarmerFriendlyAdvice(
   query: string,
   lat: number,
   lon: number,
+  locationName: string,
   telemetry: LiveTelemetry | null,
-  fieldName: string,
   healthScore: number,
   isBangla: boolean
 ): { text: string; sourceTag: string } {
   const q = query.toLowerCase();
-  const isFeniRegion =
-    lat >= 22.8 && lat <= 23.25 && lon >= 91.2 && lon <= 91.6;
-
   const temp = telemetry?.temp;
   const rain = telemetry?.rainfall;
-  const wind = telemetry?.windSpeed;
   const solar = telemetry?.solarRadiation;
-  const obsDate = telemetry?.observationDate ?? "Recent";
+  const locDisplay = locationName || `Lat: ${lat.toFixed(2)}°, Lon: ${lon.toFixed(2)}`;
 
-  const hasLiveNASA =
-    temp !== null && temp !== undefined ||
-    rain !== null && rain !== undefined;
+  const sourceTag = isBangla
+    ? `🛰️ নাসা স্যাটেলাইট উপাত্ত (${locDisplay})`
+    : `🛰️ NASA Satellite Telemetry (${locDisplay})`;
 
-  const sourceTag = hasLiveNASA
-    ? isBangla
-      ? `🛰️ NASA POWER লাইভ (${lat.toFixed(2)}°, ${lon.toFixed(2)}°)`
-      : `🛰️ NASA POWER Live (${lat.toFixed(2)}°, ${lon.toFixed(2)}°)`
-    : isFeniRegion
-      ? isBangla
-        ? "📂 ফেনী অফলাইন নাসা ডেটাসেট"
-        : "📂 Feni Offline NASA Dataset"
-      : isBangla
-        ? "🌍 গ্লোবাল অফলাইন অ্যাগ্রো-ইঞ্জিন"
-        : "🌍 Global Offline Agro-Engine";
+  const tempTextBn = temp !== null && temp !== undefined ? `${temp.toFixed(1)}°C` : "স্বাভাবিক";
+  const rainTextBn = rain !== null && rain !== undefined ? `${rain.toFixed(1)} মিমি/দিন` : "পরিমিত";
+  const tempTextEn = temp !== null && temp !== undefined ? `${temp.toFixed(1)}°C` : "normal";
+  const rainTextEn = rain !== null && rain !== undefined ? `${rain.toFixed(1)} mm/day` : "moderate";
 
-  // Build telemetry summary string
-  const telemetrySummaryEn = hasLiveNASA
-    ? `At coordinates (${lat.toFixed(4)}°, ${lon.toFixed(4)}°) [Obs: ${obsDate}], NASA POWER records: Temp ${temp ?? "--"}°C, Rainfall ${rain ?? "--"} mm/day, Solar ${solar ?? "--"} kWh/m²/day, Wind ${wind ?? "--"} m/s.`
-    : `Using baseline regional profile for ${fieldName} (${lat.toFixed(4)}°, ${lon.toFixed(4)}°).`;
-
-  const telemetrySummaryBn = hasLiveNASA
-    ? `আপনার নির্বাচিত স্থানাঙ্ক (${lat.toFixed(4)}°, ${lon.toFixed(4)}°) [তারিখ: ${obsDate}]-এ NASA POWER উপাত্ত অনুযায়ী: তাপমাত্রা ${temp ?? "--"}°C, বৃষ্টিপাত ${rain ?? "--"} মিমি/দিন, সৌর বিকিরণ ${solar ?? "--"} kWh/m²/day, বাতাস ${wind ?? "--"} m/s।`
-    : `${fieldName} (${lat.toFixed(4)}°, ${lon.toFixed(4)}°)-এর জন্য সংরক্ষিত আঞ্চলিক উপাত্ত ব্যবহার করা হচ্ছে।`;
-
-  // 1. WATER / IRRIGATION / RAINFALL QUERY
+  // 1. WATER / IRRIGATION QUERY
   if (
     q.includes("water") ||
     q.includes("rain") ||
@@ -140,30 +148,28 @@ function generateGlobalFieldAdvice(
     q.includes("সেচ") ||
     q.includes("বৃষ্টি")
   ) {
-    const lowRain = rain !== null && rain !== undefined && rain < 2.0;
-    const highSolar = solar !== null && solar !== undefined && solar > 5.0;
-
+    const isDry = rain !== null && rain !== undefined && rain < 2.0;
     if (isBangla) {
       return {
         sourceTag,
-        text: `${telemetrySummaryBn}\n\n💧 **সেচ ও পানি ব্যবস্থাপনা পরামর্শ:** ${
-          lowRain
-            ? `বৃষ্টিপাত কম (${rain} মিমি/দিন)${highSolar ? " এবং উচ্চ সৌর বিকিরণের কারণে বাষ্পীভবন বেশি" : ""}। মাটির আর্দ্রতা ধরে রাখতে মালচিং (খড় বা কচুরিপানা) ব্যবহার করুন এবং সকাল বা বিকেলে হালকা সেচ দিন।`
-            : `পর্যাপ্ত আর্দ্রতা বা বৃষ্টিপাত লক্ষ্য করা যাচ্ছে। জমিতে জলাবদ্ধতা এড়াতে নালা পরিষ্কার রাখুন।`
+        text: `📍 **এলাকা:** ${locDisplay}\n🌡️ **তাপমাত্রা:** ${tempTextBn} | 🌧️ **বৃষ্টিপাত:** ${rainTextBn}\n\n💧 **কৃষকের সহজ পরামর্শ:**\n${
+          isDry
+            ? "আপনার জমিতে বর্তমানে বৃষ্টির পরিমাণ কিছুটা কম মনে হচ্ছে। মাটির আর্দ্রতা ধরে রাখতে খড় বা কচুরিপানা দিয়ে মালচিং করতে পারেন এবং সকালে বা বিকেলে হালকা সেচ দেওয়া ভালো হবে।"
+            : "জমির আবহাওয়া ও আর্দ্রতা সন্তোষজনক রয়েছে। অতিরিক্ত পানি জমতে না দিয়ে নিষ্কাশনের ব্যবস্থা রাখুন।"
         }`,
       };
     }
     return {
       sourceTag,
-      text: `${telemetrySummaryEn}\n\n💧 **Water & Irrigation Advisory:** ${
-        lowRain
-          ? `Precipitation is low (${rain} mm/day)${highSolar ? " with high solar radiation driving evapotranspiration" : ""}. Apply organic mulching to reduce soil moisture loss and schedule drip or early-morning irrigation.`
-          : `Moisture levels appear moderate. Ensure field drainage channels are clear to prevent root waterlogging.`
+      text: `📍 **Location:** ${locDisplay}\n🌡️ **Temperature:** ${tempTextEn} | 🌧️ **Rainfall:** ${rainTextEn}\n\n💧 **Farmer Advisory:**\n${
+        isDry
+          ? "Rainfall is currently on the lower side. Apply organic mulch (straw or crop residue) to retain soil moisture, and consider light irrigation during early morning or evening."
+          : "Moisture levels look adequate. Ensure your field drainage channels are clear to prevent waterlogging."
       }`,
     };
   }
 
-  // 2. CROP ROTATION / NEXT CROP QUERY
+  // 2. CROP ROTATION QUERY
   if (
     q.includes("rotat") ||
     q.includes("crop") ||
@@ -173,34 +179,27 @@ function generateGlobalFieldAdvice(
     q.includes("পরিবর্তন")
   ) {
     const isHot = temp !== null && temp !== undefined && temp > 30;
-    const isCool = temp !== null && temp !== undefined && temp < 20;
-
     if (isBangla) {
-      const suggestion = isHot
-        ? "উচ্চ তাপমাত্রার কারণে খরা-সহনশীল ডাল জাতীয় ফসল (মুগ বা মাষকলাই), তিল অথবা ভুট্টা চাষ করলে মাটির নাইট্রোজেন বাড়বে এবং পানির খরচ কমবে।"
-        : isCool
-          ? "শীতল আবহাওয়ায় সরিষা, গম, মসুর ডাল বা আলু আবর্তন ফসল হিসেবে অত্যন্ত উপযোগী।"
-          : "ধান বা প্রধান ফসলের পর শিম জাতীয় ফসল (ডাল/বাদাম) চাষ করলে মাটির জৈব পদার্থ ও নাইট্রোজেন স্থিতিশীল থাকে।";
-
       return {
         sourceTag,
-        text: `${telemetrySummaryBn}\n\n🌾 **ফসল আবর্তন (Crop Rotation) পরামর্শ:** ${suggestion}`,
+        text: `📍 **এলাকা:** ${locDisplay}\n🌡️ **তাপমাত্রা:** ${tempTextBn}\n\n🌾 **ফসল আবর্তনের সহজ পরামর্শ:**\n${
+          isHot
+            ? "বর্তমান গরম আবহাওয়ায় ধান বা প্রধান ফসলের পর ডালজাতীয় ফসল (যেমন মুগ বা মাষকলাই) কিংবা খরা-সহনশীল ফসল চাষ করলে মাটির উর্বরতা ও নাইট্রোজেন বৃদ্ধি পাবে।"
+            : "মাটির পুষ্টি ও স্বাস্থ্য ঠিক রাখতে শিমজাতীয় ফসল বা সবুজ সার আবর্তনে যুক্ত করা অত্যন্ত লাভজনক।"
+        }`,
       };
     }
-
-    const suggestionEn = isHot
-      ? "Under warm conditions (>30°C), rotating into nitrogen-fixing legumes (mung bean, cowpea), sorghum, or sesame reduces water demand and restores soil nitrogen."
-      : isCool
-        ? "Under cooler temperatures (<20°C), rotating with mustard, lentils, wheat, or winter vegetables maximizes yield while breaking pest cycles."
-        : "Rotating main cereal crops with deep-rooting legumes or cover crops improves soil organic matter, water infiltration, and nutrient cycling.";
-
     return {
       sourceTag,
-      text: `${telemetrySummaryEn}\n\n🌾 **Crop Rotation Strategy:** ${suggestionEn}`,
+      text: `📍 **Location:** ${locDisplay}\n🌡️ **Temperature:** ${tempTextEn}\n\n🌾 **Crop Rotation Advisory:**\n${
+        isHot
+          ? "Given the warm temperatures, rotating into nitrogen-fixing legumes (mung beans or cover crops) after your main harvest will naturally restore soil fertility and save water."
+          : "Adding deep-rooting legumes or rotation crops between seasons helps break pest cycles and improves soil structure."
+      }`,
     };
   }
 
-  // 3. SOIL / FERTILIZER / HEALTH QUERY
+  // 3. SOIL HEALTH QUERY
   if (
     q.includes("soil") ||
     q.includes("health") ||
@@ -212,26 +211,26 @@ function generateGlobalFieldAdvice(
     if (isBangla) {
       return {
         sourceTag,
-        text: `${telemetrySummaryBn}\n\n🌱 **মাটি ও ফসলের স্বাস্থ্য (${healthScore}/100):** মাটির দীর্ঘমেয়াদী উর্বরতা ধরে রাখতে রাসায়নিক সারের পাশাপাশি জৈব কম্পোস্ট ও নাইট্রোজেন-সংবন্ধনকারী ফসল (ডাল/ধইঞ্চা) আবর্তনে যুক্ত করুন।`,
+        text: `📍 **এলাকা:** ${locDisplay}\n\n🌱 **মাটি ও ফসলের স্বাস্থ্য (স্কোর: ${healthScore}/100):**\nমাটির উর্বরতা বাড়াতে রাসায়নিক সারের ওপর চাপ কিয়ে জৈব সার বা কম্পোস্ট ব্যবহার করুন। ডালজাতীয় ফসল চাষ করলে প্রাকৃতিকভাবে মাটিতে নাইট্রোজেন জমা হয়।`,
       };
     }
     return {
       sourceTag,
-      text: `${telemetrySummaryEn}\n\n🌱 **Soil & Field Health (${healthScore}/100):** Combine organic compost with nitrogen-fixing cover crops between primary harvests to prevent nutrient depletion and surface erosion.`,
+      text: `📍 **Location:** ${locDisplay}\n\n🌱 **Soil Health Status (Score: ${healthScore}/100):**\nBoost organic matter by mixing compost into the soil. Rotating with nitrogen-fixing cover crops will naturally enrich your fields without heavy chemical costs.`,
     };
   }
 
-  // 4. DEFAULT GENERAL FIELD STATUS
+  // DEFAULT SUMMARY
   if (isBangla) {
     return {
       sourceTag,
-      text: `${telemetrySummaryBn}\n\n📊 **মাঠের সারসংক্ষেপ (${fieldName}):** বর্তমান স্বাস্থ্য স্কোর **${healthScore}/100**। আপনি ম্যাপের যেকোনো স্থানে ক্লিক করে বা সীমানা এঁকে বিশ্বের যেকোনো জমির জন্য সেচ, মাটি বা ফসল আবর্তন সম্পর্কে প্রশ্ন করতে পারেন।`,
+      text: `📍 **নির্বাচিত এলাকা:** ${locDisplay}\n🌡️ **তাপমাত্রা:** ${tempTextBn} | 🌧️ **বৃষ্টিপাত:** ${rainTextBn}\n\n🌟 **আপনার খামারের সারসংক্ষেপ:**\nফসলের স্বাস্থ্য স্কোর **${healthScore}/100**। আপনি সেচ, সার, আবহাওয়া বা কোন ফসল চাষ করবেন তা নিয়ে যেকোনো প্রশ্ন করতে পারেন।`,
     };
   }
 
   return {
     sourceTag,
-    text: `${telemetrySummaryEn}\n\n📊 **Field Overview (${fieldName}):** Current field health score is **${healthScore}/100**. Click or draw any farm boundary on the global map above, then ask about crop rotation, irrigation, heat stress, or soil health for that exact location.`,
+    text: `📍 **Selected Location:** ${locDisplay}\n🌡️ **Temperature:** ${tempTextEn} | 🌧️ **Rainfall:** ${rainTextEn}\n\n🌟 **Field Summary:**\nField health score is **${healthScore}/100**. Ask me anything about irrigation, fertilizer, weather, or best crop choices for this land.`,
   };
 }
 
@@ -248,21 +247,77 @@ export default function FarmChatBot({
       id: "welcome",
       role: "assistant",
       sourceTag: isBangla
-        ? "🛰️ গ্লোবাল NASA অ্যাগ্রো-অ্যাডভাইজর"
-        : "🛰️ Global NASA Agro-Advisor",
+        ? "🛰️ নাসা এআই কৃষি বন্ধু"
+        : "🛰️ NASA AI Farm Companion",
       content: isBangla
-        ? "স্বাগতম! ম্যাপে বিশ্বের যেকোনো খামারের অবস্থান নির্বাচন করুন এবং আপনার জমির তাপমাত্রা, বৃষ্টিপাত, সেচ বা ফসল আবর্তন (Crop Rotation) সম্পর্কে প্রশ্ন করুন।"
-        : "Welcome! Select any farm location on the global map above and ask about temperature, rainfall, irrigation, or optimal crop rotation strategies for your exact field.",
+        ? "নমস্কার! আমি আপনার নাসা এআই কৃষি বন্ধু। ম্যাপে যেকোনো জমির ওপর ক্লিক করুন এবং আপনার এলাকার আবহাওয়া, সেচ বা ফসল আবর্তন নিয়ে যেকোনো প্রশ্ন করুন।"
+        : "Hello! I am your NASA AI Farm Companion. Click anywhere on the global map and ask me about local weather, irrigation, or crop rotation for your farm.",
     },
   ]);
 
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [locationName, setLocationName] = useState<string>("");
+  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetch location name when lat/lon changes
+  useEffect(() => {
+    let active = true;
+    async0: {
+      fetchLocationName(lat, lon).then((name) => {
+        if (active && name) setLocationName(name);
+      });
+    }
+    return () => {
+      active = false;
+    };
+  }, [lat, lon]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
+
+  // Stop speech when component unmounts
+  useEffect(() => {
+    return () => {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  function handleSpeak(textToSpeak: string, msgId: string) {
+    if (!("speechSynthesis" in window)) {
+      alert("Voice reply is not supported in your browser.");
+      return;
+    }
+
+    const synth = window.speechSynthesis;
+
+    if (speakingMessageId === msgId) {
+      synth.cancel();
+      setSpeakingMessageId(null);
+      return;
+    }
+
+    synth.cancel();
+    const cleanText = textToSpeak.replace(/[*#_📍🌡️🌧️💧🌾🌱🌟🛰️]/g, "");
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = isBangla ? "bn-BD" : "en-US";
+    utterance.rate = 0.95;
+
+    utterance.onend = () => {
+      setSpeakingMessageId(null);
+    };
+
+    utterance.onerror = () => {
+      setSpeakingMessageId(null);
+    };
+
+    setSpeakingMessageId(msgId);
+    synth.speak(utterance);
+  }
 
   async function handleSend(customPrompt?: string) {
     const query = (customPrompt ?? input).trim();
@@ -279,7 +334,6 @@ export default function FarmChatBot({
     setIsTyping(true);
 
     try {
-      // Use live telemetry passed from map/dashboard, or fetch directly from NASA POWER API for current lat/lon
       let activeTelemetry = liveTelemetry;
       if (
         !activeTelemetry ||
@@ -289,12 +343,12 @@ export default function FarmChatBot({
         activeTelemetry = await fetchGlobalNASATelemetry(lat, lon);
       }
 
-      const reply = generateGlobalFieldAdvice(
+      const reply = generateFarmerFriendlyAdvice(
         query,
         lat,
         lon,
+        locationName,
         activeTelemetry,
-        selectedFieldName,
         cropHealthScore,
         isBangla
       );
@@ -316,39 +370,40 @@ export default function FarmChatBot({
   const quickPrompts = isBangla
     ? [
         "এই জমির জন্য সেরা ফসল আবর্তন কী?",
-        "বর্তমান আবহাওয়ায় সেচ প্রয়োজন কি?",
-        "মাটির স্বাস্থ্য কীভাবে বাড়াবো?",
+        "এখন কি জমিতে সেচ দেওয়া দরকার?",
+        "মাটির উর্বরতা ও স্বাস্থ্য কীভাবে বাড়াবো?",
       ]
     : [
-        "Best crop rotation for this field?",
-        "Do I need irrigation based on NASA data?",
-        "How can I improve soil health here?",
+        "What is the best crop rotation here?",
+        "Do I need irrigation right now?",
+        "How can I improve soil health?",
       ];
+
+  const locDisplayString = locationName
+    ? `${locationName} (${lat.toFixed(2)}°, ${lon.toFixed(2)}°)`
+    : `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
 
   return (
     <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-emerald-50/60 px-5 py-4 sm:px-6">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-600">
-            {isBangla
-              ? "গ্লোবাল নাসা এআই কৃষি সহায়ক"
-              : "Global NASA Field Assistant"}
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-700">
+            {isBangla ? "নাসা এআই কৃষি বন্ধু" : "NASA AI Farm Companion"}
           </p>
           <h3 className="mt-0.5 text-base font-black text-slate-900 sm:text-lg">
-            {isBangla
-              ? "আপনার জমির তথ্য নিয়ে প্রশ্ন করুন"
-              : "Ask About Your Specific Field"}
+            {isBangla ? "আপনার জমির যেকোনো প্রশ্ন করুন" : "Ask About Your Farm & Crops"}
           </h3>
         </div>
 
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800">
-          📍 {lat.toFixed(4)}°, {lon.toFixed(4)}°
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-3 py-1.5 text-xs font-bold text-emerald-900 shadow-sm">
+          <span>📍</span>
+          <span className="max-w-[220px] truncate">{locDisplayString}</span>
         </div>
       </div>
 
       {/* Chat Messages */}
-      <div className="max-h-[340px] space-y-3 overflow-y-auto p-5 sm:p-6">
+      <div className="max-h-[360px] space-y-4 overflow-y-auto p-5 sm:p-6">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -362,13 +417,39 @@ export default function FarmChatBot({
               </span>
             )}
             <div
-              className={`max-w-[88%] whitespace-pre-line rounded-2xl px-4 py-3 text-sm leading-6 ${
+              className={`relative max-w-[90%] whitespace-pre-line rounded-2xl px-4 py-3.5 text-sm leading-6 shadow-sm ${
                 msg.role === "user"
                   ? "bg-emerald-600 font-medium text-white"
-                  : "border border-slate-200/80 bg-slate-50 text-slate-800"
+                  : "border border-slate-200/80 bg-slate-50 text-slate-900"
               }`}
             >
               {msg.content}
+
+              {/* Voice Read Aloud Button for Assistant Messages */}
+              {msg.role === "assistant" && (
+                <div className="mt-3 flex items-center justify-end border-t border-slate-200/60 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSpeak(msg.content, msg.id)}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
+                      speakingMessageId === msg.id
+                        ? "bg-amber-500 text-white shadow-sm"
+                        : "bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50"
+                    }`}
+                  >
+                    <span>{speakingMessageId === msg.id ? "⏹️" : "🔊"}</span>
+                    <span>
+                      {speakingMessageId === msg.id
+                        ? isBangla
+                          ? "বন্ধ করুন"
+                          : "Stop Audio"
+                        : isBangla
+                        ? "শুনে নিন (Listen)"
+                        : "Listen Voice Reply"}
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -378,8 +459,8 @@ export default function FarmChatBot({
             <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-600" />
             <span>
               {isBangla
-                ? "NASA POWER উপাত্ত বিশ্লেষণ করা হচ্ছে..."
-                : "Analyzing NASA POWER field observations..."}
+                ? "নাসা স্যাটেলাইট উপাত্ত বিশ্লেষণ করা হচ্ছে..."
+                : "Analyzing NASA satellite observations..."}
             </span>
           </div>
         )}
@@ -393,9 +474,9 @@ export default function FarmChatBot({
             key={prompt}
             type="button"
             onClick={() => void handleSend(prompt)}
-            className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800"
+            className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 transition hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-900 shadow-sm"
           >
-            {prompt}
+            🌱 {prompt}
           </button>
         ))}
       </div>
@@ -414,17 +495,17 @@ export default function FarmChatBot({
           onChange={(e) => setInput(e.target.value)}
           placeholder={
             isBangla
-              ? `স্থানাঙ্ক (${lat.toFixed(2)}°, ${lon.toFixed(2)}°) নিয়ে প্রশ্ন লিখুন...`
-              : `Ask about field (${lat.toFixed(2)}°, ${lon.toFixed(2)}°)...`
+              ? `${locationName || "এই জমি"} সম্পর্কে প্রশ্ন লিখুন...`
+              : `Ask about ${locationName || "this field"}...`
           }
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none"
+          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none"
         />
         <button
           type="submit"
           disabled={isTyping || !input.trim()}
-          className="shrink-0 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-black text-white transition hover:bg-emerald-700 disabled:opacity-50"
+          className="shrink-0 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-black text-white transition hover:bg-emerald-700 disabled:opacity-50 shadow-sm"
         >
-          {isBangla ? "পাঠান" : "Ask"}
+          {isBangla ? "জিজ্ঞেস করুন" : "Ask"}
         </button>
       </form>
     </div>
