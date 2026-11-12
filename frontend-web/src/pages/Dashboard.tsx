@@ -47,10 +47,8 @@ import FarmerGoalSelector from "../components/farmer/FarmerGoalSelector";
 import PatternRecommendationList from "../components/farmer/PatternRecommendationList";
 import DemoFieldsSection from "../components/farmer/DemoFieldsSection";
 
-// Interactive farm map
 import FarmMap from "../components/farmer/FarmMap";
 
-// Charts load in their own chunk.
 const ClimateShiftSection = lazy(
   () => import("../components/farmer/ClimateShiftSection"),
 );
@@ -74,6 +72,10 @@ const FIELD_ID =
 // Temporary demonstration score.
 // Replace with a real backend-derived score when available.
 const CROP_HEALTH_SCORE = 78;
+
+// =======================================================
+// HELPER FUNCTIONS
+// =======================================================
 
 function getObject(
   data: unknown,
@@ -112,16 +114,15 @@ function getApiErrorMessage(
   error: unknown,
   fallback: string,
 ): string {
-  const errorObject =
-    error as {
-      response?: {
-        data?: {
-          detail?: string;
-          message?: string;
-        };
+  const errorObject = error as {
+    response?: {
+      data?: {
+        detail?: string;
+        message?: string;
       };
-      message?: string;
     };
+    message?: string;
+  };
 
   return (
     errorObject?.response?.data?.detail ||
@@ -188,6 +189,10 @@ function calculateClimateStatus(
     ? "good"
     : "moderate";
 }
+
+// =======================================================
+// CROP NORMALIZATION
+// =======================================================
 
 function normalizeCrop(
   crop: Crop,
@@ -260,6 +265,10 @@ function extractCrops(
     .map(normalizeCrop);
 }
 
+// =======================================================
+// RECOMMENDATION HELPERS
+// =======================================================
+
 function matchesSelectedCrops(
   pattern: RecommendedPattern,
   selectedCropIds: string[],
@@ -276,6 +285,10 @@ function matchesSelectedCrops(
     ),
   );
 }
+
+// =======================================================
+// ENVIRONMENT HELPERS
+// =======================================================
 
 function latestRow(
   data: unknown,
@@ -297,7 +310,16 @@ function latestRow(
   return {};
 }
 
+// =======================================================
+// DASHBOARD
+// =======================================================
+
 export default function Dashboard() {
+
+  // =====================================================
+  // LANGUAGE
+  // =====================================================
+
   const [language, setLanguage] =
     useState<Language>(() => {
       const stored =
@@ -388,26 +410,52 @@ export default function Dashboard() {
       t.recommendations.changeCrops,
   };
 
+  // =====================================================
+  // FIELD AND MAP COORDINATES
+  // =====================================================
+
   const [field, setField] =
     useState<Field | null>(null);
 
-  // Coordinates currently selected on FarmMap.
-  const [mapLat, setMapLat] = useState<number>(23.0185);
-  const [mapLon, setMapLon] = useState<number>(91.3976);
-  const [selectedMapLocation, setSelectedMapLocation] = useState<{
-    lat: number;
-    lon: number;
-  } | null>(null);
-  const [environmentLoading, setEnvironmentLoading] = useState(false);
-  const [environmentError, setEnvironmentError] = useState("");
+  // Default Feni University / Feni location.
+  // Updated automatically when the user selects
+  // another location on FarmMap.
+
+  const [mapLat, setMapLat] =
+    useState<number>(23.0185);
+
+  const [mapLon, setMapLon] =
+    useState<number>(91.3976);
+
+  // =====================================================
+  // ENVIRONMENT STATE
+  // =====================================================
 
   const [
     environment,
     setEnvironment,
   ] = useState<Environment | null>(null);
 
+  const [
+    environmentLoading,
+    setEnvironmentLoading,
+  ] = useState(false);
+
+  const [
+    environmentError,
+    setEnvironmentError,
+  ] = useState("");
+
+  // =====================================================
+  // SOIL STATE
+  // =====================================================
+
   const [soil, setSoil] =
     useState<SoilProfile | null>(null);
+
+  // =====================================================
+  // RECOMMENDATION STATE
+  // =====================================================
 
   const [
     recommendations,
@@ -421,6 +469,10 @@ export default function Dashboard() {
       ...DEFAULT_PATTERN_PRIORITIES,
     });
 
+  // =====================================================
+  // CROP STATE
+  // =====================================================
+
   const [crops, setCrops] =
     useState<NormalizedCrop[]>([]);
 
@@ -428,6 +480,10 @@ export default function Dashboard() {
     selectedCropIds,
     setSelectedCropIds,
   ] = useState<string[]>([]);
+
+  // =====================================================
+  // DASHBOARD LOADING AND ERROR STATE
+  // =====================================================
 
   const [loading, setLoading] =
     useState(true);
@@ -445,12 +501,20 @@ export default function Dashboard() {
     setRecommendationUpdated,
   ] = useState(false);
 
+  // =====================================================
+  // LANGUAGE PERSISTENCE
+  // =====================================================
+
   useEffect(() => {
     window.localStorage.setItem(
       "field-shift-language",
       language,
     );
   }, [language]);
+
+  // =====================================================
+  // INITIAL DASHBOARD DATA LOADING
+  // =====================================================
 
   useEffect(() => {
     let active = true;
@@ -491,6 +555,10 @@ export default function Dashboard() {
           ) as Field,
         );
 
+        // Backend environment data is used as
+        // initial/fallback data.
+        // NASA POWER will update it after loading.
+
         setEnvironment(
           getObject(
             environmentData,
@@ -516,6 +584,7 @@ export default function Dashboard() {
         setCrops(
           extractCrops(cropData),
         );
+
       } catch (err: unknown) {
         console.error(
           "FIELD SHIFT dashboard load failed:",
@@ -534,6 +603,7 @@ export default function Dashboard() {
               : "Unable to connect to the FIELD SHIFT local backend.",
           ),
         );
+
       } finally {
         if (active) {
           setLoading(false);
@@ -548,105 +618,227 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Fetch NASA POWER daily observations whenever the map selection changes.
-  // NASA POWER daily data is delayed, so this requests a recent completed window.
-  useEffect(() => {
-    if (!selectedMapLocation) return;
+  // =====================================================
+  // LIVE LOCATION-BASED NASA POWER TELEMETRY
+  // =====================================================
+  //
+  // Fetches automatically:
+  // 1. After initial dashboard loading.
+  // 2. Whenever mapLat changes.
+  // 3. Whenever mapLon changes.
+  //
+  // NASA POWER daily data is delayed.
+  // This fetches a recent completed observation window.
+  //
+  // =====================================================
 
-    const selectedLocation = selectedMapLocation;
+  useEffect(() => {
+
+    // Wait until the initial backend loading completes.
+    // This prevents the initial backend environment
+    // response from overwriting NASA telemetry.
+
+    if (loading) {
+      return;
+    }
+
     const controller = new AbortController();
 
-    async function loadSelectedLocationEnvironment() {
+    async function fetchLiveEnvironment(
+      lat: number,
+      lon: number,
+    ) {
       try {
         setEnvironmentLoading(true);
         setEnvironmentError("");
 
+        // Latest available completed observation window.
         const endDate = new Date();
-        endDate.setUTCDate(endDate.getUTCDate() - 10);
+        endDate.setUTCDate(
+          endDate.getUTCDate() - 10,
+        );
 
         const startDate = new Date();
-        startDate.setUTCDate(startDate.getUTCDate() - 17);
+        startDate.setUTCDate(
+          startDate.getUTCDate() - 17,
+        );
 
         const formatDate = (date: Date) =>
-          date.toISOString().slice(0, 10).replace(/-/g, "");
+          date
+            .toISOString()
+            .slice(0, 10)
+            .replace(/-/g, "");
 
+        // NASA POWER API parameters.
         const params = new URLSearchParams({
-          parameters: "T2M,PRECTOTCORR,WS10M,ALLSKY_SFC_SW_DWN",
+          parameters:
+            "T2M,PRECTOTCORR,WS2M,ALLSKY_SFC_SW_DWN",
+
           community: "AG",
-          longitude: String(selectedLocation.lon),
-          latitude: String(selectedLocation.lat),
+
+          longitude: String(lon),
+          latitude: String(lat),
+
           start: formatDate(startDate),
           end: formatDate(endDate),
+
           format: "JSON",
         });
 
+        const url =
+          `https://power.larc.nasa.gov/api/temporal/daily/point?${params.toString()}`;
+
+        // Fetch NASA POWER observations.
         const response = await fetch(
-          `https://power.larc.nasa.gov/api/temporal/daily/point?${params.toString()}`,
-          { signal: controller.signal }
+          url,
+          {
+            signal: controller.signal,
+          },
         );
 
         if (!response.ok) {
-          throw new Error(`NASA POWER request failed (${response.status})`);
+          throw new Error(
+            `NASA POWER request failed (${response.status})`,
+          );
         }
 
         const payload = await response.json();
-        const parameters = payload?.properties?.parameter;
 
-        const temperature = parameters?.T2M ?? {};
-        const rainfall = parameters?.PRECTOTCORR ?? {};
-        const windSpeed = parameters?.WS10M ?? {};
-        const solarRadiation = parameters?.ALLSKY_SFC_SW_DWN ?? {};
+        const parameters =
+          payload?.properties?.parameter;
 
-        const dates = Object.keys(temperature).sort();
+        if (!parameters) {
+          throw new Error(
+            "Invalid NASA POWER response.",
+          );
+        }
+
+        // Extract NASA environmental parameters.
+        const temperature =
+          parameters.T2M ?? {};
+
+        const rainfall =
+          parameters.PRECTOTCORR ?? {};
+
+        const wind =
+          parameters.WS2M ?? {};
+
+        const solar =
+          parameters.ALLSKY_SFC_SW_DWN ?? {};
+
+        // Sort dates chronologically.
+        const dates = Object.keys(
+          temperature,
+        ).sort();
+
+        // Convert NASA POWER data into
+        // the existing Environment component format.
 
         const rows = dates
           .map((date) => {
-            const temp = Number(temperature[date]);
-            const rain = Number(rainfall[date]);
-            const wind = Number(windSpeed[date]);
-            const solar = Number(solarRadiation[date]);
+
+            const temp =
+              Number(temperature[date]);
+
+            const rain =
+              Number(rainfall[date]);
+
+            const windSpeed =
+              Number(wind[date]);
+
+            const solarRadiation =
+              Number(solar[date]);
+
+            const validValue = (
+              value: number,
+            ): number | null => {
+              return Number.isFinite(value) &&
+                value !== -999
+                ? value
+                : null;
+            };
+
+            const validTemp =
+              validValue(temp);
+
+            const validRain =
+              validValue(rain);
+
+            const validWind =
+              validValue(windSpeed);
+
+            const validSolar =
+              validValue(solarRadiation);
 
             return {
               date,
               observation_date: date,
-              power_temperature_mean: Number.isFinite(temp) && temp !== -999
-                ? temp
-                : null,
-              ag_rainfall_mm: Number.isFinite(rain) && rain !== -999
-                ? rain
-                : null,
-              power_precipitation: Number.isFinite(rain) && rain !== -999
-                ? rain
-                : null,
-              precipitation: Number.isFinite(rain) && rain !== -999
-                ? rain
-                : null,
-              rainfall: Number.isFinite(rain) && rain !== -999
-                ? rain
-                : null,
-              power_wind_speed: Number.isFinite(wind) && wind !== -999
-                ? wind
-                : null,
-              power_solar_radiation: Number.isFinite(solar) && solar !== -999
-                ? solar
-                : null,
+
+              // Temperature (°C)
+              power_temperature_mean:
+                validTemp,
+
+              // Rainfall / precipitation (mm/day)
+              ag_rainfall_mm:
+                validRain,
+
+              power_precipitation:
+                validRain,
+
+              precipitation:
+                validRain,
+
+              rainfall:
+                validRain,
+
+              // Wind speed (m/s)
+              power_wind_speed:
+                validWind,
+
+              // Solar radiation
+              power_solar_radiation:
+                validSolar,
             };
           })
-          .filter((row) =>
-            row.power_temperature_mean !== null ||
-            row.ag_rainfall_mm !== null ||
-            row.power_wind_speed !== null ||
-            row.power_solar_radiation !== null
+          .filter(
+            (row) =>
+              row.power_temperature_mean !== null ||
+              row.ag_rainfall_mm !== null ||
+              row.power_wind_speed !== null ||
+              row.power_solar_radiation !== null,
           );
 
         if (rows.length === 0) {
-          throw new Error("NASA POWER returned no usable observations for these coordinates.");
+          throw new Error(
+            "NASA POWER returned no usable observations for these coordinates.",
+          );
         }
 
-        // Keep the existing Environment component contract: its `data` member
-        // contains chronological observation rows.
-        setEnvironment({ data: rows } as unknown as Environment);
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        // Preserve the existing Environment contract.
+        // Its data property contains chronological rows.
+
+        setEnvironment({
+          data: rows,
+        } as unknown as Environment);
+
+        console.info(
+          "NASA POWER telemetry successfully updated:",
+          {
+            latitude: lat,
+            longitude: lon,
+            observations: rows.length,
+            latestObservation:
+              rows[rows.length - 1],
+          },
+        );
+
       } catch (err: unknown) {
+
+        // Ignore cancelled requests.
         if (
           err instanceof Error &&
           err.name === "AbortError"
@@ -654,15 +846,22 @@ export default function Dashboard() {
           return;
         }
 
-        console.error("Selected-location NASA POWER fetch failed:", err);
-        setEnvironmentError(
-          getApiErrorMessage(
-            err,
-            language === "bn"
-              ? "নির্বাচিত স্থানের NASA পরিবেশগত তথ্য লোড করা যায়নি।"
-              : "Could not load NASA environmental data for the selected location."
-          )
+        console.error(
+          "NASA POWER telemetry fetch failed:",
+          err,
         );
+
+        if (!controller.signal.aborted) {
+          setEnvironmentError(
+            getApiErrorMessage(
+              err,
+              language === "bn"
+                ? "নির্বাচিত স্থানের NASA পরিবেশগত তথ্য লোড করা যায়নি।"
+                : "Could not load NASA environmental data for the selected location.",
+            ),
+          );
+        }
+
       } finally {
         if (!controller.signal.aborted) {
           setEnvironmentLoading(false);
@@ -670,12 +869,27 @@ export default function Dashboard() {
       }
     }
 
-    loadSelectedLocationEnvironment();
+    // Trigger automatic NASA telemetry fetching.
+    fetchLiveEnvironment(
+      mapLat,
+      mapLon,
+    );
 
-    return () => controller.abort();
-  }, [selectedMapLocation, language]);
+    // Cancel outdated requests when coordinates change
+    // or the component unmounts.
+
+    return () => {
+      controller.abort();
+    };
+
+  }, [mapLat, mapLon, loading, language]);
+
+  // =====================================================
+  // UPDATE CROP ROTATION RECOMMENDATIONS
+  // =====================================================
 
   async function updateRecommendations(): Promise<boolean> {
+
     if (recommendationLoading) {
       return false;
     }
@@ -705,6 +919,7 @@ export default function Dashboard() {
       }, 120);
 
       return true;
+
     } catch (err: unknown) {
       console.error(
         "FIELD SHIFT recommendation update failed:",
@@ -721,10 +936,15 @@ export default function Dashboard() {
       );
 
       return false;
+
     } finally {
       setRecommendationLoading(false);
     }
   }
+
+  // =====================================================
+  // SELECTED CROPS
+  // =====================================================
 
   const selectedCrops =
     useMemo(
@@ -734,6 +954,10 @@ export default function Dashboard() {
         ),
       [crops, selectedCropIds],
     );
+
+  // =====================================================
+  // FILTER RECOMMENDATIONS
+  // =====================================================
 
   const recommendationResults =
     useMemo<RecommendedPattern[]>(
@@ -757,6 +981,10 @@ export default function Dashboard() {
       [recommendations, selectedCropIds],
     );
 
+  // =====================================================
+  // CURRENT ENVIRONMENT AND SOIL
+  // =====================================================
+
   const currentSoil = soil || {};
 
   const environmentRows =
@@ -767,6 +995,10 @@ export default function Dashboard() {
       data: environment,
     });
 
+  // =====================================================
+  // FIELD STATUS
+  // =====================================================
+
   const soilStatus =
     calculateSoilStatus(currentSoil);
 
@@ -776,6 +1008,10 @@ export default function Dashboard() {
   const climateStatus =
     calculateClimateStatus(currentEnvironment);
 
+  // =====================================================
+  // SELECTED CROP NAMES
+  // =====================================================
+
   const selectedCropNames =
     selectedCrops.map(
       (crop) =>
@@ -783,6 +1019,10 @@ export default function Dashboard() {
           ? crop.banglaName
           : crop.englishName,
     );
+
+  // =====================================================
+  // INITIAL LOADING SCREEN
+  // =====================================================
 
   if (loading) {
     return (
@@ -805,6 +1045,10 @@ export default function Dashboard() {
       </div>
     );
   }
+
+  // =====================================================
+  // DASHBOARD CONNECTION ERROR
+  // =====================================================
 
   if (error && !field) {
     return (
@@ -844,8 +1088,17 @@ export default function Dashboard() {
     );
   }
 
+  // =====================================================
+  // MAIN DASHBOARD
+  // =====================================================
+
   return (
     <main className="fs-page">
+
+      {/* =================================================
+          LANGUAGE SWITCHER
+      ================================================== */}
+
       <div className="fs-container pt-4">
         <div className="flex justify-end">
           <LanguageSwitcher
@@ -855,18 +1108,25 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* =================================================
+          FARMER HEADER
+      ================================================== */}
+
       <FarmerHeader
-  selectedFieldName={
-    field?.name || (isBangla ? "নির্বাচিত জমির প্লট" : "Selected Field Plot")
-  }
-  isBangla={isBangla}
-/>
+        selectedFieldName={
+          field?.name ||
+          (isBangla
+            ? "নির্বাচিত জমির প্লট"
+            : "Selected Field Plot")
+        }
+        isBangla={isBangla}
+      />
 
       <section className="fs-container py-6 sm:py-8 lg:py-10">
 
-        {/* =====================================================
+        {/* ================================================
             1. FARMER-FIRST FIELD STATUS
-        ====================================================== */}
+        ================================================= */}
 
         <section className="fs-section">
           <FarmerFieldStatus
@@ -877,115 +1137,144 @@ export default function Dashboard() {
           />
         </section>
 
- {/* =======================================================
-    2. INTERACTIVE FARM MAP
-   ======================================================= */}
-<section
-  id="farm-map"
-  className="fs-section scroll-mt-6 space-y-4"
->
-  <FarmMap
-    initialLat={mapLat}
-    initialLon={mapLon}
-    onLocationSelect={(lat, lon) => {
-      setMapLat(lat);
-      setMapLon(lon);
-      setSelectedMapLocation({ lat, lon });
-    }}
-    selectedFieldName={field?.name || (language === "bn" ? "নির্বাচিত জমির প্লট" : "Selected Field Plot")}
-    cropHealthScore={CROP_HEALTH_SCORE}
-    isBangla={language === "bn"}
-  />
-</section>
+        {/* ================================================
+            2. INTERACTIVE FARM MAP
+        ================================================= */}
 
-{/* =======================================================
-    2.1. OFFLINE-FIRST BILINGUAL FARM CHATBOT
-   ======================================================= */}
-<section className="fs-section scroll-mt-6 mt-6">
-  <FarmChatBot
-    isBangla={language === "bn"}
-    selectedFieldName={field?.name || (language === "bn" ? "নির্বাচিত জমির প্লট" : "Selected Field Plot")}
-    cropHealthScore={CROP_HEALTH_SCORE}
-  />
-</section>
-
-{/* =====================================================
-    3. SIMPLE FIELD ENVIRONMENT
-   ===================================================== */}
-
-<section className="fs-section mt-6">
-  <SectionTitle
-    eyebrow={
-      language === "bn"
-        ? "মাঠের অবস্থা"
-        : "Field environment"
-    }
-    title={
-      language === "bn"
-        ? "আজকের মাঠের পরিবেশ"
-        : "Today's field environment"
-    }
-    description={
-      language === "bn"
-        ? "মাঠের জন্য পাওয়া প্রধান পরিবেশগত তথ্য এক নজরে দেখুন।"
-        : "See the main environmental signals available for your field at a glance."
-    }
-  />
-
-  <div className="mt-5 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-    <div className="p-5 sm:p-6">
-      {environmentLoading && (
-        <p
-          className="mb-3 rounded-xl bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700"
-          role="status"
-          aria-live="polite"
+        <section
+          id="farm-map"
+          className="fs-section scroll-mt-6 space-y-4"
         >
-          {language === "bn"
-            ? "নির্বাচিত স্থানাঙ্কের NASA POWER তথ্য লোড হচ্ছে..."
-            : "Loading NASA POWER observations for the selected coordinates..."}
-        </p>
-      )}
+          <FarmMap
+            initialLat={23.0185}
+            initialLon={91.3976}
+            onLocationSelect={(lat, lon) => {
+              setMapLat(lat);
+              setMapLon(lon);
+            }}
+            selectedFieldName={
+              field?.name ||
+              (language === "bn"
+                ? "নির্বাচিত জমির প্লট"
+                : "Selected Field Plot")
+            }
+            cropHealthScore={CROP_HEALTH_SCORE}
+            isBangla={language === "bn"}
+          />
+        </section>
 
-      {environmentError && (
-        <p
-          className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800"
-          role="alert"
-        >
-          {environmentError}
-        </p>
-      )}
+        {/* ================================================
+            2.1 OFFLINE-FIRST BILINGUAL FARM CHATBOT
+        ================================================= */}
 
-      <WeatherSummary
-        environment={currentEnvironment}
-      />
+        <section className="fs-section scroll-mt-6 mt-6">
+          <FarmChatBot
+            isBangla={language === "bn"}
+            selectedFieldName={
+              field?.name ||
+              (language === "bn"
+                ? "নির্বাচিত জমির প্লট"
+                : "Selected Field Plot")
+            }
+            cropHealthScore={CROP_HEALTH_SCORE}
+          />
+        </section>
 
-      <div className="mt-4">
-        <EnvironmentSummary
-          environment={currentEnvironment}
-        />
-      </div>
-    </div>
-  </div>
+        {/* ================================================
+            3. SIMPLE FIELD ENVIRONMENT
+        ================================================= */}
 
-  <p className="mt-2 text-[11px] leading-5 text-slate-500">
-    {language === "bn"
-      ? "তথ্যসূত্র: NASA POWER Daily API। দৈনিক স্যাটেলাইট/আবহাওয়া উপাত্ত প্রকাশে বিলম্ব থাকতে পারে; এটি তাৎক্ষণিক আবহাওয়া পর্যবেক্ষণ নয়।"
-      : "Source: NASA POWER Daily API. Daily observations are published with a data latency and are not instantaneous live weather measurements."}
-  </p>
+        <section className="fs-section mt-6">
 
-  <div
-    id="earth-observations"
-    className="mt-4 scroll-mt-6"
-  >
-    <EarthObservationContext
-      data={environmentRows}
-      language={language}
-    />
-  </div>
-</section>
-        {/* =====================================================
+          <SectionTitle
+            eyebrow={
+              language === "bn"
+                ? "মাঠের অবস্থা"
+                : "Field environment"
+            }
+            title={
+              language === "bn"
+                ? "আজকের মাঠের পরিবেশ"
+                : "Today's field environment"
+            }
+            description={
+              language === "bn"
+                ? "মাঠের জন্য পাওয়া প্রধান পরিবেশগত তথ্য এক নজরে দেখুন।"
+                : "See the main environmental signals available for your field at a glance."
+            }
+          />
+
+          <div className="mt-5 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+
+            <div className="p-5 sm:p-6">
+
+              {/* NASA LOADING STATUS */}
+
+              {environmentLoading && (
+                <p
+                  className="mb-3 rounded-xl bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700"
+                  role="status"
+                  aria-live="polite"
+                >
+                  {language === "bn"
+                    ? "নির্বাচিত স্থানাঙ্কের NASA POWER তথ্য লোড হচ্ছে..."
+                    : "Loading NASA POWER observations for the selected coordinates..."}
+                </p>
+              )}
+
+              {/* NASA ERROR STATUS */}
+
+              {environmentError && (
+                <p
+                  className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800"
+                  role="alert"
+                >
+                  {environmentError}
+                </p>
+              )}
+
+              {/* WEATHER SUMMARY */}
+
+              <WeatherSummary
+                environment={currentEnvironment}
+              />
+
+              {/* ENVIRONMENT SUMMARY */}
+
+              <div className="mt-4">
+                <EnvironmentSummary
+                  environment={currentEnvironment}
+                />
+              </div>
+
+            </div>
+          </div>
+
+          {/* DATA SOURCE DISCLAIMER */}
+
+          <p className="mt-2 text-[11px] leading-5 text-slate-500">
+            {language === "bn"
+              ? "তথ্যসূত্র: NASA POWER Daily API। দৈনিক স্যাটেলাইট/আবহাওয়া উপাত্ত প্রকাশে বিলম্ব থাকতে পারে; এটি তাৎক্ষণিক আবহাওয়া পর্যবেক্ষণ নয়।"
+              : "Source: NASA POWER Daily API. Daily observations are published with a data latency and are not instantaneous live weather measurements."}
+          </p>
+
+          {/* EARTH OBSERVATION CONTEXT */}
+
+          <div
+            id="earth-observations"
+            className="mt-4 scroll-mt-6"
+          >
+            <EarthObservationContext
+              data={environmentRows}
+              language={language}
+            />
+          </div>
+
+        </section>
+
+        {/* ================================================
             4. SOIL
-        ====================================================== */}
+        ================================================= */}
 
         <section className="fs-section">
           <FarmerSoilView
@@ -994,9 +1283,9 @@ export default function Dashboard() {
           />
         </section>
 
-        {/* =====================================================
+        {/* ================================================
             5. CLIMATE SHIFT
-        ====================================================== */}
+        ================================================= */}
 
         <section className="fs-section">
           <Suspense
@@ -1004,21 +1293,25 @@ export default function Dashboard() {
               <div className="h-40 animate-pulse rounded-[2rem] bg-slate-100" />
             }
           >
-            <ClimateShiftSection language={language} />
+            <ClimateShiftSection
+              language={language}
+            />
           </Suspense>
         </section>
 
-        {/* =====================================================
+        {/* ================================================
             6. DEMO FIELDS
-        ====================================================== */}
+        ================================================= */}
 
         <section className="fs-section">
-          <DemoFieldsSection language={language} />
+          <DemoFieldsSection
+            language={language}
+          />
         </section>
 
-        {/* =====================================================
+        {/* ================================================
             7. CROP SELECTION
-        ====================================================== */}
+        ================================================= */}
 
         <section className="fs-section">
           <CropSelector
@@ -1029,11 +1322,12 @@ export default function Dashboard() {
           />
         </section>
 
-        {/* =====================================================
+        {/* ================================================
             8. FARMER PRIORITIES
-        ====================================================== */}
+        ================================================= */}
 
         <section className="fs-section">
+
           <FarmerGoalSelector
             priorities={priorities}
             onChange={setPriorities}
@@ -1042,8 +1336,11 @@ export default function Dashboard() {
             language={language}
           />
 
+          {/* RECOMMENDATION LOADING */}
+
           {recommendationLoading && (
             <div className="mt-4 flex items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4">
+
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-100 border-t-blue-600" />
               </div>
@@ -1057,8 +1354,11 @@ export default function Dashboard() {
                   {t.status.comparing}
                 </p>
               </div>
+
             </div>
           )}
+
+          {/* RECOMMENDATION UPDATED */}
 
           {recommendationUpdated &&
             !recommendationLoading && (
@@ -1067,6 +1367,7 @@ export default function Dashboard() {
                 role="status"
                 aria-live="polite"
               >
+
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-green-600 shadow-sm">
                   ✓
                 </div>
@@ -1082,14 +1383,18 @@ export default function Dashboard() {
                       : "The results now reflect your selected crops and priorities."}
                   </p>
                 </div>
+
               </div>
             )}
+
+          {/* GENERAL ERROR */}
 
           {error && field && (
             <div
               className="mt-4 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4"
               role="alert"
             >
+
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-red-600">
                 ⚠️
               </div>
@@ -1103,21 +1408,27 @@ export default function Dashboard() {
                   {error}
                 </p>
               </div>
+
             </div>
           )}
+
         </section>
 
-        {/* =====================================================
+        {/* ================================================
             9. RECOMMENDATIONS
-        ====================================================== */}
+        ================================================= */}
 
         <section
           id="recommendations"
           className="fs-section scroll-mt-6"
         >
+
           <div className="mb-5 rounded-[2rem] border border-green-100 bg-green-50 p-5 sm:p-6">
+
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
               <div>
+
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-green-600">
                   {recommendationLabels.selectedCropFilter}
                 </p>
@@ -1129,9 +1440,11 @@ export default function Dashboard() {
                 <p className="mt-2 text-sm leading-6 text-green-900/70">
                   {recommendationLabels.subtitle}
                 </p>
+
               </div>
 
               <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
+
                 <p className="text-2xl font-black text-green-700">
                   {recommendationResults.length}
                 </p>
@@ -1139,11 +1452,16 @@ export default function Dashboard() {
                 <p className="text-[10px] font-black uppercase tracking-wide text-green-600">
                   {recommendationLabels.scenarios}
                 </p>
+
               </div>
+
             </div>
+
+            {/* SELECTED CROP FILTERS */}
 
             {selectedCropNames.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
+
                 {selectedCropNames.map((name) => (
                   <span
                     key={name}
@@ -1152,9 +1470,13 @@ export default function Dashboard() {
                     🌱 {name}
                   </span>
                 ))}
+
               </div>
             )}
+
           </div>
+
+          {/* RECOMMENDATION RESULTS */}
 
           {recommendations ? (
             <PatternRecommendationList
@@ -1165,7 +1487,10 @@ export default function Dashboard() {
             />
           ) : (
             <div className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 text-center">
-              <div className="text-4xl">🌱</div>
+
+              <div className="text-4xl">
+                🌱
+              </div>
 
               <h3 className="mt-3 text-lg font-black text-amber-950">
                 {recommendationLabels.noMatch}
@@ -1174,15 +1499,18 @@ export default function Dashboard() {
               <p className="mt-2 text-sm text-amber-900/70">
                 {recommendationLabels.changeCrops}
               </p>
+
             </div>
           )}
+
         </section>
 
-        {/* =====================================================
+        {/* ================================================
             10. HOW FIELD SHIFT WORKS
-        ====================================================== */}
+        ================================================= */}
 
         <section className="fs-section overflow-hidden rounded-[2rem] border border-blue-100 bg-blue-50 p-6 sm:p-7">
+
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-blue-600">
             {language === "bn"
               ? "FIELD SHIFT কীভাবে কাজ করে"
@@ -1202,6 +1530,7 @@ export default function Dashboard() {
           </p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+
             {[
               [
                 "🛰️",
@@ -1240,11 +1569,15 @@ export default function Dashboard() {
                   : "Your farming goals influence the decision-support score.",
               ],
             ].map(([icon, title, description]) => (
+
               <div
                 key={title}
                 className="rounded-2xl bg-white/70 p-4"
               >
-                <div className="text-2xl">{icon}</div>
+
+                <div className="text-2xl">
+                  {icon}
+                </div>
 
                 <p className="mt-3 text-sm font-black text-blue-950">
                   {title}
@@ -1253,20 +1586,29 @@ export default function Dashboard() {
                 <p className="mt-1 text-xs leading-5 text-blue-900/70">
                   {description}
                 </p>
+
               </div>
+
             ))}
+
           </div>
+
         </section>
 
-        {/* =====================================================
+        {/* ================================================
             11. NOTICE
-        ====================================================== */}
+        ================================================= */}
 
         <section className="fs-section">
+
           <div className="fs-notice flex items-start gap-3 p-4 sm:p-5">
-            <span className="text-base">ℹ️</span>
+
+            <span className="text-base">
+              ℹ️
+            </span>
 
             <div>
+
               <p className="font-black text-slate-700">
                 {language === "bn"
                   ? "Decision-support তথ্য"
@@ -1278,15 +1620,19 @@ export default function Dashboard() {
                   ? "FIELD SHIFT crop-rotation scenario তুলনা করতে সাহায্য করে। এর score yield, profit বা farm performance-এর নিশ্চয়তা নয়।"
                   : "FIELD SHIFT helps compare available crop-rotation scenarios. Its scores are not guarantees of yield, profit or farm performance."}
               </p>
+
             </div>
+
           </div>
+
         </section>
 
-        {/* =====================================================
+        {/* ================================================
             12. TECHNICAL DETAILS
-        ====================================================== */}
+        ================================================= */}
 
         <details className="mb-10 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+
           <summary className="cursor-pointer px-6 py-5 text-sm font-black text-slate-800">
             {language === "bn"
               ? "কারিগরি তথ্য"
@@ -1294,6 +1640,7 @@ export default function Dashboard() {
           </summary>
 
           <div className="border-t border-slate-200 p-6">
+
             <p className="text-sm leading-6 text-slate-500">
               {language === "bn"
                 ? "FIELD SHIFT একটি স্থানীয় offline database ব্যবহার করে, যেখানে NASA-derived environmental features, মাটির তথ্য এবং মূল্যায়িত crop-rotation scenario রয়েছে। Recommendation score একটি decision-support score; এটি yield, profit বা irrigation cost-এর সরাসরি পূর্বাভাস নয়।"
@@ -1301,7 +1648,9 @@ export default function Dashboard() {
             </p>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
+
               <div className="rounded-xl bg-slate-50 p-4">
+
                 <p className="text-xs font-bold text-slate-400">
                   {language === "bn"
                     ? "চালানোর ধরন"
@@ -1311,9 +1660,11 @@ export default function Dashboard() {
                 <p className="mt-1 text-sm font-bold text-slate-800">
                   Offline
                 </p>
+
               </div>
 
               <div className="rounded-xl bg-slate-50 p-4">
+
                 <p className="text-xs font-bold text-slate-400">
                   {language === "bn"
                     ? "Scenario"
@@ -1323,9 +1674,11 @@ export default function Dashboard() {
                 <p className="mt-1 text-sm font-bold text-slate-800">
                   {recommendations?.counts.patterns ?? 0}
                 </p>
+
               </div>
 
               <div className="rounded-xl bg-slate-50 p-4">
+
                 <p className="text-xs font-bold text-slate-400">
                   {language === "bn"
                     ? "ইন্টারনেট"
@@ -1337,10 +1690,15 @@ export default function Dashboard() {
                     ? "প্রয়োজন নেই"
                     : "Not required"}
                 </p>
+
               </div>
+
             </div>
+
           </div>
+
         </details>
+
       </section>
     </main>
   );
