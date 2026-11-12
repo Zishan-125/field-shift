@@ -693,22 +693,21 @@ async function fetchNASAPOWER(
 
 export default function Dashboard() {
 
-  // -----------------------------------------------------
-  // LANGUAGE
-  // -----------------------------------------------------
+ // -----------------------------------------------------
+// LANGUAGE
+// -----------------------------------------------------
 
-  const [language, setLanguage] =
-    useState<Language>(() => {
-      const stored = localStorage.getItem(
-        "field-shift-language",
-      );
+const [language, setLanguage] =
+  useState<Language>(() => {
+    const stored = localStorage.getItem(
+      "field-shift-language",
+    );
 
-      return stored === "en" ? "en" : "bn";
-    });
+    return stored === "bn" ? "bn" : "en";
+  });
 
-  const t = language === "bn" ? bn : en;
-  const isBangla = language === "bn";
-
+const t = language === "bn" ? bn : en;
+const isBangla = language === "bn";
   const recommendationLabels = {
     selectedCropFilter:
       "selectedCropFilter" in t.recommendations
