@@ -119,6 +119,7 @@ function generateFarmerFriendlyAdvice(
   lat: number,
   lon: number,
   locationName: string,
+  fieldName: string,
   telemetry: LiveTelemetry | null,
   healthScore: number,
   isBangla: boolean
@@ -150,7 +151,7 @@ function generateFarmerFriendlyAdvice(
     if (isBangla) {
       return {
         sourceTag,
-        text: `📍 **এলাকা:** ${locDisplay}\n🌡️ **তাপমাত্রা:** ${tempTextBn} | 🌧️ **বৃষ্টিপাত:** ${rainTextBn}\n\n💧 **কৃষকের সহজ পরামর্শ:**\n${
+        text: `📍 **এলাকা (${fieldName}):** ${locDisplay}\n🌡️ **তাপমাত্রা:** ${tempTextBn} | 🌧️ **বৃষ্টিপাত:** ${rainTextBn}\n\n💧 **কৃষকের সহজ পরামর্শ:**\n${
           isDry
             ? "আপনার জমিতে বর্তমানে বৃষ্টির পরিমাণ কিছুটা কম মনে হচ্ছে। মাটির আর্দ্রতা ধরে রাখতে খড় বা কচুরিপানা দিয়ে মালচিং করতে পারেন এবং সকালে বা বিকেলে হালকা সেচ দেওয়া ভালো হবে।"
             : "জমির আবহাওয়া ও আর্দ্রতা সন্তোষজনক রয়েছে। অতিরিক্ত পানি জমতে না দিয়ে নিষ্কাশনের ব্যবস্থা রাখুন।"
@@ -159,7 +160,7 @@ function generateFarmerFriendlyAdvice(
     }
     return {
       sourceTag,
-      text: `📍 **Location:** ${locDisplay}\n🌡️ **Temperature:** ${tempTextEn} | 🌧️ **Rainfall:** ${rainTextEn}\n\n💧 **Farmer Advisory:**\n${
+      text: `📍 **Location (${fieldName}):** ${locDisplay}\n🌡️ **Temperature:** ${tempTextEn} | 🌧️ **Rainfall:** ${rainTextEn}\n\n💧 **Farmer Advisory:**\n${
         isDry
           ? "Rainfall is currently on the lower side. Apply organic mulch (straw or crop residue) to retain soil moisture, and consider light irrigation during early morning or evening."
           : "Moisture levels look adequate. Ensure your field drainage channels are clear to prevent waterlogging."
@@ -180,7 +181,7 @@ function generateFarmerFriendlyAdvice(
     if (isBangla) {
       return {
         sourceTag,
-        text: `📍 **এলাকা:** ${locDisplay}\n🌡️ **তাপমাত্রা:** ${tempTextBn}\n\n🌾 **ফসল আবর্তনের সহজ পরামর্শ:**\n${
+        text: `📍 **এলাকা (${fieldName}):** ${locDisplay}\n🌡️ **তাপমাত্রা:** ${tempTextBn}\n\n🌾 **ফসল আবর্তনের সহজ পরামর্শ:**\n${
           isHot
             ? "বর্তমান গরম আবহাওয়ায় ধান বা প্রধান ফসলের পর ডালজাতীয় ফসল (যেমন মুগ বা মাষকলাই) কিংবা খরা-সহনশীল ফসল চাষ করলে মাটির উর্বরতা ও নাইট্রোজেন বৃদ্ধি পাবে।"
             : "মাটির পুষ্টি ও স্বাস্থ্য ঠিক রাখতে শিমজাতীয় ফসল বা সবুজ সার আবর্তনে যুক্ত করা অত্যন্ত লাভজনক।"
@@ -189,7 +190,7 @@ function generateFarmerFriendlyAdvice(
     }
     return {
       sourceTag,
-      text: `📍 **Location:** ${locDisplay}\n🌡️ **Temperature:** ${tempTextEn}\n\n🌾 **Crop Rotation Advisory:**\n${
+      text: `📍 **Location (${fieldName}):** ${locDisplay}\n🌡️ **Temperature:** ${tempTextEn}\n\n🌾 **Crop Rotation Advisory:**\n${
         isHot
           ? "Given the warm temperatures, rotating into nitrogen-fixing legumes (mung beans or cover crops) after your main harvest will naturally restore soil fertility and save water."
           : "Adding deep-rooting legumes or rotation crops between seasons helps break pest cycles and improves soil structure."
@@ -209,12 +210,12 @@ function generateFarmerFriendlyAdvice(
     if (isBangla) {
       return {
         sourceTag,
-        text: `📍 **এলাকা:** ${locDisplay}\n\n🌱 **মাটি ও ফসলের স্বাস্থ্য (স্কোর: ${healthScore}/100):**\nমাটির উর্বরতা বাড়াতে রাসায়নিক সারের ওপর চাপ কমিয়ে জৈব সার বা কম্পোস্ট ব্যবহার করুন। ডালজাতীয় ফসল চাষ করলে প্রাকৃতিকভাবে মাটিতে নাইট্রোজেন জমা হয়।`,
+        text: `📍 **এলাকা (${fieldName}):** ${locDisplay}\n\n🌱 **মাটি ও ফসলের স্বাস্থ্য (স্কোর: ${healthScore}/100):**\nমাটির উর্বরতা বাড়াতে রাসায়নিক সারের ওপর চাপ কমিয়ে জৈব সার বা কম্পোস্ট ব্যবহার করুন। ডালজাতীয় ফসল চাষ করলে প্রাকৃতিকভাবে মাটিতে নাইট্রোজেন জমা হয়।`,
       };
     }
     return {
       sourceTag,
-      text: `📍 **Location:** ${locDisplay}\n\n🌱 **Soil Health Status (Score: ${healthScore}/100):**\nBoost organic matter by mixing compost into the soil. Rotating with nitrogen-fixing cover crops will naturally enrich your fields without heavy chemical costs.`,
+      text: `📍 **Location (${fieldName}):** ${locDisplay}\n\n🌱 **Soil Health Status (Score: ${healthScore}/100):**\nBoost organic matter by mixing compost into the soil. Rotating with nitrogen-fixing cover crops will naturally enrich your fields without heavy chemical costs.`,
     };
   }
 
@@ -222,24 +223,24 @@ function generateFarmerFriendlyAdvice(
   if (isBangla) {
     return {
       sourceTag,
-      text: `📍 **নির্বাচিত এলাকা:** ${locDisplay}\n🌡️ **তাপমাত্রা:** ${tempTextBn} | 🌧️ **বৃষ্টিপাত:** ${rainTextBn}\n\n🌟 **আপনার খামারের সারসংক্ষেপ:**\nফসলের স্বাস্থ্য স্কোর **${healthScore}/100**। আপনি সেচ, সার, আবহাওয়া বা কোন ফসল চাষ করবেন তা নিয়ে যেকোনো প্রশ্ন করতে পারেন।`,
+      text: `📍 **নির্বাচিত এলাকা (${fieldName}):** ${locDisplay}\n🌡️ **তাপমাত্রা:** ${tempTextBn} | 🌧️ **বৃষ্টিপাত:** ${rainTextBn}\n\n🌟 **আপনার খামারের সারসংক্ষেপ:**\nফসলের স্বাস্থ্য স্কোর **${healthScore}/100**। আপনি সেচ, সার, আবহাওয়া বা কোন ফসল চাষ করবেন তা নিয়ে যেকোনো প্রশ্ন করতে পারেন।`,
     };
   }
 
   return {
     sourceTag,
-    text: `📍 **Selected Location:** ${locDisplay}\n🌡️ **Temperature:** ${tempTextEn} | 🌧️ **Rainfall:** ${rainTextEn}\n\n🌟 **Field Summary:**\nField health score is **${healthScore}/100**. Ask me anything about irrigation, fertilizer, weather, or best crop choices for this land.`,
+    text: `📍 **Selected Location (${fieldName}):** ${locDisplay}\n🌡️ **Temperature:** ${tempTextEn} | 🌧️ **Rainfall:** ${rainTextEn}\n\n🌟 **Field Summary:**\nField health score is **${healthScore}/100**. Ask me anything about irrigation, fertilizer, weather, or best crop choices for this land.`,
   };
 }
 
 export default function FarmChatBot({
   isBangla = false,
-  _selectedFieldName = "Field Plot",
+  selectedFieldName = "Field Plot",
   cropHealthScore = 78,
   lat = 23.0185,
   lon = 91.3976,
   liveTelemetry = null,
-}: FarmChatBotProps & { _selectedFieldName?: string }) {
+}: FarmChatBotProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: "welcome",
@@ -248,8 +249,8 @@ export default function FarmChatBot({
         ? "🛰️ নাসা এআই কৃষি বন্ধু"
         : "🛰️ NASA AI Farm Companion",
       content: isBangla
-        ? "নমস্কার! আমি আপনার নাসা এআই কৃষি বন্ধু। ম্যাপে যেকোনো জমির ওপর ক্লিক করুন এবং আপনার এলাকার আবহাওয়া, সেচ বা ফসল আবর্তন নিয়ে যেকোনো প্রশ্ন করুন।"
-        : "Hello! I am your NASA AI Farm Companion. Click anywhere on the global map and ask me about local weather, irrigation, or crop rotation for your farm.",
+        ? `নমস্কার! আমি আপনার নাসা এআই কৃষি বন্ধু (${selectedFieldName})। ম্যাপে যেকোনো জমির ওপর ক্লিক করুন এবং আপনার এলাকার আবহাওয়া, সেচ বা ফসল আবর্তন নিয়ে যেকোনো প্রশ্ন করুন।`
+        : `Hello! I am your NASA AI Farm Companion for ${selectedFieldName}. Click anywhere on the global map and ask me about local weather, irrigation, or crop rotation for your farm.`,
     },
   ]);
 
@@ -344,6 +345,7 @@ export default function FarmChatBot({
         lat,
         lon,
         locationName,
+        selectedFieldName,
         activeTelemetry,
         cropHealthScore,
         isBangla
@@ -491,8 +493,8 @@ export default function FarmChatBot({
           onChange={(e) => setInput(e.target.value)}
           placeholder={
             isBangla
-              ? `${locationName || "এই জমি"} সম্পর্কে প্রশ্ন লিখুন...`
-              : `Ask about ${locationName || "this field"}...`
+              ? `${locationName || selectedFieldName} সম্পর্কে প্রশ্ন লিখুন...`
+              : `Ask about ${locationName || selectedFieldName}...`
           }
           className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none"
         />
