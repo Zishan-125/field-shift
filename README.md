@@ -215,9 +215,16 @@ script; tables are reloaded with `backend/offline/build_*_tables.py`.
 
 ### Deployment
 
-The frontend is built by Vercel from this repository. Production (`field-shift-five.vercel.app`) deploys the
-`Zishan-backend-ml-models-data-pipeline` branch; every push to `improve/feni-v2` gets a Vercel preview.
-The app needs the FastAPI server above; point `VITE_API_BASE_URL` at it.
+The frontend is built by Vercel from this repository (checked 12 Nov 2026 through GitHub's deployment
+records):
+
+* **Production**, [field-shift-five.vercel.app](https://field-shift-five.vercel.app/), deploys the
+  `Zishan-backend-ml-models-data-pipeline` branch. That branch does **not** yet contain the work described
+  here (verdict card, field risk, validation); it has a separate map and chat assistant.
+* Every push to `improve/feni-v2` gets a Vercel preview, which is behind Vercel login.
+* The app needs the FastAPI server above, reachable at `VITE_API_BASE_URL` (a build-time setting in Vercel).
+  No hosted backend for this branch is confirmed; the README previously named Render and Turso, which this
+  code does not use. Until one is set up, run it locally as above.
 
 ## License
 
