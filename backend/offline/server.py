@@ -760,10 +760,11 @@ def recommendations(
     # -------------------------------------------------------------
 
     return {
-        "field": {
-            "field_id": field["field_id"],
-            "name": field.get("name"),
-        },
+        "field": (
+            {"field_id": field_id, "name": f"Demo field, {demo_field['upazila']}", "demo": True,
+             "upazila": demo_field["upazila"]}
+            if demo else {"field_id": field["field_id"], "name": field.get("name"), "demo": False}
+        ),
 
         "priority_profile": weights,
 
@@ -1213,7 +1214,8 @@ def pattern_recommendations(
     each one as a change from the farmer's current pattern.
     """
 
-    field = require_field(field_id)
+    demo = is_demo_field(field_id)
+    field = require_field(FIELD_ID if demo else field_id)
     weights = normalize_pattern_priorities(request)
 
     names = crop_names()
@@ -1229,6 +1231,19 @@ def pattern_recommendations(
             status_code=404,
             detail=f"Pattern not found: {request.current_pattern_id}",
         )
+
+    # Demo fields: the climate score comes from the field's own satellite
+    # record instead of the hand-set crop priors.
+    demo_field = None
+    if demo:
+        demo_field = fetch_one("SELECT * FROM demo_fields WHERE field_id = ?", (field_id,))
+        offsets = flowering_offsets()
+        for pattern in patterns.values():
+            if pattern["indicators"] is None:
+                continue
+            risk = field_pattern_risk(pattern, field_id, demo_field["upazila"], offsets)
+            pattern["field_risk"] = risk
+            pattern["indicators"] = {**pattern["indicators"], "climate_resilience_score": risk["resilience_score"]}
 
     def score(pattern: dict):
         if pattern["indicators"] is None:
@@ -1330,7 +1345,11 @@ def pattern_recommendations(
                 "food_production_score": "sourced: BBS Feni yields 2024-25 x food energy (FCT Bangladesh 2013, USDA) x share eaten by people (FAOSTAT FBS Bangladesh)",
                 "water_productivity_score": "sourced: human food energy per m3 of crop water need (FAO-56 Kc x ET0, FAO effective rainfall)",
                 "soil_health_score": "provisional: hand-set crop priors",
-                "climate_resilience_score": "provisional: hand-set crop priors",
+                "climate_resilience_score": (
+                    "sourced: this field's own record - Sentinel-1 inundation, SMAP root-zone dryness, "
+                    "flowering heat, observed Rabi fallow (docs/methodology/field-risk.md)"
+                    if demo else "provisional: hand-set crop priors"
+                ),
                 "crop_diversity_score": "crop groups per season",
             },
             "default_priorities": DEFAULT_PATTERN_PRIORITIES,
@@ -1708,6 +1727,177 @@ def projection_context(upazila: str) -> dict:
         "recent_years": "2015-2025",
         "models_total": 10,
     }
+
+
+# ---------------------------------------------------------------------
+# FIELD RISK: hazard frequencies from each demo field's own record
+# ---------------------------------------------------------------------
+
+# Weights say how far each signal is backed up (docs/methodology/field-risk.md):
+# inundation is observed on the field and floods go with lost Aman production
+# in BBS records; soil dryness is a model product (SMAP, 9 km) not yet checked
+# against yield; heat at flowering did not line up with yield (exposure only);
+# a Rabi season left fallow is observed but its cause is unknown.
+FIELD_HAZARD_WEIGHTS = {"inundation": 1.0, "soil_dry": 0.5, "heat_flowering": 0.25, "rabi_fallow_observed": 0.5}
+
+# FAO-56 depletion fraction p (Allen et al. 1998, Table 22). Grass pea is not
+# in the table, so its soil-dry count is skipped.
+FAO56_P = {
+    "rice_aman": 0.20, "rice_aus": 0.20, "rice_boro": 0.20, "wheat": 0.55, "maize": 0.55,
+    "mustard": 0.60, "lentil": 0.50, "mungbean": 0.45, "potato": 0.35, "groundnut": 0.50, "chili": 0.30,
+}
+IRRIGATED = {"rice_boro"}            # Boro is irrigated: soil dryness is not its limit
+INUNDATION_VH_DB = -22.0             # single Sentinel-1 scene over open water
+RICE_FLOOD_DAYS = 15                 # water on consecutive passes for > 2 weeks: beyond normal paddy water
+                                     # here (<= 13 days, 2017-2025) and beyond the ~2-week submergence
+                                     # tolerance of Sub1 rice (Xu et al. 2006, Nature 442: 705-708)
+DRY_RUN_DAYS = 10
+S1_FIRST_YEAR = 2017                 # full three-orbit coverage from 2017 (orbit-mix table)
+
+_FIELD_CACHE: dict = {}
+
+
+def is_demo_field(field_id: str) -> bool:
+    return table_exists("demo_fields") and fetch_one(
+        "SELECT field_id FROM demo_fields WHERE field_id = ?", (field_id,)
+    ) is not None
+
+
+def field_series(field_id: str) -> dict:
+    import pandas as pd
+
+    if field_id not in _FIELD_CACHE:
+        s1 = pd.DataFrame(fetch_all("SELECT date, vh_db FROM demo_field_s1 WHERE field_id = ? ORDER BY date", (field_id,))) \
+            if table_exists("demo_field_s1") else pd.DataFrame()
+        smap = pd.DataFrame(fetch_all("SELECT date, theta_field FROM demo_field_smap WHERE field_id = ? ORDER BY date", (field_id,))) \
+            if table_exists("demo_field_smap") else pd.DataFrame()
+        for frame in (s1, smap):
+            if not frame.empty:
+                frame["date"] = pd.to_datetime(frame["date"])
+        soil = fetch_one("SELECT * FROM demo_field_soil WHERE field_id = ?", (field_id,)) \
+            if table_exists("demo_field_soil") else None
+        rabi = fetch_all(
+            "SELECT year, rule_label FROM demo_field_seasons WHERE field_id = ? AND season = 'rabi'", (field_id,)
+        )
+        _FIELD_CACHE[field_id] = {"s1": s1, "smap": smap, "soil": soil, "rabi": rabi, "pd": pd}
+    return _FIELD_CACHE[field_id]
+
+
+def longest_true_run(values) -> int:
+    best = run = 0
+    for value in values:
+        run = run + 1 if value else 0
+        best = max(best, run)
+    return best
+
+
+def longest_wet_spell_days(dates: list, wet) -> int:
+    """Days from the first to the last pass of the longest run of consecutive wet passes."""
+
+    best, start = 0, None
+    for i, value in enumerate(wet):
+        if value and start is None:
+            start = i
+        if start is not None and (not value or i == len(wet) - 1):
+            end = i if value else i - 1
+            best = max(best, (dates[end] - dates[start]).days)
+            start = None
+    return best
+
+
+def field_hits(item: dict, field_id: str, upazila: str, offsets: dict) -> dict:
+    """{hazard: {"years_hit": [...], "n_years": n}} for one crop window on one demo field."""
+
+    data = field_series(field_id)
+    pd, s1, smap, soil = data["pd"], data["s1"], data["smap"], data["soil"]
+    crop = item["crop_id"]
+    rice = crop.startswith("rice_")
+    out: dict = {}
+
+    if not s1.empty:
+        hits, years = [], []
+        for year in range(S1_FIRST_YEAR, s1["date"].max().year + 1):
+            start = pd.Timestamp(year, 1, 1) + pd.Timedelta(days=item["start_doy"] - 1)
+            end = start + pd.Timedelta(days=item["field_days"] - 1)
+            if start.year < S1_FIRST_YEAR or end > s1["date"].max():
+                continue
+            scenes = s1[(s1["date"] >= start) & (s1["date"] <= end)]
+            if len(scenes) < max(2, item["field_days"] // 15):
+                continue
+            years.append(end.year)
+            wet = (scenes["vh_db"] < INUNDATION_VH_DB).to_numpy()
+            if rice:
+                # Paddy stands in water on purpose; a flood is water that stays.
+                flooded = longest_wet_spell_days(list(scenes["date"]), wet) >= RICE_FLOOD_DAYS
+            else:
+                flooded = bool(wet.any())
+            if flooded:
+                hits.append(end.year)
+        out["inundation"] = {"years_hit": hits, "n_years": len(years)}
+
+    if not smap.empty and soil and crop in FAO56_P and crop not in IRRIGATED:
+        threshold = soil["theta_fc"] - FAO56_P[crop] * (soil["theta_fc"] - soil["theta_wp"])
+        hits, years = [], []
+        for year in range(smap["date"].min().year, smap["date"].max().year + 1):
+            start = pd.Timestamp(year, 1, 1) + pd.Timedelta(days=item["start_doy"] - 1)
+            end = start + pd.Timedelta(days=item["field_days"] - 1)
+            if start < smap["date"].min() or end > smap["date"].max():
+                continue
+            days = smap[(smap["date"] >= start) & (smap["date"] <= end)]
+            years.append(end.year)
+            if longest_true_run((days["theta_field"] < threshold).to_numpy()) >= DRY_RUN_DAYS:
+                hits.append(end.year)
+        out["soil_dry"] = {"years_hit": hits, "n_years": len(years), "threshold_m3m3": round(threshold, 3)}
+
+    if rice and crop in offsets and table_exists("climate_daily"):
+        heat = crop_hits(item, upazila, offsets)
+        if "heat_flowering" in heat["hits"]:
+            out["heat_flowering"] = {"years_hit": heat["hits"]["heat_flowering"], "n_years": len(heat["years"])}
+
+    if item.get("position") == "rabi":
+        labelled = [r for r in data["rabi"] if r["rule_label"]]
+        if labelled:
+            out["rabi_fallow_observed"] = {
+                "years_hit": sorted(r["year"] for r in labelled if r["rule_label"] == "Fallow"),
+                "n_years": len(labelled),
+            }
+
+    return out
+
+
+def field_pattern_risk(pattern: dict, field_id: str, upazila: str, offsets: dict) -> dict:
+    """Weighted hazard frequency per crop, averaged over the pattern's crops."""
+
+    crops = []
+    for item in pattern["schedule"]:
+        if item.get("is_fallow"):
+            continue
+        hazards = field_hits(item, field_id, upazila, offsets)
+        terms = []
+        for hazard, h in hazards.items():
+            if not h["n_years"]:
+                continue
+            frequency = len(h["years_hit"]) / h["n_years"]
+            terms.append({
+                "hazard": hazard, "weight": FIELD_HAZARD_WEIGHTS[hazard], "n_hit": len(h["years_hit"]),
+                "n_years": h["n_years"], "years_hit": h["years_hit"], "frequency": round(frequency, 3),
+                "weighted": round(FIELD_HAZARD_WEIGHTS[hazard] * frequency, 3),
+            })
+        risk = min(1.0, sum(t["weighted"] for t in terms))
+        crops.append({
+            "crop_id": item["crop_id"], "name_en": item["name_en"], "name_bn": item["name_bn"],
+            "position": item.get("position"), "risk": round(risk, 3),
+            "hazards": sorted(terms, key=lambda t: -t["weighted"]),
+        })
+
+    risk = sum(c["risk"] for c in crops) / len(crops) if crops else 0.0
+    drivers = sorted(
+        ({**h, "crop_id": c["crop_id"], "name_en": c["name_en"], "name_bn": c["name_bn"], "position": c["position"]}
+         for c in crops for h in c["hazards"] if h["n_hit"] > 0),
+        key=lambda d: -d["weighted"],
+    )
+    return {"field_id": field_id, "risk": round(risk, 3), "resilience_score": round(1 - risk, 6),
+            "crops": crops, "drivers": drivers[:3]}
 
 
 def climate_extremes_block(upazila: str) -> dict | None:
