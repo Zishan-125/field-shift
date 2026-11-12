@@ -1,5 +1,10 @@
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 
-import { useState, useEffect, useRef, useCallback } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -55,10 +60,8 @@ interface NASAResponse {
   messages?: string[];
 }
 
-// Convert NASA POWER values safely.
-// NASA POWER uses -999 for unavailable observations.
 function toValidNumber(value: unknown): number | null {
-  if (value === null || value === undefined) {
+  if (value === null || value === undefined || value === "") {
     return null;
   }
 
@@ -71,12 +74,14 @@ function toValidNumber(value: unknown): number | null {
   return parsed;
 }
 
-// Format a date as YYYYMMDD using UTC.
 function formatNASADate(date: Date): string {
   return date.toISOString().slice(0, 10).replace(/-/g, "");
 }
 
-// Automatically re-center map smoothly when coordinates change.
+// -------------------------------------------------------
+// MAP RECENTER
+// -------------------------------------------------------
+
 function MapRecenter({
   lat,
   lon,
@@ -95,7 +100,10 @@ function MapRecenter({
   return null;
 }
 
-// Handle polygon drawing controls natively via Leaflet.
+// -------------------------------------------------------
+// POLYGON DRAW CONTROL
+// -------------------------------------------------------
+
 function DrawControlComponent({
   onLocationSelect,
 }: {
@@ -103,11 +111,10 @@ function DrawControlComponent({
 }) {
   const map = useMap();
 
-  const onLocationSelectRef = useRef(onLocationSelect);
+  const callbackRef = useRef(onLocationSelect);
 
-  // Keep the latest callback without rebuilding Leaflet controls.
   useEffect(() => {
-    onLocationSelectRef.current = onLocationSelect;
+    callbackRef.current = onLocationSelect;
   }, [onLocationSelect]);
 
   useEffect(() => {
@@ -142,21 +149,26 @@ function DrawControlComponent({
 
     map.addControl(drawControl);
 
-    const handleCreated = (event: L.LeafletEvent) => {
-      const layer = (event as L.DrawEvents.Created).layer as L.Polygon;
+    // Use a small structural type instead of relying on
+    // L.DrawEvents.Created being exported by every type version.
+    const handleCreated = (event: L.LeafletEvent & {
+      layer: L.Layer;
+    }) => {
+      const layer = event.layer;
 
       drawnItems.addLayer(layer);
 
-      // Use the polygon bounding-box center as the representative point.
-      const center = layer.getBounds().getCenter();
+      if (
+        layer instanceof L.Polygon ||
+        layer instanceof L.Rectangle
+      ) {
+        const center = layer.getBounds().getCenter();
 
-      const selectedLat = Number(center.lat.toFixed(4));
-      const selectedLon = Number(center.lng.toFixed(4));
-
-      onLocationSelectRef.current?.(
-        selectedLat,
-        selectedLon
-      );
+        callbackRef.current?.(
+          Number(center.lat.toFixed(4)),
+          Number(center.lng.toFixed(4)),
+        );
+      }
     };
 
     map.on(L.Draw.Event.CREATED, handleCreated);
@@ -171,7 +183,10 @@ function DrawControlComponent({
   return null;
 }
 
-// Capture clicks anywhere on the map.
+// -------------------------------------------------------
+// MAP CLICK HANDLER
+// -------------------------------------------------------
+
 function LocationClickHandler({
   onSelect,
 }: {
@@ -181,13 +196,17 @@ function LocationClickHandler({
     click(event) {
       onSelect(
         event.latlng.lat,
-        event.latlng.lng
+        event.latlng.lng,
       );
     },
   });
 
   return null;
 }
+
+// =======================================================
+// FARM MAP
+// =======================================================
 
 export default function FarmMap({
   onLocationSelect,
@@ -197,12 +216,20 @@ export default function FarmMap({
   cropHealthScore,
   isBangla = false,
 }: FarmMapProps) {
+  // -----------------------------------------------------
+  // COORDINATES
+  // -----------------------------------------------------
+
   const [lat, setLat] = useState<number>(initialLat);
   const [lon, setLon] = useState<number>(initialLon);
 
   const [mapLayer, setMapLayer] = useState<
     "standard" | "nasa"
   >("standard");
+
+  // -----------------------------------------------------
+  // TELEMETRY STATE
+  // -----------------------------------------------------
 
   const [loadingWeather, setLoadingWeather] =
     useState<boolean>(false);
@@ -216,13 +243,19 @@ export default function FarmMap({
   const abortControllerRef =
     useRef<AbortController | null>(null);
 
-  // Synchronize the map when Dashboard coordinates change.
+  // -----------------------------------------------------
+  // SYNCHRONIZE DASHBOARD COORDINATES
+  // -----------------------------------------------------
+
   useEffect(() => {
     setLat(initialLat);
     setLon(initialLon);
   }, [initialLat, initialLon]);
 
-  // Dynamic bilingual field name.
+  // -----------------------------------------------------
+  // FIELD LABEL AND HEALTH SCORE
+  // -----------------------------------------------------
+
   const activeFieldName =
     selectedFieldName && selectedFieldName.trim() !== ""
       ? selectedFieldName
@@ -230,17 +263,22 @@ export default function FarmMap({
         ? "নির্বাচিত জমির প্লট"
         : "Custom Field Plot";
 
-  // Dynamic crop health score.
   const activeHealthScore =
     cropHealthScore !== undefined &&
     !isNaN(cropHealthScore)
       ? cropHealthScore
       : 82;
 
-  // Fetch NASA POWER daily telemetry for selected coordinates.
+  // -----------------------------------------------------
+  // NASA POWER FETCH
+  // -----------------------------------------------------
+
   const fetchNASAData = useCallback(
-    async (selectedLat: number, selectedLon: number) => {
-      // Cancel any previous request.
+    async (
+      selectedLat: number,
+      selectedLon: number,
+    ) => {
+      // Cancel the previous map-popup request.
       abortControllerRef.current?.abort();
 
       const controller = new AbortController();
@@ -252,34 +290,47 @@ export default function FarmMap({
       setClimateData(null);
 
       try {
-        // NASA POWER daily data can have a reporting delay.
-        // Request a recent completed observation window.
         const endDate = new Date();
-        endDate.setUTCDate(endDate.getUTCDate() - 10);
-
-        const startDate = new Date();
-        startDate.setUTCDate(startDate.getUTCDate() - 17);
-
-        const start = formatNASADate(startDate);
-        const end = formatNASADate(endDate);
-
-        const parameters = [
-          "T2M",
-          "PRECTOTCORR",
-          "WS2M",
-          "ALLSKY_SFC_SW_DWN",
-        ].join(",");
-
-        const url = new URL(
-          "https://power.larc.nasa.gov/api/temporal/daily/point"
+        endDate.setUTCDate(
+          endDate.getUTCDate() - 10,
         );
 
-        url.searchParams.set("parameters", parameters);
+        const startDate = new Date();
+        startDate.setUTCDate(
+          startDate.getUTCDate() - 17,
+        );
+
+        const url = new URL(
+          "https://power.larc.nasa.gov/api/temporal/daily/point",
+        );
+
+        url.searchParams.set(
+          "parameters",
+          [
+            "T2M",
+            "PRECTOTCORR",
+            "WS2M",
+            "ALLSKY_SFC_SW_DWN",
+          ].join(","),
+        );
+
         url.searchParams.set("community", "AG");
-        url.searchParams.set("longitude", String(selectedLon));
-        url.searchParams.set("latitude", String(selectedLat));
-        url.searchParams.set("start", start);
-        url.searchParams.set("end", end);
+        url.searchParams.set(
+          "longitude",
+          String(selectedLon),
+        );
+        url.searchParams.set(
+          "latitude",
+          String(selectedLat),
+        );
+        url.searchParams.set(
+          "start",
+          formatNASADate(startDate),
+        );
+        url.searchParams.set(
+          "end",
+          formatNASADate(endDate),
+        );
         url.searchParams.set("format", "JSON");
 
         const response = await fetch(url.toString(), {
@@ -288,45 +339,52 @@ export default function FarmMap({
 
         if (!response.ok) {
           throw new Error(
-            `NASA POWER request failed: ${response.status}`
+            `NASA POWER request failed: ${response.status}`,
           );
         }
 
         const data: NASAResponse = await response.json();
 
-        const parametersData = data?.properties?.parameter;
+        const parameters = data?.properties?.parameter;
 
-        if (!parametersData) {
-          throw new Error("NASA POWER returned no parameter data.");
+        if (!parameters) {
+          throw new Error(
+            "NASA POWER returned no parameter data.",
+          );
         }
 
-        const temperatures = parametersData.T2M ?? {};
-        const rainfall = parametersData.PRECTOTCORR ?? {};
-        const windSpeeds = parametersData.WS2M ?? {};
+        const temperatures = parameters.T2M ?? {};
+        const rainfall = parameters.PRECTOTCORR ?? {};
+        const windSpeeds = parameters.WS2M ?? {};
         const solarRadiation =
-          parametersData.ALLSKY_SFC_SW_DWN ?? {};
+          parameters.ALLSKY_SFC_SW_DWN ?? {};
 
-        // Use dates that exist in the temperature dataset.
-        const observationDates = Object.keys(temperatures).sort();
+        const observationDates = Array.from(
+          new Set([
+            ...Object.keys(temperatures),
+            ...Object.keys(rainfall),
+            ...Object.keys(windSpeeds),
+            ...Object.keys(solarRadiation),
+          ]),
+        ).sort();
 
-        if (observationDates.length === 0) {
-          throw new Error("No NASA POWER observations found.");
-        }
-
-        // Find the most recent date with at least one valid observation.
         const latestDate = [...observationDates]
           .reverse()
-          .find((date) => {
-            return [
+          .find((date) =>
+            [
               temperatures[date],
               rainfall[date],
               windSpeeds[date],
               solarRadiation[date],
-            ].some((value) => toValidNumber(value) !== null);
-          });
+            ].some(
+              (value) => toValidNumber(value) !== null,
+            ),
+          );
 
         if (!latestDate) {
-          throw new Error("No valid NASA POWER observations found.");
+          throw new Error(
+            "No valid NASA POWER observations found.",
+          );
         }
 
         if (controller.signal.aborted) return;
@@ -336,11 +394,12 @@ export default function FarmMap({
           rainfall: toValidNumber(rainfall[latestDate]),
           windSpeed: toValidNumber(windSpeeds[latestDate]),
           solarRadiation: toValidNumber(
-            solarRadiation[latestDate]
+            solarRadiation[latestDate],
           ),
           observationDate: latestDate,
         });
-      } catch (error) {
+
+      } catch (error: unknown) {
         if (
           error instanceof Error &&
           error.name === "AbortError"
@@ -350,14 +409,14 @@ export default function FarmMap({
 
         console.error(
           "Failed to fetch NASA POWER telemetry:",
-          error
+          error,
         );
 
         if (!controller.signal.aborted) {
           setWeatherError(
             isBangla
               ? "নাসার আবহাওয়ার উপাত্ত সংগ্রহ করা যায়নি। আবার চেষ্টা করুন।"
-              : "Unable to retrieve NASA POWER telemetry. Please try again."
+              : "Unable to retrieve NASA POWER telemetry. Please try again.",
           );
         }
       } finally {
@@ -366,37 +425,67 @@ export default function FarmMap({
         }
       }
     },
-    [isBangla]
+    [isBangla],
   );
 
-  // Abort any pending request when this component unmounts.
+  // -----------------------------------------------------
+  // INITIAL POPUP TELEMETRY
+  // -----------------------------------------------------
+
   useEffect(() => {
+    void fetchNASAData(lat, lon);
+
     return () => {
       abortControllerRef.current?.abort();
     };
+    // Fetch on initial mount. Coordinate changes are handled
+    // directly by handleMapClick.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle map clicks and polygon selection.
+  // -----------------------------------------------------
+  // HANDLE MAP CLICK OR POLYGON SELECTION
+  // -----------------------------------------------------
+
   const handleMapClick = useCallback(
-    (clickedLat: number, clickedLon: number) => {
-      const roundedLat = Number(clickedLat.toFixed(4));
-      const roundedLon = Number(clickedLon.toFixed(4));
+    (
+      clickedLat: number,
+      clickedLon: number,
+    ) => {
+      const roundedLat = Number(
+        clickedLat.toFixed(4),
+      );
+
+      const roundedLon = Number(
+        clickedLon.toFixed(4),
+      );
 
       setLat(roundedLat);
       setLon(roundedLon);
 
-      // Send selected coordinates to Dashboard.
-      onLocationSelect?.(roundedLat, roundedLon);
+      // Notify Dashboard. Dashboard fetches its own
+      // full observation history for both environment sections.
+      onLocationSelect?.(
+        roundedLat,
+        roundedLon,
+      );
 
-      // Fetch telemetry for the selected location.
-      void fetchNASAData(roundedLat, roundedLon);
+      // Fetch latest observation for the map popup.
+      void fetchNASAData(
+        roundedLat,
+        roundedLon,
+      );
     },
-    [onLocationSelect, fetchNASAData]
+    [onLocationSelect, fetchNASAData],
   );
+
+  // =====================================================
+  // RENDER
+  // =====================================================
 
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-      {/* Header */}
+      {/* HEADER */}
       <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
@@ -418,7 +507,7 @@ export default function FarmMap({
           </p>
         </div>
 
-        {/* Layer Controls */}
+        {/* LAYER BUTTONS */}
         <div className="flex items-center gap-1 self-start rounded-xl bg-slate-100 p-1 sm:self-auto">
           <button
             type="button"
@@ -446,20 +535,25 @@ export default function FarmMap({
         </div>
       </div>
 
-      {/* Map Container */}
+      {/* MAP */}
       <div className="relative z-0 h-[440px] w-full overflow-hidden rounded-2xl border border-slate-200/60">
         <MapContainer
           center={[lat, lon]}
           zoom={14}
-          scrollWheelZoom={true}
+          scrollWheelZoom
           style={{
             height: "100%",
             width: "100%",
           }}
         >
-          <MapRecenter lat={lat} lon={lon} />
+          <MapRecenter
+            lat={lat}
+            lon={lon}
+          />
 
-          <LocationClickHandler onSelect={handleMapClick} />
+          <LocationClickHandler
+            onSelect={handleMapClick}
+          />
 
           <DrawControlComponent
             onLocationSelect={handleMapClick}
@@ -496,7 +590,7 @@ export default function FarmMap({
             </LayersControl.BaseLayer>
           </LayersControl>
 
-          {/* Selected Location Marker */}
+          {/* SELECTED LOCATION */}
           <Marker
             position={[lat, lon]}
             icon={customMarker}
@@ -508,8 +602,8 @@ export default function FarmMap({
                 </p>
 
                 <p className="text-[11px] text-slate-500">
-                  {isBangla ? "অক্ষাংশ" : "Lat"}: {lat} |
-                  {" "}
+                  {isBangla ? "অক্ষাংশ" : "Lat"}: {lat}
+                  {" | "}
                   {isBangla ? "দ্রাঘিমাংশ" : "Lon"}: {lon}
                 </p>
 
@@ -522,7 +616,6 @@ export default function FarmMap({
                   </span>
                 </div>
 
-                {/* Loading State */}
                 {loadingWeather ? (
                   <p className="mt-1 animate-pulse text-[11px] font-bold text-emerald-600">
                     {isBangla
@@ -540,25 +633,19 @@ export default function FarmMap({
                     <p className="text-slate-700">
                       🌡️ {isBangla ? "তাপমাত্রা" : "Temperature"}:
                       {" "}
-                      <b>
-                        {climateData.temp ?? "--"}°C
-                      </b>
+                      <b>{climateData.temp ?? "--"}°C</b>
                     </p>
 
                     <p className="text-slate-700">
                       🌧️ {isBangla ? "বৃষ্টিপাত" : "Rainfall"}:
                       {" "}
-                      <b>
-                        {climateData.rainfall ?? "--"} mm/day
-                      </b>
+                      <b>{climateData.rainfall ?? "--"} mm/day</b>
                     </p>
 
                     <p className="text-slate-700">
                       💨 {isBangla ? "বাতাসের গতি" : "Wind Speed"}:
                       {" "}
-                      <b>
-                        {climateData.windSpeed ?? "--"} m/s
-                      </b>
+                      <b>{climateData.windSpeed ?? "--"} m/s</b>
                     </p>
 
                     <p className="text-slate-700">
@@ -570,9 +657,10 @@ export default function FarmMap({
                     </p>
 
                     <p className="pt-1 text-[10px] text-slate-400">
-                      {isBangla ? "পর্যবেক্ষণের তারিখ" : "Observation Date"}:
-                      {" "}
-                      {climateData.observationDate}
+                      {isBangla
+                        ? "পর্যবেক্ষণের তারিখ"
+                        : "Observation Date"}
+                      : {climateData.observationDate}
                     </p>
                   </div>
                 ) : weatherError ? (
@@ -582,8 +670,8 @@ export default function FarmMap({
                 ) : (
                   <p className="mt-1 text-[10px] italic text-slate-400">
                     {isBangla
-                      ? "আবহাওয়ার উপাত্ত পেতে ম্যাপে ক্লিক করুন"
-                      : "Click the map to retrieve climate data"}
+                      ? "আবহাওয়ার উপাত্ত পাওয়া যায়নি"
+                      : "Climate data is not available"}
                   </p>
                 )}
               </div>
@@ -592,7 +680,7 @@ export default function FarmMap({
         </MapContainer>
       </div>
 
-      {/* Coordinate and Status Footer */}
+      {/* COORDINATES */}
       <div className="mt-3 flex flex-col items-center justify-between gap-2 text-[11px] text-slate-500 sm:flex-row">
         <span>
           {isBangla ? "সক্রিয় স্থানাঙ্ক:" : "Active Coordinates:"}
@@ -609,7 +697,7 @@ export default function FarmMap({
         </span>
       </div>
 
-      {/* Telemetry Status */}
+      {/* TELEMETRY LOADING */}
       {loadingWeather && (
         <div className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-xs text-emerald-700">
           <span className="animate-pulse font-bold">
@@ -620,12 +708,14 @@ export default function FarmMap({
         </div>
       )}
 
+      {/* TELEMETRY ERROR */}
       {!loadingWeather && weatherError && (
         <div className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3 text-xs text-red-700">
           {weatherError}
         </div>
       )}
 
+      {/* TELEMETRY VALUES */}
       {!loadingWeather && climateData && (
         <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -655,7 +745,7 @@ export default function FarmMap({
                 {isBangla ? "বৃষ্টিপাত" : "Rainfall"}
               </p>
               <p className="text-sm font-black text-slate-900">
-                {climateData.rainfall ?? "--"} mm/day
+                {climateData.rainfall ?? "--"} mm
               </p>
             </div>
 
