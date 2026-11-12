@@ -1,0 +1,55 @@
+{
+ "aman_2024_over_2023": {
+  "bbs": {
+   "Cumilla": 0.875,
+   "Feni": 0.405,
+   "Noakhali": 0.829
+  },
+  "model": {
+   "Cumilla": 0.983,
+   "Feni": 0.988,
+   "Noakhali": 0.966
+  },
+  "rules": {
+   "Cumilla": 1.317,
+   "Feni": 1.015,
+   "Noakhali": 0.87
+  }
+ },
+ "boro_2025_over_2024": {
+  "bbs": {
+   "Cumilla": 1.014,
+   "Feni": 0.994,
+   "Noakhali": 0.993
+  },
+  "model": {
+   "Cumilla": 0.979,
+   "Feni": 0.895,
+   "Noakhali": 1.066
+  },
+  "rules": {
+   "Cumilla": 1.012,
+   "Feni": 1.196,
+   "Noakhali": 1.065
+  }
+ },
+ "boro_over_aman_2023_24": {
+  "Feni": {
+   "bbs": 0.472,
+   "model": 0.95
+  },
+  "Noakhali": {
+   "bbs": 0.476,
+   "model": 0.821
+  },
+  "Cumilla": {
+   "bbs": 1.203,
+   "model": 0.98
+  }
+ },
+ "aman_collapse_check": {
+  "rule": "Feni model Aman 2024/2023 < 0.7 and lowest of the three districts",
+  "feni_ratio": 0.988,
+  "passed": false
+ }
+}
