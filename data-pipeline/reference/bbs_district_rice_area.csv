@@ -4,15 +4,137 @@ Noakhali,total_aman,2021-22,2021,372889,Acres,150955,Hectors,3.4 Total Aman,89,B
 Cumilla,total_aman,2022-23,2022,322108,Acres,130401,Hectors,3.5 Total Aman,86,BBS_YB_2024,Read from the PDF text layer; acre/ha = 2.470
 Feni,total_aman,2022-23,2022,163014,Acres,65995,Hectors,3.5 Total Aman,86,BBS_YB_2024,Checked on the rendered page
 Noakhali,total_aman,2022-23,2022,394742,Acres,159801,Hectors,3.5 Total Aman,86,BBS_YB_2024,Checked on the rendered page
+Bagerhat,total_aman,2023-24,2023,167981,Acre,67981,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Bandarban,total_aman,2023-24,2023,25953,Acre,10503,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Barguna,total_aman,2023-24,2023,233055,Acre,94316,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Barishal,total_aman,2023-24,2023,285074,Acre,115368,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Bhola,total_aman,2023-24,2023,417441,Acre,168936,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Bogura,total_aman,2023-24,2023,444256,Acre,179788,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Brahmanbaria,total_aman,2023-24,2023,178007,Acre,72039,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Chandpur,total_aman,2023-24,2023,104001,Acre,42089,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Chapai Nawabganj,total_aman,2023-24,2023,132965,Acre,53810,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Chattogram,total_aman,2023-24,2023,439574,Acre,177893,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Chuadanga,total_aman,2023-24,2023,89260,Acre,36123,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Cox's Bazar,total_aman,2023-24,2023,185551,Acre,75092,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
 Cumilla,total_aman,2023-24,2023,317209,Acre,128373,Hectare,3.5 Total Aman,87,BBS_YB_2025,"Aman of fiscal year 2023-24 is planted Jul-Aug 2023 and harvested Nov-Dec 2023, i.e. Kharif-2 2023. Same value in BBS_YB_2024 p.86"
-Cumilla,total_aman,2024-25,2024,277503,Acre,112304,Hectare,3.5 Total Aman,87,BBS_YB_2025,
+Dhaka,total_aman,2023-24,2023,19706,Acre,7975,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Dinajpur,total_aman,2023-24,2023,640543,Acre,259224,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Faridpur,total_aman,2023-24,2023,200658,Acre,81205,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
 Feni,total_aman,2023-24,2023,163406,Acre,66130,Hectare,3.5 Total Aman,87,BBS_YB_2025,"Same value in BBS_YB_2024 p.86. Consistent with 65,935 ha (2021-22) and 65,995 ha (2022-23), and with the DAE Feni office's 66,525 ha of T. Aman in 2020 (news report, see docs/methodology/bbs-aman-area-check.md)"
-Feni,total_aman,2024-25,2024,66107,Acre,26753,Hectare,3.5 Total Aman,87,BBS_YB_2025,"-60 % on 2023-24, the lowest ratio of all 64 districts (next: Sherpur -21 %). The acre figure equals the previous years' hectare level to 0.03 %, so a data-entry slip in this one cell cannot be ruled out; see docs/methodology/bbs-aman-area-check.md"
+Gaibandha,total_aman,2023-24,2023,314202,Acre,127156,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Gazipur,total_aman,2023-24,2023,103013,Acre,41689,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Gopalganj,total_aman,2023-24,2023,61544,Acre,24907,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Habiganj,total_aman,2023-24,2023,223781,Acre,90563,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Jamalpur,total_aman,2023-24,2023,275315,Acre,111418,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Jashore,total_aman,2023-24,2023,343202,Acre,138892,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Jhallokati,total_aman,2023-24,2023,111489,Acre,45119,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Jhenaidah,total_aman,2023-24,2023,255165,Acre,103264,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Joypurhat,total_aman,2023-24,2023,165358,Acre,66919,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Khagrachari,total_aman,2023-24,2023,67710,Acre,27402,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Khulna,total_aman,2023-24,2023,238629,Acre,96572,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Kishoreganj,total_aman,2023-24,2023,179444,Acre,72620,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Kurigram,total_aman,2023-24,2023,296768,Acre,120100,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Kushtia,total_aman,2023-24,2023,216391,Acre,87572,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Lakshmipur,total_aman,2023-24,2023,187858,Acre,76025,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Lalmonirhat,total_aman,2023-24,2023,213445,Acre,86380,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Madaripur,total_aman,2023-24,2023,65714,Acre,26594,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Magura,total_aman,2023-24,2023,152771,Acre,61826,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Manikganj,total_aman,2023-24,2023,89942,Acre,36399,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Meherpur,total_aman,2023-24,2023,63846,Acre,25838,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Moulvibazar,total_aman,2023-24,2023,252060,Acre,102007,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Munshiganj,total_aman,2023-24,2023,48509,Acre,19631,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Mymensingh,total_aman,2023-24,2023,624410,Acre,252695,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Naogaon,total_aman,2023-24,2023,481000,Acre,194666,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Narail,total_aman,2023-24,2023,104343,Acre,42227,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Narayanganj,total_aman,2023-24,2023,14009,Acre,5670,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Narsingdi,total_aman,2023-24,2023,95854,Acre,38792,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Natore,total_aman,2023-24,2023,217885,Acre,88177,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Netrokona,total_aman,2023-24,2023,306223,Acre,123927,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Nilphamari,total_aman,2023-24,2023,279503,Acre,113113,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
 Noakhali,total_aman,2023-24,2023,395487,Acre,160051,Hectare,3.5 Total Aman,87,BBS_YB_2025,Same value in BBS_YB_2024 p.86
+Pabna,total_aman,2023-24,2023,221456,Acre,89622,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Panchagar,total_aman,2023-24,2023,246567,Acre,99784,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Patuakhali,total_aman,2023-24,2023,465365,Acre,188331,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Pirojpur,total_aman,2023-24,2023,148931,Acre,60272,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Rajbari,total_aman,2023-24,2023,124202,Acre,50264,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Rajshahi,total_aman,2023-24,2023,197835,Acre,80063,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Rangamati,total_aman,2023-24,2023,23819,Acre,9639,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Rangpur,total_aman,2023-24,2023,409266,Acre,165628,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Satkhira,total_aman,2023-24,2023,214115,Acre,86651,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Shariatpur,total_aman,2023-24,2023,36074,Acre,14599,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Sherpur,total_aman,2023-24,2023,241422,Acre,97702,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Sirajganj,total_aman,2023-24,2023,208971,Acre,84569,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Sunamganj,total_aman,2023-24,2023,196288,Acre,79437,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Sylhet,total_aman,2023-24,2023,352321,Acre,142582,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Tangail,total_aman,2023-24,2023,294897,Acre,119343,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Thakurgaon,total_aman,2023-24,2023,339058,Acre,137215,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Bagerhat,total_aman,2024-25,2024,166750,Acre,67483,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Bandarban,total_aman,2024-25,2024,26549,Acre,10744,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Barguna,total_aman,2024-25,2024,231645,Acre,93745,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Barishal,total_aman,2024-25,2024,293722,Acre,118868,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Bhola,total_aman,2024-25,2024,409495,Acre,165720,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Bogura,total_aman,2024-25,2024,441024,Acre,178480,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Brahmanbaria,total_aman,2024-25,2024,178427,Acre,72208,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Chandpur,total_aman,2024-25,2024,83306,Acre,33713,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Chapai Nawabganj,total_aman,2024-25,2024,132133,Acre,53473,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Chattogram,total_aman,2024-25,2024,422907,Acre,171148,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Chuadanga,total_aman,2024-25,2024,90287,Acre,36539,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Cox's Bazar,total_aman,2024-25,2024,185189,Acre,74945,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Cumilla,total_aman,2024-25,2024,277503,Acre,112304,Hectare,3.5 Total Aman,87,BBS_YB_2025,
+Dhaka,total_aman,2024-25,2024,17761,Acre,7188,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Dinajpur,total_aman,2024-25,2024,641547,Acre,259631,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Faridpur,total_aman,2024-25,2024,205392,Acre,83121,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Feni,total_aman,2024-25,2024,66107,Acre,26753,Hectare,3.5 Total Aman,87,BBS_YB_2025,"-60 % on 2023-24, the lowest ratio of all 64 districts (next: Sherpur -21 %). The acre figure equals the previous years' hectare level to 0.03 %, so a data-entry slip in this one cell cannot be ruled out; see docs/methodology/bbs-aman-area-check.md"
+Gaibandha,total_aman,2024-25,2024,303005,Acre,122624,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Gazipur,total_aman,2024-25,2024,102837,Acre,41618,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Gopalganj,total_aman,2024-25,2024,58540,Acre,23691,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Habiganj,total_aman,2024-25,2024,217988,Acre,88218,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Jamalpur,total_aman,2024-25,2024,281624,Acre,113972,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Jashore,total_aman,2024-25,2024,334357,Acre,135312,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Jhallokati,total_aman,2024-25,2024,111061,Acre,44946,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Jhenaidah,total_aman,2024-25,2024,262514,Acre,106238,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Joypurhat,total_aman,2024-25,2024,170950,Acre,69183,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Khagrachari,total_aman,2024-25,2024,67602,Acre,27358,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Khulna,total_aman,2024-25,2024,222493,Acre,90042,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Kishoreganj,total_aman,2024-25,2024,185343,Acre,75007,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Kurigram,total_aman,2024-25,2024,297667,Acre,120464,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Kushtia,total_aman,2024-25,2024,214445,Acre,86785,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Lakshmipur,total_aman,2024-25,2024,178031,Acre,72048,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Lalmonirhat,total_aman,2024-25,2024,213494,Acre,86400,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Madaripur,total_aman,2024-25,2024,71244,Acre,28832,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Magura,total_aman,2024-25,2024,152647,Acre,61775,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Manikganj,total_aman,2024-25,2024,79706,Acre,32257,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Meherpur,total_aman,2024-25,2024,63826,Acre,25830,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Moulvibazar,total_aman,2024-25,2024,244599,Acre,98988,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Munshiganj,total_aman,2024-25,2024,49844,Acre,20171,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Mymensingh,total_aman,2024-25,2024,634522,Acre,256788,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Naogaon,total_aman,2024-25,2024,485460,Acre,196463,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Narail,total_aman,2024-25,2024,104439,Acre,42266,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Narayanganj,total_aman,2024-25,2024,13881,Acre,5618,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Narsingdi,total_aman,2024-25,2024,95840,Acre,38786,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Natore,total_aman,2024-25,2024,220949,Acre,89417,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Netrokona,total_aman,2024-25,2024,284254,Acre,115036,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Nilphamari,total_aman,2024-25,2024,279602,Acre,113153,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
 Noakhali,total_aman,2024-25,2024,327773,Acre,132648,Hectare,3.5 Total Aman,87,BBS_YB_2025,
+Pabna,total_aman,2024-25,2024,220423,Acre,89204,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Panchagar,total_aman,2024-25,2024,246623,Acre,99807,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Patuakhali,total_aman,2024-25,2024,469385,Acre,189958,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Pirojpur,total_aman,2024-25,2024,147077,Acre,59521,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Rajbari,total_aman,2024-25,2024,117825,Acre,47683,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Rajshahi,total_aman,2024-25,2024,201584,Acre,81580,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Rangamati,total_aman,2024-25,2024,23865,Acre,9658,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Rangpur,total_aman,2024-25,2024,409436,Acre,165696,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Satkhira,total_aman,2024-25,2024,210326,Acre,85118,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Shariatpur,total_aman,2024-25,2024,37139,Acre,15030,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Sherpur,total_aman,2024-25,2024,189825,Acre,76821,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Sirajganj,total_aman,2024-25,2024,210864,Acre,85335,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Sunamganj,total_aman,2024-25,2024,193580,Acre,78341,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Sylhet,total_aman,2024-25,2024,354264,Acre,143369,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Tangail,total_aman,2024-25,2024,295746,Acre,119687,Hectare,3.5 Total Aman,87,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
+Thakurgaon,total_aman,2024-25,2024,339098,Acre,137231,Hectare,3.5 Total Aman,88,BBS_YB_2025,Read from the PDF text layer; 64 districts sum to the national total
 Cumilla,total_boro,2023-24,2024,381427,Acre,154415,Hectare,4 Total Boro,97,BBS_YB_2025,"Boro of fiscal year 2023-24 is transplanted Dec 2023-Jan 2024 and harvested Apr-May 2024, i.e. Rabi season ending 2024"
-Cumilla,total_boro,2024-25,2025,386961,Acre,156654,Hectare,4 Total Boro,97,BBS_YB_2025,"As printed; acre x 0.404686 gives 156,598 ha"
 Feni,total_boro,2023-24,2024,77150,Acre,31222,Hectare,4 Total Boro,97,BBS_YB_2025,
-Feni,total_boro,2024-25,2025,76652,Acre,31021,Hectare,4 Total Boro,97,BBS_YB_2025,
 Noakhali,total_boro,2023-24,2024,188227,Acre,76174,Hectare,4 Total Boro,97,BBS_YB_2025,
+Cumilla,total_boro,2024-25,2025,386961,Acre,156654,Hectare,4 Total Boro,97,BBS_YB_2025,"As printed; acre x 0.404686 gives 156,598 ha"
+Feni,total_boro,2024-25,2025,76652,Acre,31021,Hectare,4 Total Boro,97,BBS_YB_2025,
 Noakhali,total_boro,2024-25,2025,186884,Acre,75631,Hectare,4 Total Boro,97,BBS_YB_2025,
