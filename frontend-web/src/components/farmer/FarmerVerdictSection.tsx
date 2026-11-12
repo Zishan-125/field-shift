@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { getDemoFields } from "../../services/api";
 
 import type { DemoFieldsResponse } from "../../types/demoFields";
+import type { PatternRecommendationResponse } from "../../types/pattern";
 
 import type { FieldPick } from "./FieldMapPicker";
 import VerdictCard from "./VerdictCard";
@@ -25,10 +26,12 @@ export default function FarmerVerdictSection({
   language,
   pick,
   onPick,
+  recommendations,
 }: {
   language: Language;
   pick: FieldPick;
   onPick: (pick: FieldPick) => void;
+  recommendations?: PatternRecommendationResponse | null;
 }) {
   const t = language === "bn" ? bn.mapPicker : en.mapPicker;
   const [data, setData] = useState<DemoFieldsResponse | null>(null);
@@ -47,26 +50,19 @@ export default function FarmerVerdictSection({
       : fill(pick.insideFeni ? t.nearest : t.outside, { field: upazila, km });
 
   return (
-    <div className="space-y-4">
-      <VerdictCard
-        fieldId={pick.fieldId}
-        fieldName={upazila}
-        language={language}
-        sameTopEverywhere={data?.same_top_everywhere ?? false}
-      />
-
-      <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <div className="space-y-3">
+      <div className="rounded-[2rem] border border-slate-200 bg-white p-3 shadow-sm sm:p-6">
         <p className="text-sm font-black text-slate-900">{t.title}</p>
         <p
-          className={`mt-2 rounded-xl px-3 py-2 text-xs leading-5 ${
+          className={`mt-1.5 rounded-xl px-3 py-1.5 text-[11px] leading-4 ${
             pick.distanceKm === null ? "bg-blue-50 text-blue-950" : "bg-amber-50 text-amber-950"
           }`}
         >
           📍 {note}
         </p>
-        <div className="mt-3">
+        <div className="mt-2">
           {data ? (
-            <Suspense fallback={<div className="h-[300px] animate-pulse rounded-2xl bg-slate-100" />}>
+            <Suspense fallback={<div className="h-[210px] animate-pulse rounded-2xl bg-slate-100" />}>
               <FieldMapPicker
                 fields={data.fields}
                 upazilas={data.upazilas}
@@ -76,10 +72,18 @@ export default function FarmerVerdictSection({
               />
             </Suspense>
           ) : (
-            <div className="h-[300px] animate-pulse rounded-2xl bg-slate-100" />
+            <div className="h-[210px] animate-pulse rounded-2xl bg-slate-100" />
           )}
         </div>
       </div>
+
+      <VerdictCard
+        fieldId={pick.fieldId}
+        fieldName={upazila}
+        language={language}
+        sameTopEverywhere={data?.same_top_everywhere ?? false}
+        recommendations={recommendations}
+      />
     </div>
   );
 }

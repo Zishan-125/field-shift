@@ -760,11 +760,10 @@ def recommendations(
     # -------------------------------------------------------------
 
     return {
-        "field": (
-            {"field_id": field_id, "name": f"Demo field, {demo_field['upazila']}", "demo": True,
-             "upazila": demo_field["upazila"]}
-            if demo else {"field_id": field["field_id"], "name": field.get("name"), "demo": False}
-        ),
+        "field": {
+            "field_id": field["field_id"],
+            "name": field.get("name"),
+        },
 
         "priority_profile": weights,
 
@@ -1345,10 +1344,11 @@ def pattern_recommendations(
     )
 
     return {
-        "field": {
-            "field_id": field["field_id"],
-            "name": field.get("name"),
-        },
+        "field": (
+            {"field_id": field_id, "name": f"Demo field, {demo_field['upazila']}", "demo": True,
+             "upazila": demo_field["upazila"]}
+            if demo else {"field_id": field["field_id"], "name": field.get("name"), "demo": False}
+        ),
         "priority_profile": weights,
         "current": current,
         "results": recommended,

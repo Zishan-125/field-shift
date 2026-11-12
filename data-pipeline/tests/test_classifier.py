@@ -182,3 +182,11 @@ def test_guard_six_fields_do_not_all_share_a_top_pick():
 
     data = TestClient(server.app).get("/api/offline/demo-fields").json()
     assert not data["same_top_everywhere"]
+
+
+def test_demo_field_response_names_the_demo_field():
+    sys.path.insert(0, str(ROOT / "backend" / "offline"))
+    import server
+
+    result = server.pattern_recommendations("feni_sonagazi_01", server.PatternRecommendationRequest())
+    assert result["field"]["field_id"] == "feni_sonagazi_01" and result["field"]["demo"]

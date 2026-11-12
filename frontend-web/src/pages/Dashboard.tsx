@@ -52,6 +52,7 @@ import FarmerGoalSelector from "../components/farmer/FarmerGoalSelector";
 import PatternRecommendationList from "../components/farmer/PatternRecommendationList";
 import DemoFieldsSection from "../components/farmer/DemoFieldsSection";
 import AboutSections from "../components/farmer/AboutSections";
+import Collapsible from "../components/common/Collapsible";
 import FarmerVerdictSection, { DEFAULT_FIELD } from "../components/farmer/FarmerVerdictSection";
 import type { FieldPick } from "../components/farmer/FieldMapPicker";
 
@@ -477,6 +478,7 @@ export default function Dashboard() {
   // The demo field picked on the map drives the verdict and the full list.
   const [pick, setPick] = useState<FieldPick>({ fieldId: DEFAULT_FIELD, distanceKm: null, insideFeni: true });
   const firstPick = useRef(true);
+  const [recommendationsOpen, setRecommendationsOpen] = useState(false);
 
   useEffect(() => {
     if (firstPick.current) {
@@ -627,10 +629,12 @@ export default function Dashboard() {
         true,
       );
 
+      setRecommendationsOpen(true);
+
       window.setTimeout(() => {
         document
           .getElementById(
-            "recommendations",
+            "recommendations-details",
           )
           ?.scrollIntoView({
             behavior: "smooth",
@@ -811,136 +815,13 @@ export default function Dashboard() {
 
       <section className="fs-container py-6 sm:py-8 lg:py-10">
 
-        {/* 0. VERDICT + MAP FIELD PICKER (six demo fields) */}
+        {/* 0. MAP FIELD PICKER + VERDICT (with the top 3) */}
         <section className="fs-section">
-          <FarmerVerdictSection language={language} pick={pick} onPick={setPick} />
-        </section>
-
-        {/* =====================================================
-            1. FARMER-FIRST FIELD STATUS
-        ====================================================== */}
-
-        <section className="fs-section">
-          <FarmerFieldStatus
-            soilStatus={
-              soilStatus
-            }
-            waterStatus={
-              waterStatus
-            }
-            climateStatus={
-              climateStatus
-            }
-            language={
-              language
-            }
-          />
-        </section>
-
-        {/* =====================================================
-            2. SIMPLE FIELD ENVIRONMENT
-        ====================================================== */}
-
-        <section className="fs-section">
-          <SectionTitle
-            eyebrow={
-              language === "bn"
-                ? "মাঠের অবস্থা"
-                : "Field environment"
-            }
-            title={
-              language === "bn"
-                ? "আজকের মাঠের পরিবেশ"
-                : "Today's field environment"
-            }
-            description={
-              language === "bn"
-                ? "মাঠের জন্য পাওয়া প্রধান পরিবেশগত তথ্য এক নজরে দেখুন।"
-                : "See the main environmental signals available for your field at a glance."
-            }
-          />
-
-          <div className="mt-5 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-            <div className="p-5 sm:p-6">
-              <WeatherSummary
-                environment={
-                  currentEnvironment
-                }
-              />
-
-              <div className="mt-4">
-                <EnvironmentSummary
-                  environment={
-                    currentEnvironment
-                  }
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* NASA / Earth observation anchor */}
-          <div
-            id="earth-observations"
-            className="mt-4 scroll-mt-6"
-          >
-            <EarthObservationContext
-              data={
-                environmentRows
-              }
-              language={
-                language
-              }
-            />
-          </div>
-        </section>
-
-        {/* =====================================================
-            3. SOIL
-        ====================================================== */}
-
-        <section className="fs-section">
-          <FarmerSoilView
-            soil={currentSoil}
-            language={
-              language
-            }
-          />
-        </section>
-
-        {/* =====================================================
-            3b. CLIMATE SHIFT (NASA POWER since 1984)
-        ====================================================== */}
-
-        <section className="fs-section">
-          <Suspense
-            fallback={
-              <div className="h-40 animate-pulse rounded-[2rem] bg-slate-100" />
-            }
-          >
-            <ClimateShiftSection language={language} />
-          </Suspense>
-        </section>
-
-        <section className="fs-section">
-          <DemoFieldsSection language={language} />
-        </section>
-
-        {/* =====================================================
-            4. CROP SELECTION
-        ====================================================== */}
-
-        <section className="fs-section">
-          <CropSelector
-            crops={crops}
-            selectedCrops={
-              selectedCropIds
-            }
-            onChange={
-              setSelectedCropIds
-            }
-            language={
-              language
-            }
+          <FarmerVerdictSection
+            language={language}
+            pick={pick}
+            onPick={setPick}
+            recommendations={recommendations}
           />
         </section>
 
@@ -1045,13 +926,20 @@ export default function Dashboard() {
           )}
         </section>
 
+        <Collapsible
+          id="recommendations-details"
+          title={language === "bn" ? "সব সুপারিশ বিস্তারিত" : "All recommendations in detail"}
+          subtitle={language === "bn" ? "প্রতিটি ফসল-চক্রের খাদ্য, পানি, ঝুঁকি ও সময়সূচি" : "Food, water, risk and calendar for every pattern"}
+          open={recommendationsOpen}
+          onToggle={setRecommendationsOpen}
+        >
         {/* =====================================================
             6. RECOMMENDATIONS
         ====================================================== */}
 
         <section
           id="recommendations"
-          className="fs-section scroll-mt-6"
+          className="scroll-mt-6"
         >
           <div className="mb-5 rounded-[2rem] border border-green-100 bg-green-50 p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -1141,10 +1029,168 @@ export default function Dashboard() {
           )}
         </section>
 
-        <AboutSections
+        </Collapsible>
+
+        <Collapsible
+          title={language === "bn" ? "আবহাওয়া আপনার ফসলের সাথে কী করে" : "What your climate does to your crops"}
+          subtitle={language === "bn" ? "বন্যা, তাপ, বর্ষার ওঠানামা, ২০৪১–২০৬০ সালের অনুমান" : "Floods, heat, monsoon swings, 2041–2060 projections"}
+        >
+        {/* =====================================================
+            3b. CLIMATE SHIFT (NASA POWER since 1984)
+        ====================================================== */}
+
+        <section className="mb-4 last:mb-0">
+          <Suspense
+            fallback={
+              <div className="h-40 animate-pulse rounded-[2rem] bg-slate-100" />
+            }
+          >
+            <ClimateShiftSection language={language} />
+          </Suspense>
+        </section>
+
+        </Collapsible>
+
+        <Collapsible
+          title={language === "bn" ? "ছয়টি জমিতে উপগ্রহ কী দেখেছে" : "What satellites saw on six fields"}
+          subtitle={language === "bn" ? "২০১৬–২০২৫, প্রতিটি মৌসুম" : "2016–2025, season by season"}
+        >
+        <section className="mb-4 last:mb-0">
+          <DemoFieldsSection language={language} />
+        </section>
+
+        </Collapsible>
+
+        <Collapsible
+          title={language === "bn" ? "মাঠের অবস্থা: মাটি, পানি, আবহাওয়া" : "Field conditions: soil, water, weather"}
+          subtitle={language === "bn" ? "পরীক্ষামূলক প্লটের নাসা ও মাটির তথ্য" : "NASA and soil data for the test plot"}
+        >
+        {/* =====================================================
+            1. FARMER-FIRST FIELD STATUS
+        ====================================================== */}
+
+        <section className="mb-4 last:mb-0">
+          <FarmerFieldStatus
+            soilStatus={
+              soilStatus
+            }
+            waterStatus={
+              waterStatus
+            }
+            climateStatus={
+              climateStatus
+            }
+            language={
+              language
+            }
+          />
+        </section>
+
+        {/* =====================================================
+            2. SIMPLE FIELD ENVIRONMENT
+        ====================================================== */}
+
+        <section className="mb-4 last:mb-0">
+          <SectionTitle
+            eyebrow={
+              language === "bn"
+                ? "মাঠের অবস্থা"
+                : "Field environment"
+            }
+            title={
+              language === "bn"
+                ? "আজকের মাঠের পরিবেশ"
+                : "Today's field environment"
+            }
+            description={
+              language === "bn"
+                ? "মাঠের জন্য পাওয়া প্রধান পরিবেশগত তথ্য এক নজরে দেখুন।"
+                : "See the main environmental signals available for your field at a glance."
+            }
+          />
+
+          <div className="mt-5 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+            <div className="p-5 sm:p-6">
+              <WeatherSummary
+                environment={
+                  currentEnvironment
+                }
+              />
+
+              <div className="mt-4">
+                <EnvironmentSummary
+                  environment={
+                    currentEnvironment
+                  }
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* NASA / Earth observation anchor */}
+          <div
+            id="earth-observations"
+            className="mt-4 scroll-mt-6"
+          >
+            <EarthObservationContext
+              data={
+                environmentRows
+              }
+              language={
+                language
+              }
+            />
+          </div>
+        </section>
+
+        {/* =====================================================
+            3. SOIL
+        ====================================================== */}
+
+        <section className="mb-4 last:mb-0">
+          <FarmerSoilView
+            soil={currentSoil}
+            language={
+              language
+            }
+          />
+        </section>
+
+        </Collapsible>
+
+        <Collapsible
+          title={language === "bn" ? "ফসল বেছে নিন" : "Choose crops"}
+          subtitle={language === "bn" ? "শুধু এই ফসলগুলো আছে এমন ফসল-চক্র দেখুন" : "Show only patterns with these crops"}
+        >
+        {/* =====================================================
+            4. CROP SELECTION
+        ====================================================== */}
+
+        <section className="mb-4 last:mb-0">
+          <CropSelector
+            crops={crops}
+            selectedCrops={
+              selectedCropIds
+            }
+            onChange={
+              setSelectedCropIds
+            }
+            language={
+              language
+            }
+          />
+        </section>
+
+        </Collapsible>
+
+        <Collapsible
+          title={language === "bn" ? "কীভাবে কাজ করে ও কারিগরি তথ্য" : "How it works and technical details"}
+        >
+          <AboutSections
           language={language}
           patternCount={recommendations?.counts.patterns ?? 0}
         />
+        </Collapsible>
       </section>
     </main>
   );

@@ -119,27 +119,33 @@ export default function VerdictCard({
   fieldName,
   language,
   sameTopEverywhere = false,
+  recommendations,
 }: {
   fieldId: string;
   fieldName: string;
   language: Language;
   sameTopEverywhere?: boolean;
+  recommendations?: PatternRecommendationResponse | null;
 }) {
   const t = strings(language);
-  const [data, setData] = useState<PatternRecommendationResponse | null>(null);
+  const [fetched, setFetched] = useState<PatternRecommendationResponse | null>(null);
   const [error, setError] = useState(false);
+  // Dashboard's list follows the same field and the farmer's priorities; use it when it matches.
+  const shared = recommendations && recommendations.field.field_id === fieldId ? recommendations : null;
+  const data = shared ?? fetched;
 
   useEffect(() => {
+    if (shared) return;
     let active = true;
-    setData(null);
+    setFetched(null);
     setError(false);
     getPatternRecommendations(fieldId, DEFAULT_PATTERN_PRIORITIES, DEFAULT_CURRENT_PATTERN_ID)
-      .then((response) => active && setData(response))
+      .then((response) => active && setFetched(response))
       .catch(() => active && setError(true));
     return () => {
       active = false;
     };
-  }, [fieldId]);
+  }, [fieldId, shared]);
 
   if (error) return <p className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">{t.error}</p>;
   if (!data) return <div className="h-56 animate-pulse rounded-[2rem] bg-slate-100" />;

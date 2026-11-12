@@ -220,7 +220,7 @@ export default function FarmerGoalSelector({
   }
 
   return (
-    <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-green-600">
@@ -229,7 +229,7 @@ export default function FarmerGoalSelector({
               : "Your priorities"}
           </p>
 
-          <h2 className="mt-2 text-xl font-black text-slate-900 sm:text-2xl">
+          <h2 className="mt-1 text-base font-black text-slate-900 sm:text-xl">
             {language === "bn"
               ? "কোন বিষয়টি আপনার কাছে বেশি গুরুত্বপূর্ণ?"
               : "What matters most to you?"}
@@ -254,7 +254,7 @@ export default function FarmerGoalSelector({
         </button>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
         {GOALS.map((goal) => {
           const active = selectedGoal === goal.key;
           const weight = Number(priorities[goal.key]) || 0;
@@ -264,7 +264,7 @@ export default function FarmerGoalSelector({
             <div
               key={goal.key}
               className={[
-                "rounded-2xl border p-4 transition",
+                "flex items-center gap-2 rounded-xl border px-2.5 py-2 transition",
                 active
                   ? "border-green-500 bg-green-50 ring-2 ring-green-100"
                   : "border-slate-200 bg-white",
@@ -275,26 +275,16 @@ export default function FarmerGoalSelector({
                 type="button"
                 onClick={() => selectGoal(goal.key)}
                 disabled={loading}
-                className="flex w-full items-start gap-3 text-left disabled:cursor-not-allowed"
+                className="flex min-w-0 flex-1 items-center gap-2 text-left disabled:cursor-not-allowed"
+                title={language === "bn" ? goal.descriptionBn : goal.descriptionEn}
               >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-xl">
+                <span className="shrink-0 text-lg" aria-hidden>
                   {goal.icon}
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-black text-slate-900">
-                    {title}
-                  </p>
-
-                  <p className="mt-1 text-xs leading-5 text-slate-500">
-                    {language === "bn"
-                      ? goal.descriptionBn
-                      : goal.descriptionEn}
-                  </p>
-                </div>
+                </span>
+                <span className="min-w-0 text-sm font-black leading-5 text-slate-900">{title}</span>
               </button>
 
-              <div className="mt-3 flex items-center justify-end gap-2">
+              <div className="flex shrink-0 items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => step(goal.key, -1)}
@@ -335,7 +325,7 @@ export default function FarmerGoalSelector({
         type="button"
         onClick={applyGoal}
         disabled={loading || !dirty}
-        className="fs-primary-button mt-5 w-full disabled:cursor-not-allowed disabled:opacity-50"
+        className="fs-primary-button mt-3 w-full disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading
           ? language === "bn"

@@ -93,7 +93,7 @@ export default function FieldMapPicker({
         center={[22.99, 91.42]}
         zoom={10}
         scrollWheelZoom={false}
-        style={{ height: 300, width: "100%" }}
+        style={{ height: 210, width: "100%" }}
         attributionControl
       >
         <TileLayer
@@ -134,7 +134,7 @@ export default function FieldMapPicker({
         })}
         <TapHandler fields={fields} upazilas={upazilas} onPick={onPick} />
       </MapContainer>
-      <p className="bg-slate-50 px-3 py-2 text-[11px] leading-5 text-slate-500">{t.hint}</p>
+      <p className="bg-slate-50 px-2.5 py-1 text-[10px] leading-4 text-slate-500">{t.hint}</p>
     </div>
   );
 }
