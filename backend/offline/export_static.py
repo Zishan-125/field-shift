@@ -7,6 +7,7 @@ built site runs with no backend (and the PWA service worker can precache it):
     health.json, crops.json
     field.json, environment.json, soil.json        the original test plot
     demo-fields.json                               six demo fields, timeline, top picks
+    district-context.json                          64 districts' Aman area 2024/2023 (national context)
     climate-shift/<upazila>.json                   one per upazila (+ default.json)
     recommendations/<field_id>.json                default-priority response + pattern_order
     manifest.json                                  what was exported, when, from which commit
@@ -81,7 +82,8 @@ def main() -> None:
                        ("field", f"/api/offline/fields/{server.FIELD_ID}"),
                        ("environment", f"/api/offline/fields/{server.FIELD_ID}/environment"),
                        ("soil", f"/api/offline/fields/{server.FIELD_ID}/soil"),
-                       ("demo-fields", "/api/offline/demo-fields")):
+                       ("demo-fields", "/api/offline/demo-fields"),
+                       ("district-context", "/api/offline/district-context")):
         write(OUT / f"{name}.json", get(path))
         files.append(f"{name}.json")
 

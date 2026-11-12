@@ -32,6 +32,7 @@ PREDICTIONS = ROOT / "data-pipeline" / "derived" / "demo_field_predictions.csv"
 PROCESSED = ROOT / "data-pipeline" / "data" / "processed"
 SOIL = ROOT / "data-pipeline" / "derived" / "demo_field_soil_water.csv"
 UPAZILAS = ROOT / "data-pipeline" / "reference" / "feni_upazilas.geojson"
+DISTRICT_RATIO = ROOT / "data-pipeline" / "derived" / "district_aman_ratio.csv"
 
 
 def main() -> None:
@@ -75,6 +76,8 @@ def main() -> None:
                 soil.to_sql("demo_field_soil", conn, if_exists="replace", index=False)
             pd.DataFrame([{"key": "feni_upazilas", "geojson": UPAZILAS.read_text(encoding="utf-8")}]).to_sql(
                 "demo_area", conn, if_exists="replace", index=False)
+            if DISTRICT_RATIO.exists():
+                pd.read_csv(DISTRICT_RATIO).to_sql("district_aman_ratio", conn, if_exists="replace", index=False)
     finally:
         conn.close()
     print(f"[OK] demo_fields: {len(fields)} rows; demo_field_seasons: {len(seasons)} rows; "

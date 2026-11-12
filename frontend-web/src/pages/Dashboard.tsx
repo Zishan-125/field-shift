@@ -60,6 +60,9 @@ import type { FieldPick } from "../components/farmer/FieldMapPicker";
 const ClimateShiftSection = lazy(
   () => import("../components/farmer/ClimateShiftSection"),
 );
+const DistrictContextSection = lazy(
+  () => import("../components/farmer/DistrictContextSection"),
+);
 import CropSelector from "../components/farmer/CropSelector";
 
 import SectionTitle from "../components/common/SectionTitle";
@@ -1049,6 +1052,15 @@ export default function Dashboard() {
           </Suspense>
         </section>
 
+        </Collapsible>
+
+        <Collapsible
+          title={language === "bn" ? "সারা দেশে ফেনী: ২০২৪-এর আমন" : "Feni in Bangladesh: Aman in 2024"}
+          subtitle={language === "bn" ? "৬৪ জেলার আমনের জমি, ২০২৪ বনাম ২০২৩ (জাতীয় তুলনা)" : "Aman area in all 64 districts, 2024 vs 2023 (national context)"}
+        >
+          <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-slate-100" />}>
+            <DistrictContextSection language={language} />
+          </Suspense>
         </Collapsible>
 
         <Collapsible

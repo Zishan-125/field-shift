@@ -2030,6 +2030,34 @@ def demo_top_picks() -> dict:
     return _TOP_PICKS
 
 
+@app.get("/api/offline/district-context")
+def district_context():
+    """
+    National context: every district's 2024-25 / 2023-24 Total Aman area (BBS
+    Yearbook 2025, Table 3.5) with the districts BBS lists in its Aug-Sep 2024
+    flood-damage table (4.2.9). Context and validation only; recommendations
+    cover Feni.
+    """
+
+    if not table_exists("district_aman_ratio"):
+        raise HTTPException(status_code=503, detail="Run backend/offline/build_field_tables.py")
+
+    rows = fetch_all("SELECT * FROM district_aman_ratio ORDER BY ratio_2024_over_2023 DESC")
+    total_2023 = sum(r["aman_ha_2023_24"] for r in rows)
+    total_2024 = sum(r["aman_ha_2024_25"] for r in rows)
+    lowest = min(rows, key=lambda r: r["ratio_2024_over_2023"])
+    return {
+        "districts": rows,
+        "n_districts": len(rows),
+        "national_ratio": round(total_2024 / total_2023, 3),
+        "lowest": lowest["district"],
+        "feni": next(r for r in rows if r["district"] == "Feni"),
+        "scope": "national context and validation only; recommendations cover Feni only",
+        "source": "BBS Yearbook of Agricultural Statistics 2025, Table 3.5 (pp. 87-88); flood list Table 4.2.9 (pp. 447-448)",
+        "runtime": "offline",
+    }
+
+
 @app.get("/api/offline/demo-fields")
 def demo_fields():
     """

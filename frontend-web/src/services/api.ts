@@ -174,6 +174,29 @@ export async function getPatternRecommendations(
   );
 }
 
+export interface DistrictContext {
+  districts: {
+    district: string;
+    aman_ha_2023_24: number;
+    aman_ha_2024_25: number;
+    ratio_2024_over_2023: number;
+    flood_listed_2024: number;
+  }[];
+  n_districts: number;
+  national_ratio: number;
+  lowest: string;
+  feni: { district: string; ratio_2024_over_2023: number };
+  scope: string;
+  source: string;
+}
+
+export async function getDistrictContext(): Promise<DistrictContext> {
+  return liveOrStatic(
+    async () => (await api.get<DistrictContext>("/api/offline/district-context")).data,
+    () => staticJson<DistrictContext>("district-context.json"),
+  );
+}
+
 /** @deprecated crop permutations without a season check; live API only */
 export async function getRecommendations(
   fieldId: string,

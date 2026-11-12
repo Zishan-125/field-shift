@@ -205,3 +205,23 @@ def test_static_export_covers_every_demo_field():
         assert exported["pattern_order"], "tie order needed for the static re-ranking"
         for pattern in exported["results"]:
             assert pattern["indicators"] is not None
+
+
+def test_district_context_covers_64_districts_with_feni_lowest():
+    import pandas as pd
+
+    bbs = pd.read_csv(ROOT / "data-pipeline" / "reference" / "bbs_district_rice_area.csv")
+    aman = bbs[(bbs["crop"] == "total_aman") & bbs["bbs_year"].isin(["2023-24", "2024-25"])]
+    assert aman.groupby("bbs_year")["district"].nunique().to_dict() == {"2023-24": 64, "2024-25": 64}
+    # Districts sum to the national totals printed in Table 3.5 (2 ha rounding in 2023-24).
+    totals = aman.groupby("bbs_year")["area_ha"].sum()
+    assert abs(totals["2023-24"] - 5750755) <= 5 and totals["2024-25"] == 5612036
+
+    sys.path.insert(0, str(ROOT / "backend" / "offline"))
+    from fastapi.testclient import TestClient
+    import server
+
+    data = TestClient(server.app).get("/api/offline/district-context").json()
+    assert data["n_districts"] == 64 and data["lowest"] == "Feni"
+    assert sum(d["flood_listed_2024"] for d in data["districts"]) == 15
+    assert "Feni only" in data["scope"]
