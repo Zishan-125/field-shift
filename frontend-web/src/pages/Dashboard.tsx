@@ -16,7 +16,6 @@ import {
 } from "../services/api";
 
 import type { Field } from "../types/field";
-import type { Environment } from "../types/environment";
 import type { SoilProfile } from "../types/soil";
 
 import {
@@ -65,22 +64,44 @@ const FIELD_ID =
 
 const CROP_HEALTH_SCORE = 78;
 
-type EnvironmentRow = Environment & {
+// =======================================================
+// ENVIRONMENT TYPES
+// =======================================================
+
+/**
+ * Important:
+ * Do not extend the backend Environment type here.
+ *
+ * The backend Environment type defines several numeric
+ * properties as `number | undefined`.
+ *
+ * NASA POWER can return missing values. We normalize those
+ * missing values to `undefined` so the NASA rows remain
+ * compatible with the existing application types.
+ */
+type EnvironmentRow = {
+  [key: string]: unknown;
+
   date?: string;
   observation_date?: string;
   observation_month?: string;
+
   year?: number;
   month?: number;
-  power_temperature_mean?: number | null;
-  ag_rainfall_mm?: number | null;
-  power_precipitation?: number | null;
-  precipitation?: number | null;
-  rainfall?: number | null;
-  power_wind_speed?: number | null;
-  wind_speed?: number | null;
-  power_solar_radiation?: number | null;
-  solar_radiation?: number | null;
-  [key: string]: unknown;
+
+  power_temperature_mean?: number;
+  temperature_c?: number;
+
+  ag_rainfall_mm?: number;
+  power_precipitation?: number;
+  precipitation?: number;
+  rainfall?: number;
+
+  power_wind_speed?: number;
+  wind_speed?: number;
+
+  power_solar_radiation?: number;
+  solar_radiation?: number;
 };
 
 // =======================================================
@@ -122,7 +143,11 @@ function getObject(
   for (const key of keys) {
     const value = object[key];
 
-    if (value && typeof value === "object" && !Array.isArray(value)) {
+    if (
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value)
+    ) {
       return value as Record<string, unknown>;
     }
   }
@@ -135,7 +160,7 @@ function getObject(
 // =======================================================
 
 /**
- * Accepts any of these response shapes:
+ * Supports these response formats:
  *
  * [row, row]
  * { data: [row, row] }
@@ -185,7 +210,10 @@ function extractEnvironmentRows(
         ) as EnvironmentRow[];
       }
 
-      if (candidate && typeof candidate === "object") {
+      if (
+        candidate &&
+        typeof candidate === "object"
+      ) {
         next = candidate;
         break;
       }
@@ -196,7 +224,6 @@ function extractEnvironmentRows(
       continue;
     }
 
-    // A flat observation object is also valid.
     const looksLikeObservation = [
       "power_temperature_mean",
       "temperature_c",
@@ -221,16 +248,16 @@ function sortEnvironmentRows(
   return [...rows].sort((a, b) => {
     const dateA = String(
       a.date ??
-      a.observation_date ??
-      a.observation_month ??
-      "",
+        a.observation_date ??
+        a.observation_month ??
+        "",
     );
 
     const dateB = String(
       b.date ??
-      b.observation_date ??
-      b.observation_month ??
-      "",
+        b.observation_date ??
+        b.observation_month ??
+        "",
     );
 
     return dateA.localeCompare(dateB);
@@ -245,18 +272,44 @@ function latestEnvironmentRow(
     : {};
 }
 
-function validNASAValue(value: unknown): number | null {
-  if (value === null || value === undefined || value === "") {
+/**
+ * Converts valid NASA POWER values to numbers.
+ *
+ * NASA POWER uses -999 for missing observations.
+ * Null, undefined, empty strings and -999 are treated
+ * as unavailable.
+ */
+function validNASAValue(
+  value: unknown,
+): number | null {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
     return null;
   }
 
   const number = Number(value);
 
-  if (!Number.isFinite(number) || number === -999) {
+  if (
+    !Number.isFinite(number) ||
+    number === -999
+  ) {
     return null;
   }
 
   return number;
+}
+
+/**
+ * Converts nullable NASA values to the type expected
+ * by the existing Environment interface.
+ */
+function nasaValueOrUndefined(
+  value: number | null,
+): number | undefined {
+  return value === null ? undefined : value;
 }
 
 // =======================================================
@@ -268,7 +321,11 @@ function calculateSoilStatus(
 ): "good" | "moderate" | "attention" {
   const rawValue = soil["soil_ph_0-5cm"];
 
-  if (rawValue === null || rawValue === undefined || rawValue === "") {
+  if (
+    rawValue === null ||
+    rawValue === undefined ||
+    rawValue === ""
+  ) {
     return "moderate";
   }
 
@@ -278,8 +335,13 @@ function calculateSoilStatus(
     return "moderate";
   }
 
-  if (ph >= 5.5 && ph <= 7.5) return "good";
-  if (ph >= 5 && ph <= 8) return "moderate";
+  if (ph >= 5.5 && ph <= 7.5) {
+    return "good";
+  }
+
+  if (ph >= 5 && ph <= 8) {
+    return "moderate";
+  }
 
   return "attention";
 }
@@ -289,16 +351,18 @@ function calculateWaterStatus(
 ): "good" | "moderate" | "attention" {
   const precipitation = validNASAValue(
     environment.ag_rainfall_mm ??
-    environment.power_precipitation ??
-    environment.precipitation ??
-    environment.rainfall,
+      environment.power_precipitation ??
+      environment.precipitation ??
+      environment.rainfall,
   );
 
   if (precipitation === null) {
     return "moderate";
   }
 
-  return precipitation > 0 ? "moderate" : "attention";
+  return precipitation > 0
+    ? "moderate"
+    : "attention";
 }
 
 function calculateClimateStatus(
@@ -306,7 +370,7 @@ function calculateClimateStatus(
 ): "good" | "moderate" | "attention" {
   const temperature = validNASAValue(
     environment.power_temperature_mean ??
-    environment.temperature_c,
+      environment.temperature_c,
   );
 
   if (temperature === null) {
@@ -328,33 +392,38 @@ function normalizeCrop(
 ): NormalizedCrop {
   const englishName = String(
     crop.english_name ??
-    crop.name_en ??
-    crop.crop_name ??
-    crop.name ??
-    "",
+      crop.name_en ??
+      crop.crop_name ??
+      crop.name ??
+      "",
   ).trim();
 
   const banglaName = String(
     crop.bangla_name ??
-    crop.bengali_name ??
-    crop.name_bn ??
-    "",
+      crop.bengali_name ??
+      crop.name_bn ??
+      "",
   ).trim();
 
   const id = String(
     (crop.id ?? crop.crop_id ?? englishName) ||
-    `crop-${index}`,
+      `crop-${index}`,
   );
 
   return {
     id,
     englishName: englishName || `Crop ${index + 1}`,
-    banglaName: banglaName || englishName || `ফসল ${index + 1}`,
+    banglaName:
+      banglaName ||
+      englishName ||
+      `ফসল ${index + 1}`,
     icon: String(crop.icon ?? crop.emoji ?? "🌱"),
   };
 }
 
-function extractCrops(data: unknown): NormalizedCrop[] {
+function extractCrops(
+  data: unknown,
+): NormalizedCrop[] {
   if (Array.isArray(data)) {
     return data
       .filter(
@@ -364,7 +433,12 @@ function extractCrops(data: unknown): NormalizedCrop[] {
       .map(normalizeCrop);
   }
 
-  const object = getObject(data, "crops", "data", "results");
+  const object = getObject(
+    data,
+    "crops",
+    "data",
+    "results",
+  );
 
   for (const key of ["crops", "data", "results"]) {
     const candidate = object[key];
@@ -408,6 +482,8 @@ async function fetchNASAPOWER(
   lon: number,
   signal: AbortSignal,
 ): Promise<EnvironmentRow[]> {
+  // NASA POWER daily observations can have a reporting delay.
+  // Request a recent completed window rather than today's data.
   const endDate = new Date();
   endDate.setUTCDate(endDate.getUTCDate() - 10);
 
@@ -415,10 +491,14 @@ async function fetchNASAPOWER(
   startDate.setUTCDate(startDate.getUTCDate() - 17);
 
   const formatDate = (date: Date) =>
-    date.toISOString().slice(0, 10).replace(/-/g, "");
+    date
+      .toISOString()
+      .slice(0, 10)
+      .replace(/-/g, "");
 
   const params = new URLSearchParams({
-    parameters: "T2M,PRECTOTCORR,WS2M,ALLSKY_SFC_SW_DWN",
+    parameters:
+      "T2M,PRECTOTCORR,WS2M,ALLSKY_SFC_SW_DWN",
     community: "AG",
     longitude: String(lon),
     latitude: String(lat),
@@ -440,10 +520,13 @@ async function fetchNASAPOWER(
 
   const payload = await response.json();
 
-  const parameters = payload?.properties?.parameter;
+  const parameters =
+    payload?.properties?.parameter;
 
   if (!parameters) {
-    throw new Error("NASA POWER returned no parameter data.");
+    throw new Error(
+      "NASA POWER returned no parameter data.",
+    );
   }
 
   const temperature = parameters.T2M ?? {};
@@ -451,7 +534,8 @@ async function fetchNASAPOWER(
   const wind = parameters.WS2M ?? {};
   const solar = parameters.ALLSKY_SFC_SW_DWN ?? {};
 
-  // Use the union of all available dates, not only T2M dates.
+  // Use the union of available dates so that a missing
+  // temperature value does not remove other observations.
   const dates = Array.from(
     new Set([
       ...Object.keys(temperature),
@@ -462,41 +546,76 @@ async function fetchNASAPOWER(
   ).sort();
 
   const rows: EnvironmentRow[] = dates
-    .map((date) => {
-      const temp = validNASAValue(temperature[date]);
-      const rain = validNASAValue(rainfall[date]);
-      const windSpeed = validNASAValue(wind[date]);
-      const solarRadiation = validNASAValue(solar[date]);
+    .map((date): EnvironmentRow => {
+      const temp = validNASAValue(
+        temperature[date],
+      );
+
+      const rain = validNASAValue(
+        rainfall[date],
+      );
+
+      const windSpeed = validNASAValue(
+        wind[date],
+      );
+
+      const solarRadiation = validNASAValue(
+        solar[date],
+      );
 
       const year = Number(date.slice(0, 4));
       const month = Number(date.slice(4, 6));
+
       const formattedDate =
         `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`;
+
+      /*
+       * IMPORTANT TYPESCRIPT FIX:
+       *
+       * NASA POWER may return null for a missing value.
+       * The EnvironmentRow interface uses number | undefined.
+       *
+       * Therefore, convert null to undefined before assigning
+       * the values to the row.
+       */
+      const temperatureValue =
+        nasaValueOrUndefined(temp);
+
+      const rainfallValue =
+        nasaValueOrUndefined(rain);
+
+      const windValue =
+        nasaValueOrUndefined(windSpeed);
+
+      const solarValue =
+        nasaValueOrUndefined(solarRadiation);
 
       return {
         date: formattedDate,
         observation_date: formattedDate,
-        observation_month: `${year}-${String(month).padStart(2, "0")}`,
+        observation_month:
+          `${year}-${String(month).padStart(2, "0")}`,
+
         year,
         month,
 
         // NASA POWER temperature (°C)
-        power_temperature_mean: temp,
-        temperature_c: temp,
+        power_temperature_mean: temperatureValue,
+        temperature_c: temperatureValue,
 
         // NASA POWER precipitation (mm/day)
-        ag_rainfall_mm: rain,
-        power_precipitation: rain,
-        precipitation: rain,
-        rainfall: rain,
+        ag_rainfall_mm: rainfallValue,
+        power_precipitation: rainfallValue,
+        precipitation: rainfallValue,
+        rainfall: rainfallValue,
 
-        // NASA POWER wind speed (m/s)
-        power_wind_speed: windSpeed,
-        wind_speed: windSpeed,
+        // NASA POWER wind speed at 2 metres (m/s)
+        power_wind_speed: windValue,
+        wind_speed: windValue,
 
         // NASA POWER solar radiation (kWh/m²/day)
-        power_solar_radiation: solarRadiation,
-        solar_radiation: solarRadiation,
+        power_solar_radiation: solarValue,
+        solar_radiation: solarValue,
       };
     })
     .filter((row) =>
@@ -505,7 +624,11 @@ async function fetchNASAPOWER(
         row.ag_rainfall_mm,
         row.power_wind_speed,
         row.power_solar_radiation,
-      ].some((value) => value !== null),
+      ].some(
+        (value) =>
+          value !== undefined &&
+          value !== null,
+      ),
     );
 
   if (rows.length === 0) {
@@ -526,13 +649,15 @@ export default function Dashboard() {
   // LANGUAGE
   // -----------------------------------------------------
 
-  const [language, setLanguage] = useState<Language>(() => {
-    const stored = window.localStorage.getItem(
-      "field-shift-language",
-    );
+  const [language, setLanguage] = useState<Language>(
+    () => {
+      const stored = window.localStorage.getItem(
+        "field-shift-language",
+      );
 
-    return stored === "en" ? "en" : "bn";
-  });
+      return stored === "en" ? "en" : "bn";
+    },
+  );
 
   const t = language === "bn" ? bn : en;
   const isBangla = language === "bn";
@@ -541,9 +666,15 @@ export default function Dashboard() {
     selectedCropFilter:
       "selectedCropFilter" in t.recommendations
         ? String(
-            (t.recommendations as Record<string, unknown>)
-              .selectedCropFilter ??
-            (isBangla ? "নির্বাচিত ফসল" : "Selected crops"),
+            (
+              t.recommendations as Record<
+                string,
+                unknown
+              >
+            ).selectedCropFilter ??
+              (isBangla
+                ? "নির্বাচিত ফসল"
+                : "Selected crops"),
           )
         : isBangla
           ? "নির্বাচিত ফসল"
@@ -554,11 +685,15 @@ export default function Dashboard() {
     subtitle:
       "subtitle" in t.recommendations
         ? String(
-            (t.recommendations as Record<string, unknown>)
-              .subtitle ??
-            (isBangla
-              ? "আপনার অগ্রাধিকার অনুযায়ী সম্ভাব্য ফসল পরিকল্পনা"
-              : "Recommended crop plans based on your priorities"),
+            (
+              t.recommendations as Record<
+                string,
+                unknown
+              >
+            ).subtitle ??
+              (isBangla
+                ? "আপনার অগ্রাধিকার অনুযায়ী সম্ভাব্য ফসল পরিকল্পনা"
+                : "Recommended crop plans based on your priorities"),
           )
         : isBangla
           ? "আপনার অগ্রাধিকার অনুযায়ী সম্ভাব্য ফসল পরিকল্পনা"
@@ -567,9 +702,15 @@ export default function Dashboard() {
     scenarios:
       "scenarios" in t.recommendations
         ? String(
-            (t.recommendations as Record<string, unknown>)
-              .scenarios ??
-            (isBangla ? "সম্ভাব্য পরিকল্পনা" : "Possible plans"),
+            (
+              t.recommendations as Record<
+                string,
+                unknown
+              >
+            ).scenarios ??
+              (isBangla
+                ? "সম্ভাব্য পরিকল্পনা"
+                : "Possible plans"),
           )
         : isBangla
           ? "সম্ভাব্য পরিকল্পনা"
@@ -583,10 +724,14 @@ export default function Dashboard() {
   // FIELD AND MAP COORDINATES
   // -----------------------------------------------------
 
-  const [field, setField] = useState<Field | null>(null);
+  const [field, setField] =
+    useState<Field | null>(null);
 
-  const [mapLat, setMapLat] = useState<number>(23.0185);
-  const [mapLon, setMapLon] = useState<number>(91.3976);
+  const [mapLat, setMapLat] =
+    useState<number>(23.0185);
+
+  const [mapLon, setMapLon] =
+    useState<number>(91.3976);
 
   // -----------------------------------------------------
   // ENVIRONMENT
@@ -605,7 +750,8 @@ export default function Dashboard() {
   // SOIL
   // -----------------------------------------------------
 
-  const [soil, setSoil] = useState<SoilProfile | null>(null);
+  const [soil, setSoil] =
+    useState<SoilProfile | null>(null);
 
   // -----------------------------------------------------
   // RECOMMENDATIONS
@@ -614,7 +760,9 @@ export default function Dashboard() {
   const [
     recommendations,
     setRecommendations,
-  ] = useState<PatternRecommendationResponse | null>(null);
+  ] = useState<PatternRecommendationResponse | null>(
+    null,
+  );
 
   const [priorities, setPriorities] =
     useState<PatternPriorities>({
@@ -631,7 +779,9 @@ export default function Dashboard() {
   // CROPS
   // -----------------------------------------------------
 
-  const [crops, setCrops] = useState<NormalizedCrop[]>([]);
+  const [crops, setCrops] =
+    useState<NormalizedCrop[]>([]);
+
   const [selectedCropIds, setSelectedCropIds] =
     useState<string[]>([]);
 
@@ -688,11 +838,14 @@ export default function Dashboard() {
         if (!active) return;
 
         setField(
-          getObject(fieldData, "field") as unknown as Field,
+          getObject(
+            fieldData,
+            "field",
+          ) as unknown as Field,
         );
 
-        // Normalize backend environment response.
-        // This remains available as fallback if NASA fails.
+        // Backend environment data is retained as fallback
+        // until the coordinate-specific NASA request succeeds.
         const backendRows = sortEnvironmentRows(
           extractEnvironmentRows(environmentData),
         );
@@ -711,7 +864,6 @@ export default function Dashboard() {
 
         setRecommendations(recommendationData);
         setCrops(extractCrops(cropData));
-
       } catch (err: unknown) {
         console.error(
           "FIELD SHIFT dashboard load failed:",
@@ -740,6 +892,7 @@ export default function Dashboard() {
     return () => {
       active = false;
     };
+
     // Initial load only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -766,19 +919,23 @@ export default function Dashboard() {
 
         if (controller.signal.aborted) return;
 
-        const sortedRows = sortEnvironmentRows(rows);
+        const sortedRows =
+          sortEnvironmentRows(rows);
 
-        // Replace backend fallback with live coordinate-specific
-        // NASA POWER observations.
+        // Replace fallback data with observations for
+        // the currently selected map coordinates.
         setEnvironmentRows(sortedRows);
 
-        console.info("NASA POWER observations updated", {
-          latitude: mapLat,
-          longitude: mapLon,
-          count: sortedRows.length,
-          latest: latestEnvironmentRow(sortedRows),
-        });
-
+        console.info(
+          "NASA POWER observations updated",
+          {
+            latitude: mapLat,
+            longitude: mapLon,
+            count: sortedRows.length,
+            latest:
+              latestEnvironmentRow(sortedRows),
+          },
+        );
       } catch (err: unknown) {
         if (
           err instanceof Error &&
@@ -787,7 +944,10 @@ export default function Dashboard() {
           return;
         }
 
-        console.error("NASA POWER fetch failed:", err);
+        console.error(
+          "NASA POWER fetch failed:",
+          err,
+        );
 
         if (!controller.signal.aborted) {
           setEnvironmentError(
@@ -844,7 +1004,6 @@ export default function Dashboard() {
       }, 120);
 
       return true;
-
     } catch (err: unknown) {
       console.error(
         "FIELD SHIFT recommendation update failed:",
@@ -861,7 +1020,6 @@ export default function Dashboard() {
       );
 
       return false;
-
     } finally {
       setRecommendationLoading(false);
     }
@@ -879,28 +1037,31 @@ export default function Dashboard() {
     [crops, selectedCropIds],
   );
 
-  const selectedCropNames = selectedCrops.map((crop) =>
-    language === "bn"
-      ? crop.banglaName
-      : crop.englishName,
+  const selectedCropNames = selectedCrops.map(
+    (crop) =>
+      language === "bn"
+        ? crop.banglaName
+        : crop.englishName,
   );
 
   // -----------------------------------------------------
   // FILTER RECOMMENDATIONS
   // -----------------------------------------------------
 
-  const recommendationResults = useMemo<RecommendedPattern[]>(
-    () => {
+  const recommendationResults =
+    useMemo<RecommendedPattern[]>(() => {
       if (!Array.isArray(recommendations?.results)) {
         return [];
       }
 
-      return recommendations.results.filter((pattern) =>
-        matchesSelectedCrops(pattern, selectedCropIds),
+      return recommendations.results.filter(
+        (pattern) =>
+          matchesSelectedCrops(
+            pattern,
+            selectedCropIds,
+          ),
       );
-    },
-    [recommendations, selectedCropIds],
-  );
+    }, [recommendations, selectedCropIds]);
 
   // -----------------------------------------------------
   // CURRENT ENVIRONMENT
@@ -912,10 +1073,12 @@ export default function Dashboard() {
   const currentEnvironment =
     latestEnvironmentRow(environmentRows);
 
-  // EarthObservationContext expects an array or an object
-  // containing an array under "data".
+  // EarthObservationContext receives a consistent
+  // object containing the observation array.
   const earthObservationData = useMemo(
-    () => ({ data: environmentRows }),
+    () => ({
+      data: environmentRows,
+    }),
     [environmentRows],
   );
 
@@ -923,9 +1086,14 @@ export default function Dashboard() {
   // FIELD STATUS
   // -----------------------------------------------------
 
-  const soilStatus = calculateSoilStatus(currentSoil);
-  const waterStatus = calculateWaterStatus(currentEnvironment);
-  const climateStatus = calculateClimateStatus(currentEnvironment);
+  const soilStatus =
+    calculateSoilStatus(currentSoil);
+
+  const waterStatus =
+    calculateWaterStatus(currentEnvironment);
+
+  const climateStatus =
+    calculateClimateStatus(currentEnvironment);
 
   // -----------------------------------------------------
   // LOADING SCREEN
@@ -1072,7 +1240,9 @@ export default function Dashboard() {
         <section className="fs-section mt-6">
           <SectionTitle
             eyebrow={
-              isBangla ? "মাঠের অবস্থা" : "Field environment"
+              isBangla
+                ? "মাঠের অবস্থা"
+                : "Field environment"
             }
             title={
               isBangla
@@ -1117,6 +1287,7 @@ export default function Dashboard() {
                       ? "এই স্থানের পরিবেশগত তথ্য পাওয়া যায়নি।"
                       : "No environmental observations are currently available for this location."}
                   </p>
+
                   <p className="mt-1 text-xs text-slate-500">
                     {isBangla
                       ? "ম্যাপে অন্য স্থান নির্বাচন করে আবার চেষ্টা করুন।"
@@ -1126,12 +1297,16 @@ export default function Dashboard() {
               ) : (
                 <>
                   <WeatherSummary
-                    environment={currentEnvironment}
+                    environment={
+                      currentEnvironment as unknown as import("../types/environment").Environment
+                    }
                   />
 
                   <div className="mt-4">
                     <EnvironmentSummary
-                      environment={currentEnvironment}
+                      environment={
+                        currentEnvironment as unknown as import("../types/environment").Environment
+                      }
                     />
                   </div>
                 </>
@@ -1172,13 +1347,17 @@ export default function Dashboard() {
               <div className="h-40 animate-pulse rounded-[2rem] bg-slate-100" />
             }
           >
-            <ClimateShiftSection language={language} />
+            <ClimateShiftSection
+              language={language}
+            />
           </Suspense>
         </section>
 
         {/* 6. DEMO FIELDS */}
         <section className="fs-section">
-          <DemoFieldsSection language={language} />
+          <DemoFieldsSection
+            language={language}
+          />
         </section>
 
         {/* 7. CROP SELECTION */}
@@ -1206,10 +1385,12 @@ export default function Dashboard() {
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-100 border-t-blue-600" />
               </div>
+
               <div>
                 <p className="text-sm font-black text-blue-900">
                   {t.status.updating}
                 </p>
+
                 <p className="mt-0.5 text-xs text-blue-800/70">
                   {t.status.comparing}
                 </p>
@@ -1217,27 +1398,30 @@ export default function Dashboard() {
             </div>
           )}
 
-          {recommendationUpdated && !recommendationLoading && (
-            <div
-              className="mt-4 flex items-center gap-3 rounded-2xl border border-green-100 bg-green-50 p-4"
-              role="status"
-              aria-live="polite"
-            >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-green-600 shadow-sm">
-                ✓
+          {recommendationUpdated &&
+            !recommendationLoading && (
+              <div
+                className="mt-4 flex items-center gap-3 rounded-2xl border border-green-100 bg-green-50 p-4"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-green-600 shadow-sm">
+                  ✓
+                </div>
+
+                <div>
+                  <p className="text-sm font-black text-green-900">
+                    {t.status.updated}
+                  </p>
+
+                  <p className="mt-0.5 text-xs text-green-800/70">
+                    {isBangla
+                      ? "আপনার ফসল এবং অগ্রাধিকার অনুযায়ী ফলাফল তৈরি হয়েছে।"
+                      : "The results now reflect your selected crops and priorities."}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-black text-green-900">
-                  {t.status.updated}
-                </p>
-                <p className="mt-0.5 text-xs text-green-800/70">
-                  {isBangla
-                    ? "আপনার ফসল এবং অগ্রাধিকার অনুযায়ী ফলাফল তৈরি হয়েছে।"
-                    : "The results now reflect your selected crops and priorities."}
-                </p>
-              </div>
-            </div>
-          )}
+            )}
 
           {error && field && (
             <div
@@ -1247,10 +1431,12 @@ export default function Dashboard() {
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-red-600">
                 ⚠️
               </div>
+
               <div>
                 <p className="text-sm font-black text-red-800">
                   {t.status.error}
                 </p>
+
                 <p className="mt-1 text-xs leading-5 text-red-700/80">
                   {error}
                 </p>
@@ -1270,9 +1456,11 @@ export default function Dashboard() {
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-green-600">
                   {recommendationLabels.selectedCropFilter}
                 </p>
+
                 <h2 className="mt-2 text-xl font-black text-green-950 sm:text-2xl">
                   {recommendationLabels.title}
                 </h2>
+
                 <p className="mt-2 text-sm leading-6 text-green-900/70">
                   {recommendationLabels.subtitle}
                 </p>
@@ -1282,6 +1470,7 @@ export default function Dashboard() {
                 <p className="text-2xl font-black text-green-700">
                   {recommendationResults.length}
                 </p>
+
                 <p className="text-[10px] font-black uppercase tracking-wide text-green-600">
                   {recommendationLabels.scenarios}
                 </p>
@@ -1312,9 +1501,11 @@ export default function Dashboard() {
           ) : (
             <div className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 text-center">
               <div className="text-4xl">🌱</div>
+
               <h3 className="mt-3 text-lg font-black text-amber-950">
                 {recommendationLabels.noMatch}
               </h3>
+
               <p className="mt-2 text-sm text-amber-900/70">
                 {recommendationLabels.changeCrops}
               </p>
@@ -1346,28 +1537,36 @@ export default function Dashboard() {
             {[
               [
                 "🛰️",
-                isBangla ? "NASA তথ্য" : "NASA observations",
+                isBangla
+                  ? "NASA তথ্য"
+                  : "NASA observations",
                 isBangla
                   ? "NASA Earth data থেকে পরিবেশগত তথ্য।"
                   : "Environmental conditions derived from NASA Earth data.",
               ],
               [
                 "🌱",
-                isBangla ? "স্থানীয় মাটি" : "Local soil",
+                isBangla
+                  ? "স্থানীয় মাটি"
+                  : "Local soil",
                 isBangla
                   ? "নির্বাচিত মাঠের মাটির তথ্য।"
                   : "Soil information associated with the selected field.",
               ],
               [
                 "🌾",
-                isBangla ? "ফসলের বৈশিষ্ট্য" : "Crop characteristics",
+                isBangla
+                  ? "ফসলের বৈশিষ্ট্য"
+                  : "Crop characteristics",
                 isBangla
                   ? "ফসল ও rotation-এর তথ্য।"
                   : "Stored crop and rotation information.",
               ],
               [
                 "🎯",
-                isBangla ? "আপনার অগ্রাধিকার" : "Your priorities",
+                isBangla
+                  ? "আপনার অগ্রাধিকার"
+                  : "Your priorities",
                 isBangla
                   ? "আপনার farming goals decision score-কে প্রভাবিত করে।"
                   : "Your farming goals influence the decision-support score.",
@@ -1377,10 +1576,14 @@ export default function Dashboard() {
                 key={title}
                 className="rounded-2xl bg-white/70 p-4"
               >
-                <div className="text-2xl">{icon}</div>
+                <div className="text-2xl">
+                  {icon}
+                </div>
+
                 <p className="mt-3 text-sm font-black text-blue-950">
                   {title}
                 </p>
+
                 <p className="mt-1 text-xs leading-5 text-blue-900/70">
                   {description}
                 </p>
@@ -1393,12 +1596,14 @@ export default function Dashboard() {
         <section className="fs-section">
           <div className="fs-notice flex items-start gap-3 p-4 sm:p-5">
             <span className="text-base">ℹ️</span>
+
             <div>
               <p className="font-black text-slate-700">
                 {isBangla
                   ? "Decision-support তথ্য"
                   : "Decision-support information"}
               </p>
+
               <p className="mt-1">
                 {isBangla
                   ? "FIELD SHIFT crop-rotation scenario তুলনা করতে সাহায্য করে। এর score yield, profit বা farm performance-এর নিশ্চয়তা নয়।"
@@ -1411,7 +1616,9 @@ export default function Dashboard() {
         {/* 12. TECHNICAL DETAILS */}
         <details className="mb-10 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
           <summary className="cursor-pointer px-6 py-5 text-sm font-black text-slate-800">
-            {isBangla ? "কারিগরি তথ্য" : "Technical details"}
+            {isBangla
+              ? "কারিগরি তথ্য"
+              : "Technical details"}
           </summary>
 
           <div className="border-t border-slate-200 p-6">
@@ -1424,8 +1631,11 @@ export default function Dashboard() {
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <div className="rounded-xl bg-slate-50 p-4">
                 <p className="text-xs font-bold text-slate-400">
-                  {isBangla ? "চালানোর ধরন" : "Runtime"}
+                  {isBangla
+                    ? "চালানোর ধরন"
+                    : "Runtime"}
                 </p>
+
                 <p className="mt-1 text-sm font-bold text-slate-800">
                   Offline
                 </p>
@@ -1433,8 +1643,11 @@ export default function Dashboard() {
 
               <div className="rounded-xl bg-slate-50 p-4">
                 <p className="text-xs font-bold text-slate-400">
-                  {isBangla ? "Scenario" : "Scenarios"}
+                  {isBangla
+                    ? "Scenario"
+                    : "Scenarios"}
                 </p>
+
                 <p className="mt-1 text-sm font-bold text-slate-800">
                   {recommendations?.counts.patterns ?? 0}
                 </p>
@@ -1442,10 +1655,15 @@ export default function Dashboard() {
 
               <div className="rounded-xl bg-slate-50 p-4">
                 <p className="text-xs font-bold text-slate-400">
-                  {isBangla ? "ইন্টারনেট" : "Internet"}
+                  {isBangla
+                    ? "ইন্টারনেট"
+                    : "Internet"}
                 </p>
+
                 <p className="mt-1 text-sm font-bold text-green-700">
-                  {isBangla ? "প্রয়োজন নেই" : "Not required"}
+                  {isBangla
+                    ? "প্রয়োজন নেই"
+                    : "Not required"}
                 </p>
               </div>
             </div>

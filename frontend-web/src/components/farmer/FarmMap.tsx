@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-} from "react";
-
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -33,6 +27,7 @@ const customMarker = L.icon({
 
 interface FarmMapProps {
   onLocationSelect?: (lat: number, lon: number) => void;
+  onEnvironmentUpdate?: (envPayload: any) => void;
   initialLat?: number;
   initialLon?: number;
   selectedFieldName?: string;
@@ -78,10 +73,6 @@ function formatNASADate(date: Date): string {
   return date.toISOString().slice(0, 10).replace(/-/g, "");
 }
 
-// -------------------------------------------------------
-// MAP RECENTER
-// -------------------------------------------------------
-
 function MapRecenter({
   lat,
   lon,
@@ -100,17 +91,12 @@ function MapRecenter({
   return null;
 }
 
-// -------------------------------------------------------
-// POLYGON DRAW CONTROL
-// -------------------------------------------------------
-
 function DrawControlComponent({
   onLocationSelect,
 }: {
   onLocationSelect?: (lat: number, lon: number) => void;
 }) {
   const map = useMap();
-
   const callbackRef = useRef(onLocationSelect);
 
   useEffect(() => {
@@ -121,7 +107,6 @@ function DrawControlComponent({
     if (!map) return;
 
     const drawnItems = new L.FeatureGroup();
-
     map.addLayer(drawnItems);
 
     const drawControl = new L.Control.Draw({
@@ -149,13 +134,10 @@ function DrawControlComponent({
 
     map.addControl(drawControl);
 
-    // Use a small structural type instead of relying on
-    // L.DrawEvents.Created being exported by every type version.
     const handleCreated = (event: L.LeafletEvent & {
       layer: L.Layer;
     }) => {
       const layer = event.layer;
-
       drawnItems.addLayer(layer);
 
       if (
@@ -163,7 +145,6 @@ function DrawControlComponent({
         layer instanceof L.Rectangle
       ) {
         const center = layer.getBounds().getCenter();
-
         callbackRef.current?.(
           Number(center.lat.toFixed(4)),
           Number(center.lng.toFixed(4)),
@@ -183,10 +164,6 @@ function DrawControlComponent({
   return null;
 }
 
-// -------------------------------------------------------
-// MAP CLICK HANDLER
-// -------------------------------------------------------
-
 function LocationClickHandler({
   onSelect,
 }: {
@@ -194,42 +171,28 @@ function LocationClickHandler({
 }) {
   useMapEvents({
     click(event) {
-      onSelect(
-        event.latlng.lat,
-        event.latlng.lng,
-      );
+      onSelect(event.latlng.lat, event.latlng.lng);
     },
   });
 
   return null;
 }
 
-// =======================================================
-// FARM MAP
-// =======================================================
-
 export default function FarmMap({
   onLocationSelect,
+  onEnvironmentUpdate,
   initialLat = 23.0185,
   initialLon = 91.3976,
   selectedFieldName,
   cropHealthScore,
   isBangla = false,
 }: FarmMapProps) {
-  // -----------------------------------------------------
-  // COORDINATES
-  // -----------------------------------------------------
-
   const [lat, setLat] = useState<number>(initialLat);
   const [lon, setLon] = useState<number>(initialLon);
 
   const [mapLayer, setMapLayer] = useState<
     "standard" | "nasa"
   >("standard");
-
-  // -----------------------------------------------------
-  // TELEMETRY STATE
-  // -----------------------------------------------------
 
   const [loadingWeather, setLoadingWeather] =
     useState<boolean>(false);
@@ -243,18 +206,10 @@ export default function FarmMap({
   const abortControllerRef =
     useRef<AbortController | null>(null);
 
-  // -----------------------------------------------------
-  // SYNCHRONIZE DASHBOARD COORDINATES
-  // -----------------------------------------------------
-
   useEffect(() => {
     setLat(initialLat);
     setLon(initialLon);
   }, [initialLat, initialLon]);
-
-  // -----------------------------------------------------
-  // FIELD LABEL AND HEALTH SCORE
-  // -----------------------------------------------------
 
   const activeFieldName =
     selectedFieldName && selectedFieldName.trim() !== ""
@@ -269,20 +224,13 @@ export default function FarmMap({
       ? cropHealthScore
       : 82;
 
-  // -----------------------------------------------------
-  // NASA POWER FETCH
-  // -----------------------------------------------------
-
   const fetchNASAData = useCallback(
     async (
       selectedLat: number,
       selectedLon: number,
     ) => {
-      // Cancel the previous map-popup request.
       abortControllerRef.current?.abort();
-
       const controller = new AbortController();
-
       abortControllerRef.current = controller;
 
       setLoadingWeather(true);
@@ -291,14 +239,10 @@ export default function FarmMap({
 
       try {
         const endDate = new Date();
-        endDate.setUTCDate(
-          endDate.getUTCDate() - 10,
-        );
+        endDate.setUTCDate(endDate.getUTCDate() - 10);
 
         const startDate = new Date();
-        startDate.setUTCDate(
-          startDate.getUTCDate() - 17,
-        );
+        startDate.setUTCDate(startDate.getUTCDate() - 17);
 
         const url = new URL(
           "https://power.larc.nasa.gov/api/temporal/daily/point",
@@ -344,7 +288,6 @@ export default function FarmMap({
         }
 
         const data: NASAResponse = await response.json();
-
         const parameters = data?.properties?.parameter;
 
         if (!parameters) {
@@ -389,15 +332,54 @@ export default function FarmMap({
 
         if (controller.signal.aborted) return;
 
+        const tempVal = toValidNumber(temperatures[latestDate]);
+        const rainVal = toValidNumber(rainfall[latestDate]);
+        const windVal = toValidNumber(windSpeeds[latestDate]);
+        const solarVal = toValidNumber(solarRadiation[latestDate]);
+
         setClimateData({
-          temp: toValidNumber(temperatures[latestDate]),
-          rainfall: toValidNumber(rainfall[latestDate]),
-          windSpeed: toValidNumber(windSpeeds[latestDate]),
-          solarRadiation: toValidNumber(
-            solarRadiation[latestDate],
-          ),
+          temp: tempVal,
+          rainfall: rainVal,
+          windSpeed: windVal,
+          solarRadiation: solarVal,
           observationDate: latestDate,
         });
+
+        // Map chronological rows to match EnvironmentRow contract with undefined fallback instead of null
+        const rows = observationDates.map((date) => {
+          const t = toValidNumber(temperatures[date]);
+          const r = toValidNumber(rainfall[date]);
+          const w = toValidNumber(windSpeeds[date]);
+          const s = toValidNumber(solarRadiation[date]);
+
+          return {
+            date,
+            observation_date: date,
+            observation_month: date.slice(0, 6),
+            year: Number(date.slice(0, 4)),
+            month: Number(date.slice(4, 6)),
+            power_temperature_mean: t ?? undefined,
+            temperature_c: t ?? undefined,
+            ag_rainfall_mm: r ?? undefined,
+            power_precipitation: r ?? undefined,
+            precipitation: r ?? undefined,
+            rainfall: r ?? undefined,
+            power_wind_speed: w ?? undefined,
+            wind_speed_ms: w ?? undefined,
+            power_solar_radiation: s ?? undefined,
+            solar_radiation: s ?? undefined,
+          };
+        }).filter(
+          (row) =>
+            row.power_temperature_mean !== undefined ||
+            row.ag_rainfall_mm !== undefined ||
+            row.power_wind_speed !== undefined ||
+            row.power_solar_radiation !== undefined
+        );
+
+        if (rows.length > 0) {
+          onEnvironmentUpdate?.({ data: rows });
+        }
 
       } catch (error: unknown) {
         if (
@@ -425,12 +407,8 @@ export default function FarmMap({
         }
       }
     },
-    [isBangla],
+    [isBangla, onEnvironmentUpdate],
   );
-
-  // -----------------------------------------------------
-  // INITIAL POPUP TELEMETRY
-  // -----------------------------------------------------
 
   useEffect(() => {
     void fetchNASAData(lat, lon);
@@ -438,14 +416,8 @@ export default function FarmMap({
     return () => {
       abortControllerRef.current?.abort();
     };
-    // Fetch on initial mount. Coordinate changes are handled
-    // directly by handleMapClick.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // -----------------------------------------------------
-  // HANDLE MAP CLICK OR POLYGON SELECTION
-  // -----------------------------------------------------
 
   const handleMapClick = useCallback(
     (
@@ -455,7 +427,6 @@ export default function FarmMap({
       const roundedLat = Number(
         clickedLat.toFixed(4),
       );
-
       const roundedLon = Number(
         clickedLon.toFixed(4),
       );
@@ -463,14 +434,11 @@ export default function FarmMap({
       setLat(roundedLat);
       setLon(roundedLon);
 
-      // Notify Dashboard. Dashboard fetches its own
-      // full observation history for both environment sections.
       onLocationSelect?.(
         roundedLat,
         roundedLon,
       );
 
-      // Fetch latest observation for the map popup.
       void fetchNASAData(
         roundedLat,
         roundedLon,
@@ -479,13 +447,8 @@ export default function FarmMap({
     [onLocationSelect, fetchNASAData],
   );
 
-  // =====================================================
-  // RENDER
-  // =====================================================
-
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-      {/* HEADER */}
       <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
@@ -507,7 +470,6 @@ export default function FarmMap({
           </p>
         </div>
 
-        {/* LAYER BUTTONS */}
         <div className="flex items-center gap-1 self-start rounded-xl bg-slate-100 p-1 sm:self-auto">
           <button
             type="button"
@@ -535,7 +497,6 @@ export default function FarmMap({
         </div>
       </div>
 
-      {/* MAP */}
       <div className="relative z-0 h-[440px] w-full overflow-hidden rounded-2xl border border-slate-200/60">
         <MapContainer
           center={[lat, lon]}
@@ -590,7 +551,6 @@ export default function FarmMap({
             </LayersControl.BaseLayer>
           </LayersControl>
 
-          {/* SELECTED LOCATION */}
           <Marker
             position={[lat, lon]}
             icon={customMarker}
@@ -670,7 +630,7 @@ export default function FarmMap({
                 ) : (
                   <p className="mt-1 text-[10px] italic text-slate-400">
                     {isBangla
-                      ? "আবহাওয়ার উপাত্ত পাওয়া যায়নি"
+                      ? "আবহাওয়ার উপাত্ত পাওয়া যায়নি"
                       : "Climate data is not available"}
                   </p>
                 )}
@@ -680,7 +640,6 @@ export default function FarmMap({
         </MapContainer>
       </div>
 
-      {/* COORDINATES */}
       <div className="mt-3 flex flex-col items-center justify-between gap-2 text-[11px] text-slate-500 sm:flex-row">
         <span>
           {isBangla ? "সক্রিয় স্থানাঙ্ক:" : "Active Coordinates:"}
@@ -697,7 +656,6 @@ export default function FarmMap({
         </span>
       </div>
 
-      {/* TELEMETRY LOADING */}
       {loadingWeather && (
         <div className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-xs text-emerald-700">
           <span className="animate-pulse font-bold">
@@ -708,14 +666,12 @@ export default function FarmMap({
         </div>
       )}
 
-      {/* TELEMETRY ERROR */}
       {!loadingWeather && weatherError && (
         <div className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3 text-xs text-red-700">
           {weatherError}
         </div>
       )}
 
-      {/* TELEMETRY VALUES */}
       {!loadingWeather && climateData && (
         <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
