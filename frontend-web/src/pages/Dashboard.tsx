@@ -2,6 +2,7 @@ import {
   lazy,
   Suspense,
   useEffect,
+  useRef,
   useMemo,
   useState,
 } from "react";
@@ -51,7 +52,8 @@ import FarmerGoalSelector from "../components/farmer/FarmerGoalSelector";
 import PatternRecommendationList from "../components/farmer/PatternRecommendationList";
 import DemoFieldsSection from "../components/farmer/DemoFieldsSection";
 import AboutSections from "../components/farmer/AboutSections";
-import FarmerVerdictSection from "../components/farmer/FarmerVerdictSection";
+import FarmerVerdictSection, { DEFAULT_FIELD } from "../components/farmer/FarmerVerdictSection";
+import type { FieldPick } from "../components/farmer/FieldMapPicker";
 
 // Charts (recharts) load in their own chunk so the rest of the page is not delayed.
 const ClimateShiftSection = lazy(
@@ -472,6 +474,22 @@ export default function Dashboard() {
     );
   }, [language]);
 
+  // The demo field picked on the map drives the verdict and the full list.
+  const [pick, setPick] = useState<FieldPick>({ fieldId: DEFAULT_FIELD, distanceKm: null, insideFeni: true });
+  const firstPick = useRef(true);
+
+  useEffect(() => {
+    if (firstPick.current) {
+      firstPick.current = false;
+      return;
+    }
+    getPatternRecommendations(pick.fieldId, priorities, DEFAULT_CURRENT_PATTERN_ID)
+      .then(setRecommendations)
+      .catch((err) => console.error("FIELD SHIFT recommendation update failed:", err));
+    // priorities are applied with the "update" button; only the field change triggers this
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pick.fieldId]);
+
   useEffect(() => {
     let active = true;
 
@@ -500,7 +518,7 @@ export default function Dashboard() {
           ),
 
           getPatternRecommendations(
-            FIELD_ID,
+            DEFAULT_FIELD,
             DEFAULT_PATTERN_PRIORITIES,
             DEFAULT_CURRENT_PATTERN_ID,
           ),
@@ -596,7 +614,7 @@ export default function Dashboard() {
 
       const data =
         await getPatternRecommendations(
-          FIELD_ID,
+          pick.fieldId,
           priorities,
           DEFAULT_CURRENT_PATTERN_ID,
         );
@@ -795,7 +813,7 @@ export default function Dashboard() {
 
         {/* 0. VERDICT + MAP FIELD PICKER (six demo fields) */}
         <section className="fs-section">
-          <FarmerVerdictSection language={language} />
+          <FarmerVerdictSection language={language} pick={pick} onPick={setPick} />
         </section>
 
         {/* =====================================================

@@ -15,16 +15,23 @@ const FieldMapPicker = lazy(() => import("./FieldMapPicker"));
 
 type Language = "bn" | "en";
 
-const DEFAULT_FIELD = "feni_feni_sadar_01";
+export const DEFAULT_FIELD = "feni_feni_sadar_01";
 
 function fill(template: string, values: Record<string, string | number>): string {
   return Object.entries(values).reduce((text, [key, value]) => text.split(`{${key}}`).join(String(value)), template);
 }
 
-export default function FarmerVerdictSection({ language }: { language: Language }) {
+export default function FarmerVerdictSection({
+  language,
+  pick,
+  onPick,
+}: {
+  language: Language;
+  pick: FieldPick;
+  onPick: (pick: FieldPick) => void;
+}) {
   const t = language === "bn" ? bn.mapPicker : en.mapPicker;
   const [data, setData] = useState<DemoFieldsResponse | null>(null);
-  const [pick, setPick] = useState<FieldPick>({ fieldId: DEFAULT_FIELD, distanceKm: null, insideFeni: true });
 
   useEffect(() => {
     getDemoFields().then(setData).catch(() => setData(null));
@@ -64,7 +71,7 @@ export default function FarmerVerdictSection({ language }: { language: Language 
                 fields={data.fields}
                 upazilas={data.upazilas}
                 selectedId={pick.fieldId}
-                onPick={setPick}
+                onPick={onPick}
                 language={language}
               />
             </Suspense>

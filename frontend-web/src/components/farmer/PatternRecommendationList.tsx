@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { whyLine } from "./VerdictCard";
 
 import type {
   CroppingPattern,
@@ -506,6 +507,12 @@ function RecommendationCard({
             </div>
           )}
         </div>
+
+        {/* Why? - the evidence behind this pattern */}
+        <p className="mt-3 rounded-xl bg-blue-50 px-3 py-2 text-sm leading-6 text-blue-950">
+          <span className="font-black">{language === "bn" ? bn.verdict.whyLabel : en.verdict.whyLabel}</span>{" "}
+          {whyLine(pattern, current, language)}
+        </p>
 
         {/* What changes */}
         <div className="mt-4 rounded-2xl bg-slate-50 p-4">
