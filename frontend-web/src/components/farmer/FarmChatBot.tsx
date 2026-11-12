@@ -23,7 +23,6 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   sourceTag?: string;
-  locationName?: string;
 }
 
 function toValidNum(val: unknown): number | null {
@@ -127,7 +126,6 @@ function generateFarmerFriendlyAdvice(
   const q = query.toLowerCase();
   const temp = telemetry?.temp;
   const rain = telemetry?.rainfall;
-  const solar = telemetry?.solarRadiation;
   const locDisplay = locationName || `Lat: ${lat.toFixed(2)}°, Lon: ${lon.toFixed(2)}`;
 
   const sourceTag = isBangla
@@ -211,7 +209,7 @@ function generateFarmerFriendlyAdvice(
     if (isBangla) {
       return {
         sourceTag,
-        text: `📍 **এলাকা:** ${locDisplay}\n\n🌱 **মাটি ও ফসলের স্বাস্থ্য (স্কোর: ${healthScore}/100):**\nমাটির উর্বরতা বাড়াতে রাসায়নিক সারের ওপর চাপ কিয়ে জৈব সার বা কম্পোস্ট ব্যবহার করুন। ডালজাতীয় ফসল চাষ করলে প্রাকৃতিকভাবে মাটিতে নাইট্রোজেন জমা হয়।`,
+        text: `📍 **এলাকা:** ${locDisplay}\n\n🌱 **মাটি ও ফসলের স্বাস্থ্য (স্কোর: ${healthScore}/100):**\nমাটির উর্বরতা বাড়াতে রাসায়নিক সারের ওপর চাপ কমিয়ে জৈব সার বা কম্পোস্ট ব্যবহার করুন। ডালজাতীয় ফসল চাষ করলে প্রাকৃতিকভাবে মাটিতে নাইট্রোজেন জমা হয়।`,
       };
     }
     return {
@@ -236,12 +234,12 @@ function generateFarmerFriendlyAdvice(
 
 export default function FarmChatBot({
   isBangla = false,
-  selectedFieldName = "Field Plot",
+  _selectedFieldName = "Field Plot",
   cropHealthScore = 78,
   lat = 23.0185,
   lon = 91.3976,
   liveTelemetry = null,
-}: FarmChatBotProps) {
+}: FarmChatBotProps & { _selectedFieldName?: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: "welcome",
@@ -264,11 +262,9 @@ export default function FarmChatBot({
   // Fetch location name when lat/lon changes
   useEffect(() => {
     let active = true;
-    async0: {
-      fetchLocationName(lat, lon).then((name) => {
-        if (active && name) setLocationName(name);
-      });
-    }
+    fetchLocationName(lat, lon).then((name) => {
+      if (active && name) setLocationName(name);
+    });
     return () => {
       active = false;
     };
