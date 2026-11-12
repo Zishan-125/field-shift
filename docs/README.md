@@ -24,5 +24,6 @@ Start with the [project README](../README.md) for the validation table and how t
 | [data-sources.md](data-sources.md) | Every dataset and publication used, with collection IDs, tables and pages |
 | [data-gaps.md](data-gaps.md) | What is missing or inconsistent in the data and what the app does about it |
 | [demo-script.md](demo-script.md) | A four-minute walk-through for judges |
+| [deployment.md](deployment.md) | Deploying the static site (no backend) or with the API |
 
 Older material that is no longer used is listed in [../archive/README.md](../archive/README.md).

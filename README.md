@@ -21,7 +21,7 @@ real Feni cropping patterns on food, water and the hazards that field's own sate
 from NASA GPM IMERG, crop seasons and flooding from NASA HLS and Sentinel-1, soil water from NASA SMAP,
 temperature from NASA POWER and the future from NASA NEX-GDDP-CMIP6.
 
-**Docs index:** [docs/README.md](docs/README.md) · **Demo script:** [docs/demo-script.md](docs/demo-script.md)
+**Docs index:** [docs/README.md](docs/README.md) · **Demo script:** [docs/demo-script.md](docs/demo-script.md) · **Deploy:** [docs/deployment.md](docs/deployment.md)
 
 ---
 
@@ -233,16 +233,20 @@ tables are reloaded with `backend/offline/build_*_tables.py`.
 
 ### Deployment
 
-The frontend is built by Vercel from this repository (checked 12 Nov 2026 through GitHub's deployment
-records):
+The site needs no server: the API's answers ship as static JSON and the ranking runs in the browser
+(verified from a clean clone with no API running). Setup for a Vercel project, with and without a backend:
+[docs/deployment.md](docs/deployment.md).
+
+What is live today (checked 12 Nov 2026 through GitHub's deployment records):
 
 * **Production**, [field-shift-five.vercel.app](https://field-shift-five.vercel.app/), deploys the
-  `Zishan-backend-ml-models-data-pipeline` branch. That branch does **not** yet contain the work described
-  here (verdict card, field risk, validation); it has a separate map and chat assistant.
-* Every push to `improve/feni-v2` gets a Vercel preview, which is behind Vercel login.
-* The app needs the FastAPI server above, reachable at `VITE_API_BASE_URL` (a build-time setting in Vercel).
-  No hosted backend for this branch is confirmed; the README previously named Render and Turso, which this
-  code does not use. Until one is set up, run it locally as above.
+  `Zishan-backend-ml-models-data-pipeline` branch, which does **not** yet contain this work (it has a
+  separate map and chat assistant). Merging is pending with the team.
+* Every push to `improve/feni-v2` gets a Vercel preview, behind Vercel login. A public link for this
+  branch needs its own Vercel project (root `frontend-web`, build `npm run build`, output `dist`, no
+  environment variables).
+* No hosted backend is needed or confirmed; the README previously named Render and Turso, which this code
+  does not use.
 
 ## License
 
