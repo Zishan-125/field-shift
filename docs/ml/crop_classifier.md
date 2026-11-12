@@ -42,11 +42,13 @@ against a farmer's own record of what they planted.
 ## Sentinel-1 orbit mix
 
 Observations per orbit per demo field and year: `data-pipeline/derived/s1_orbit_mix.csv`
-(`fields/orbit_mix.py`). 2017–2025: about 30 passes a year on each of
-ASC114, ASC41 and DES77, stable. 2015–2016: DES77 only (11–14 passes).
-Offset of each orbit from the all-orbit mean of the same field and month:
-ASC114 −0.7 to −0.8 dB, ASC41 +0.4 to +0.8 dB, DES77 +0.05 to +0.25 dB.
-Pooled 2015–16 dekads are therefore biased by at most about +0.25 dB, small
+(`fields/orbit_mix.py`, all six fields). 2017–2025: about 30 passes a year
+on each of ASC114, ASC41 and DES77, stable (Daganbhuiyan is covered by
+ASC114 and DES77 only). 2015–2016: DES77 only (11–14 passes). Offset of
+each orbit from the all-orbit mean of the same field and month
+(`s1_orbit_offsets.csv`): ASC114 −0.32 to −0.99 dB, ASC41 +0.43 to
++0.80 dB, DES77 +0.05 to +0.34 dB. Pooled 2015–16 dekads are therefore
+biased by at most about +0.35 dB, small
 against the ~10 dB crop cycle and the 4 dB rule. No per-orbit
 normalisation is applied; this is a recorded decision, not an oversight.
 
